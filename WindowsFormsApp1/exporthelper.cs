@@ -796,7 +796,9 @@ public static class ExportHelper_Page2
             ws.Range["H6"].Value = d.TestDate; //測試日期
             ws.Range["H10"].Value = d.TestGsm;
             ws.Range["F14"].Value = d.PressureDrop; //樣品壓損
+            ws.Range["H10"].Value = d.DemandWeight; //測試品重量
             ws.Range["F13"].Value = d.WindSpeed; //風速
+
             ws.Range["F11"].Value = d.TestGas; //測試氣體
             ws.Range["F12"].Value = d.Concentration; //測試濃度
             ws.Range["F16"].Value = d.Eff0; //初始效率
@@ -1060,12 +1062,14 @@ public static class ExportHelper_Page2
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Excel (*.xlsx)|*.xlsx";
-                sfd.FileName = $"{reportData.ReportNo}_{productType}_{demandWeight}_{productNumber}{mmddProduction}.xlsx";
+                sfd.FileName = $"{reportData.ReportNo}.xlsx";
+
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     ExportToExcel_Page2(sfd.FileName, reportData);
                 }
             }
+
             using (var wb = new XLWorkbook(filePath))
             {
                 var ws = wb.Worksheet("濾網");
@@ -1356,20 +1360,6 @@ public static class ExportHelper_Page4
             }
         }
         return formData;
-    }
-    public static T FindCtrl<T>(Control root, string nameContains) where T : Control
-    {
-        if (root == null || string.IsNullOrEmpty(nameContains)) return null;
-
-        foreach (Control c in root.Controls)
-        {
-            if (c is T t && c.Name.IndexOf(nameContains, StringComparison.OrdinalIgnoreCase) >= 0)
-                return t;
-
-            var child = FindCtrl<T>(c, nameContains); // 遞迴
-            if (child != null) return child;
-        }
-        return null;
     }
     private static T FindByExactName<T>(Control root, string exactName) where T : Control
     {
