@@ -10,7 +10,6 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static ExportHelper_Page2;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Core;
 using System.Runtime.InteropServices;
@@ -47,6 +46,7 @@ namespace WindowsFormsApp1
                 FilterRawParticleSizeBox.Rows.Add("<30 Mesh");
                 FilterRawParticleSizeBox.Rows.Add("30~60 Mesh");
                 FilterRawParticleSizeBox.Rows.Add(">60 Mesh");
+
             }
             else if (m == "SI013")
             {
@@ -172,7 +172,6 @@ namespace WindowsFormsApp1
         private void Execute_Click(object sender, EventArgs e)
         {
             var currentTab = tabControl1.SelectedTab;
-
             // --- 校正檢查區 ---
             List<int> columnsToCheck = null;
 
@@ -258,9 +257,7 @@ namespace WindowsFormsApp1
             bool on = chkAsh.Checked;
             if (!on) CylinderRawAshTB.Clear();
         }
-
         private bool _isDialogOpen = false;
-
         private void TxtMoisture_Click(object sender, EventArgs e)
         {
             if (!chkMoisture.Checked) return;        // ✅ 沒勾就不彈
@@ -276,7 +273,6 @@ namespace WindowsFormsApp1
             }
             finally { _isDialogOpen = false; }
         }
-
         private void TxtAsh_Click(object sender, EventArgs e)
         {
             if (!chkAsh.Checked) return;             // ✅ 沒勾就不彈
@@ -293,8 +289,6 @@ namespace WindowsFormsApp1
             finally { _isDialogOpen = false; }
 
         }
-
-
     }
 }
 

@@ -281,16 +281,6 @@
             this.FilterRawTestDate = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.execute = new System.Windows.Forms.Button();
-            this.TrendChartBtn = new System.Windows.Forms.Button();
-            this.label23 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -303,6 +293,16 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.execute = new System.Windows.Forms.Button();
+            this.TrendChartBtn = new System.Windows.Forms.Button();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -984,6 +984,7 @@
             this.CylinderRawSO2CheckBox.Name = "CylinderRawSO2CheckBox";
             this.CylinderRawSO2CheckBox.Size = new System.Drawing.Size(15, 50);
             this.CylinderRawSO2CheckBox.TabIndex = 13;
+            this.CylinderRawSO2CheckBox.Tag = "SO2";
             this.CylinderRawSO2CheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawH2SCheckBox
@@ -994,6 +995,7 @@
             this.CylinderRawH2SCheckBox.Name = "CylinderRawH2SCheckBox";
             this.CylinderRawH2SCheckBox.Size = new System.Drawing.Size(15, 58);
             this.CylinderRawH2SCheckBox.TabIndex = 17;
+            this.CylinderRawH2SCheckBox.Tag = "H2S";
             this.CylinderRawH2SCheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawNH3CheckBox
@@ -1004,6 +1006,7 @@
             this.CylinderRawNH3CheckBox.Name = "CylinderRawNH3CheckBox";
             this.CylinderRawNH3CheckBox.Size = new System.Drawing.Size(15, 58);
             this.CylinderRawNH3CheckBox.TabIndex = 21;
+            this.CylinderRawNH3CheckBox.Tag = "NH3";
             this.CylinderRawNH3CheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawTolueneCheckBox
@@ -1014,6 +1017,7 @@
             this.CylinderRawTolueneCheckBox.Name = "CylinderRawTolueneCheckBox";
             this.CylinderRawTolueneCheckBox.Size = new System.Drawing.Size(15, 58);
             this.CylinderRawTolueneCheckBox.TabIndex = 25;
+            this.CylinderRawTolueneCheckBox.Tag = "Toluene";
             this.CylinderRawTolueneCheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawIPACheckBox
@@ -1024,6 +1028,7 @@
             this.CylinderRawIPACheckBox.Name = "CylinderRawIPACheckBox";
             this.CylinderRawIPACheckBox.Size = new System.Drawing.Size(15, 58);
             this.CylinderRawIPACheckBox.TabIndex = 29;
+            this.CylinderRawIPACheckBox.Tag = "IPA";
             this.CylinderRawIPACheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawAcetoneCheckBox
@@ -1034,6 +1039,7 @@
             this.CylinderRawAcetoneCheckBox.Name = "CylinderRawAcetoneCheckBox";
             this.CylinderRawAcetoneCheckBox.Size = new System.Drawing.Size(15, 60);
             this.CylinderRawAcetoneCheckBox.TabIndex = 33;
+            this.CylinderRawAcetoneCheckBox.Tag = "Acetone";
             this.CylinderRawAcetoneCheckBox.UseVisualStyleBackColor = true;
             // 
             // CylinderRawValue
@@ -1053,6 +1059,7 @@
             this.CylinderRawSO2.Name = "CylinderRawSO2";
             this.CylinderRawSO2.Size = new System.Drawing.Size(75, 20);
             this.CylinderRawSO2.TabIndex = 20;
+            this.CylinderRawSO2.Tag = "SO2";
             this.CylinderRawSO2.Text = "SO2";
             this.CylinderRawSO2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -1064,6 +1071,7 @@
             this.CylinderRawNH3.Name = "CylinderRawNH3";
             this.CylinderRawNH3.Size = new System.Drawing.Size(43, 20);
             this.CylinderRawNH3.TabIndex = 20;
+            this.CylinderRawNH3.Tag = "NH3";
             this.CylinderRawNH3.Text = "NH3";
             // 
             // CylinderRawToluene
@@ -1074,6 +1082,7 @@
             this.CylinderRawToluene.Name = "CylinderRawToluene";
             this.CylinderRawToluene.Size = new System.Drawing.Size(75, 20);
             this.CylinderRawToluene.TabIndex = 20;
+            this.CylinderRawToluene.Tag = "Toluene";
             this.CylinderRawToluene.Text = "Toluene";
             // 
             // CylinderRawIPA
@@ -1085,6 +1094,7 @@
             this.CylinderRawIPA.Name = "CylinderRawIPA";
             this.CylinderRawIPA.Size = new System.Drawing.Size(35, 20);
             this.CylinderRawIPA.TabIndex = 20;
+            this.CylinderRawIPA.Tag = "IPA";
             this.CylinderRawIPA.Text = "IPA";
             // 
             // CylinderRawAcetone
@@ -1095,6 +1105,7 @@
             this.CylinderRawAcetone.Name = "CylinderRawAcetone";
             this.CylinderRawAcetone.Size = new System.Drawing.Size(75, 20);
             this.CylinderRawAcetone.TabIndex = 20;
+            this.CylinderRawAcetone.Tag = "Acetone";
             this.CylinderRawAcetone.Text = "Acetone";
             // 
             // CylinderRawSO2ConcertrationBox
@@ -1362,6 +1373,7 @@
             this.CylinderRawH2S.Name = "CylinderRawH2S";
             this.CylinderRawH2S.Size = new System.Drawing.Size(75, 64);
             this.CylinderRawH2S.TabIndex = 20;
+            this.CylinderRawH2S.Tag = "H2S";
             this.CylinderRawH2S.Text = "H2S";
             this.CylinderRawH2S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -1854,6 +1866,7 @@
             this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.77017F));
             this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.77017F));
             this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.77017F));
+            this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.FilterInProcessEffPanel.Size = new System.Drawing.Size(407, 518);
             this.FilterInProcessEffPanel.TabIndex = 19;
             // 
@@ -1965,6 +1978,7 @@
             this.FilterInSO2CheckBox.Name = "FilterInSO2CheckBox";
             this.FilterInSO2CheckBox.Size = new System.Drawing.Size(15, 74);
             this.FilterInSO2CheckBox.TabIndex = 17;
+            this.FilterInSO2CheckBox.Tag = "SO2";
             this.FilterInSO2CheckBox.UseVisualStyleBackColor = true;
             // 
             // FilterInH2SCheckBox
@@ -1975,6 +1989,7 @@
             this.FilterInH2SCheckBox.Name = "FilterInH2SCheckBox";
             this.FilterInH2SCheckBox.Size = new System.Drawing.Size(15, 74);
             this.FilterInH2SCheckBox.TabIndex = 21;
+            this.FilterInH2SCheckBox.Tag = "H2S";
             this.FilterInH2SCheckBox.UseVisualStyleBackColor = true;
             // 
             // FilterInNH3CheckBox
@@ -1985,6 +2000,7 @@
             this.FilterInNH3CheckBox.Name = "FilterInNH3CheckBox";
             this.FilterInNH3CheckBox.Size = new System.Drawing.Size(15, 74);
             this.FilterInNH3CheckBox.TabIndex = 25;
+            this.FilterInNH3CheckBox.Tag = "NH3";
             this.FilterInNH3CheckBox.UseVisualStyleBackColor = true;
             // 
             // FilterInTolueneCheckBox
@@ -1995,6 +2011,7 @@
             this.FilterInTolueneCheckBox.Name = "FilterInTolueneCheckBox";
             this.FilterInTolueneCheckBox.Size = new System.Drawing.Size(15, 74);
             this.FilterInTolueneCheckBox.TabIndex = 29;
+            this.FilterInTolueneCheckBox.Tag = "Toluene";
             this.FilterInTolueneCheckBox.UseVisualStyleBackColor = true;
             // 
             // FilterInSO2ConcentrationBox
@@ -2123,6 +2140,7 @@
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(17, 77);
             this.checkBox2.TabIndex = 37;
+            this.checkBox2.Tag = "Acetone";
             this.checkBox2.Text = "checkBox1";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
@@ -2156,6 +2174,7 @@
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(17, 74);
             this.checkBox1.TabIndex = 33;
+            this.checkBox1.Tag = "IPA";
             this.checkBox1.Text = "checkBox1";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
@@ -2604,7 +2623,7 @@
             this.FilterRawReportNoTB.Location = new System.Drawing.Point(175, 100);
             this.FilterRawReportNoTB.Name = "FilterRawReportNoTB";
             this.FilterRawReportNoTB.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawReportNoTB.TabIndex = 21;
+            this.FilterRawReportNoTB.TabIndex = 3;
             // 
             // FilterRawParticleSizeBox
             // 
@@ -2616,7 +2635,7 @@
             this.FilterRawParticleSizeBox.Name = "FilterRawParticleSizeBox";
             this.FilterRawParticleSizeBox.RowTemplate.Height = 24;
             this.FilterRawParticleSizeBox.Size = new System.Drawing.Size(237, 156);
-            this.FilterRawParticleSizeBox.TabIndex = 20;
+            this.FilterRawParticleSizeBox.TabIndex = 16;
             // 
             // 目數
             // 
@@ -2636,7 +2655,7 @@
             this.FilterRawArriveDateBox.Location = new System.Drawing.Point(175, 65);
             this.FilterRawArriveDateBox.Name = "FilterRawArriveDateBox";
             this.FilterRawArriveDateBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawArriveDateBox.TabIndex = 3;
+            this.FilterRawArriveDateBox.TabIndex = 2;
             this.FilterRawArriveDateBox.ValueChanged += new System.EventHandler(this.FilterRawArriveDateBox_ValueChanged);
             // 
             // FilterRawTestDateBox
@@ -2647,7 +2666,7 @@
             this.FilterRawTestDateBox.Location = new System.Drawing.Point(175, 25);
             this.FilterRawTestDateBox.Name = "FilterRawTestDateBox";
             this.FilterRawTestDateBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawTestDateBox.TabIndex = 2;
+            this.FilterRawTestDateBox.TabIndex = 1;
             this.FilterRawTestDateBox.ValueChanged += new System.EventHandler(this.FilterRawTestDateBox_ValueChange);
             // 
             // FilterRawTypeBox
@@ -2696,7 +2715,7 @@
             this.FilterRawBackGroundBox.Location = new System.Drawing.Point(499, 93);
             this.FilterRawBackGroundBox.Name = "FilterRawBackGroundBox";
             this.FilterRawBackGroundBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawBackGroundBox.TabIndex = 18;
+            this.FilterRawBackGroundBox.TabIndex = 14;
             // 
             // FilterRawEffvalueBox
             // 
@@ -2706,35 +2725,35 @@
             this.FilterRawEffvalueBox.Name = "FilterRawEffvalueBox";
             this.FilterRawEffvalueBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.FilterRawEffvalueBox.Size = new System.Drawing.Size(129, 99);
-            this.FilterRawEffvalueBox.TabIndex = 19;
+            this.FilterRawEffvalueBox.TabIndex = 15;
             // 
             // FilterRawConcertrationBox
             // 
             this.FilterRawConcertrationBox.Location = new System.Drawing.Point(394, 93);
             this.FilterRawConcertrationBox.Name = "FilterRawConcertrationBox";
             this.FilterRawConcertrationBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawConcertrationBox.TabIndex = 17;
+            this.FilterRawConcertrationBox.TabIndex = 13;
             // 
             // FilterRawPressureBox
             // 
             this.FilterRawPressureBox.Location = new System.Drawing.Point(390, 25);
             this.FilterRawPressureBox.Name = "FilterRawPressureBox";
             this.FilterRawPressureBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawPressureBox.TabIndex = 16;
+            this.FilterRawPressureBox.TabIndex = 12;
             // 
             // FilterRawVOCsOutletBox
             // 
             this.FilterRawVOCsOutletBox.Location = new System.Drawing.Point(175, 376);
             this.FilterRawVOCsOutletBox.Name = "FilterRawVOCsOutletBox";
             this.FilterRawVOCsOutletBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawVOCsOutletBox.TabIndex = 15;
+            this.FilterRawVOCsOutletBox.TabIndex = 11;
             // 
             // FilterRawVOCsInletBox
             // 
             this.FilterRawVOCsInletBox.Location = new System.Drawing.Point(175, 336);
             this.FilterRawVOCsInletBox.Name = "FilterRawVOCsInletBox";
             this.FilterRawVOCsInletBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawVOCsInletBox.TabIndex = 14;
+            this.FilterRawVOCsInletBox.TabIndex = 10;
             // 
             // FilterRawWeightBox
             // 
@@ -2755,7 +2774,7 @@
             this.FilterRawQuantityBox.Location = new System.Drawing.Point(225, 215);
             this.FilterRawQuantityBox.Name = "FilterRawQuantityBox";
             this.FilterRawQuantityBox.Size = new System.Drawing.Size(50, 29);
-            this.FilterRawQuantityBox.TabIndex = 6;
+            this.FilterRawQuantityBox.TabIndex = 7;
             // 
             // FilterRawQtyWeightBox
             // 
@@ -2933,104 +2952,6 @@
             this.tabPage1.Text = "物料";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // comboBox1
-            // 
-            this.comboBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "濾筒",
-            "濾網"});
-            this.comboBox1.Location = new System.Drawing.Point(182, 14);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(100, 28);
-            this.comboBox1.TabIndex = 24;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(47, 17);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(73, 20);
-            this.label12.TabIndex = 25;
-            this.label12.Text = "物料種類";
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.Checked = false;
-            this.dateTimePicker1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.dateTimePicker1.CustomFormat = "yyyy.MM.dd";
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(182, 48);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(100, 29);
-            this.dateTimePicker1.TabIndex = 20;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox2.Location = new System.Drawing.Point(182, 83);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 29);
-            this.textBox2.TabIndex = 21;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(47, 86);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(73, 20);
-            this.label22.TabIndex = 22;
-            this.label22.Text = "報告編號";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(47, 53);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(73, 20);
-            this.label21.TabIndex = 23;
-            this.label21.Text = "測試日期";
-            // 
-            // execute
-            // 
-            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.execute.Location = new System.Drawing.Point(814, 12);
-            this.execute.Name = "execute";
-            this.execute.Size = new System.Drawing.Size(121, 53);
-            this.execute.TabIndex = 3;
-            this.execute.Text = "執行";
-            this.execute.UseVisualStyleBackColor = true;
-            this.execute.Click += new System.EventHandler(this.Execute_Click);
-            // 
-            // TrendChartBtn
-            // 
-            this.TrendChartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.TrendChartBtn.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.TrendChartBtn.Location = new System.Drawing.Point(22, 12);
-            this.TrendChartBtn.Name = "TrendChartBtn";
-            this.TrendChartBtn.Size = new System.Drawing.Size(121, 53);
-            this.TrendChartBtn.TabIndex = 1;
-            this.TrendChartBtn.Text = "趨勢圖";
-            this.TrendChartBtn.UseVisualStyleBackColor = true;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(47, 121);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(41, 20);
-            this.label23.TabIndex = 22;
-            this.label23.Text = "料號";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox1.Location = new System.Drawing.Point(182, 118);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 29);
-            this.textBox1.TabIndex = 21;
-            // 
             // dataGridView1
             // 
             this.dataGridView1.AllowUserToResizeColumns = false;
@@ -3122,6 +3043,104 @@
             this.dataGridViewTextBoxColumn11.HeaderText = "Pressure_Drop";
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
             this.dataGridViewTextBoxColumn11.Width = 140;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "濾筒",
+            "濾網"});
+            this.comboBox1.Location = new System.Drawing.Point(182, 14);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(100, 28);
+            this.comboBox1.TabIndex = 24;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(47, 17);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(73, 20);
+            this.label12.TabIndex = 25;
+            this.label12.Text = "物料種類";
+            // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.Checked = false;
+            this.dateTimePicker1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.dateTimePicker1.CustomFormat = "yyyy.MM.dd";
+            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTimePicker1.Location = new System.Drawing.Point(182, 48);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(100, 29);
+            this.dateTimePicker1.TabIndex = 20;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.textBox1.Location = new System.Drawing.Point(182, 118);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 29);
+            this.textBox1.TabIndex = 21;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(47, 121);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(41, 20);
+            this.label23.TabIndex = 22;
+            this.label23.Text = "料號";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Cursor = System.Windows.Forms.Cursors.Default;
+            this.textBox2.Location = new System.Drawing.Point(182, 83);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 29);
+            this.textBox2.TabIndex = 21;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(47, 86);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(73, 20);
+            this.label22.TabIndex = 22;
+            this.label22.Text = "報告編號";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(47, 53);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(73, 20);
+            this.label21.TabIndex = 23;
+            this.label21.Text = "測試日期";
+            // 
+            // execute
+            // 
+            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.execute.Location = new System.Drawing.Point(814, 12);
+            this.execute.Name = "execute";
+            this.execute.Size = new System.Drawing.Size(121, 53);
+            this.execute.TabIndex = 3;
+            this.execute.Text = "執行";
+            this.execute.UseVisualStyleBackColor = true;
+            this.execute.Click += new System.EventHandler(this.Execute_Click);
+            // 
+            // TrendChartBtn
+            // 
+            this.TrendChartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.TrendChartBtn.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.TrendChartBtn.Location = new System.Drawing.Point(22, 12);
+            this.TrendChartBtn.Name = "TrendChartBtn";
+            this.TrendChartBtn.Size = new System.Drawing.Size(121, 53);
+            this.TrendChartBtn.TabIndex = 1;
+            this.TrendChartBtn.Text = "趨勢圖";
+            this.TrendChartBtn.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

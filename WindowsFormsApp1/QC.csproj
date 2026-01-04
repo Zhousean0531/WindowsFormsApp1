@@ -127,7 +127,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalibrationHelper.cs" />
+    <Compile Include="Export\page1\Page1ExportData.cs" />
+    <Compile Include="Export\page1\Page1ReportExporter.cs" />
+    <Compile Include="Export\page1\Page1MasterExporter.cs" />
+    <Compile Include="Export\page1\Page1DataCollector.cs" />
+    <Compile Include="Export\page3\Page3MasterExporter.cs" />
+    <Compile Include="Export\page3\Page3ExportData.cs" />
+    <Compile Include="Export\page3\Page3DataCollector.cs" />
+    <Compile Include="Export\page4\Page4DataCollector.cs" />
+    <Compile Include="Export\page4\Page4ExportData.cs" />
+    <Compile Include="Export\page4\Page4MasterExporter.cs" />
+    <Compile Include="Export\page4\Page4ReportExporter.cs" />
+    <Compile Include="Export\page2\Page2ExportData.cs" />
+    <Compile Include="Export\page2\Page2MasterExporter.cs" />
+    <Compile Include="Export\page2\Page2ReportExporter.cs" />
+    <Compile Include="Export\page2\Page2DataCollector.cs" />
+    <Compile Include="Export\page5\Page5DataCollector.cs" />
+    <Compile Include="Export\page5\Page5MasterExporter.cs" />
+    <Compile Include="Export\page5\Page5ExportData.cs" />
     <Compile Include="FormCalcMoistureAsh.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,9 +155,17 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
+    <Compile Include="helper\CalibrationHelper.cs" />
+    <Compile Include="helper\QuantityHelper.cs" />
+    <Compile Include="helper\GasMappingHelper.cs" />
+    <Compile Include="helper\EfficiencyGroup.cs" />
+    <Compile Include="helper\EfficiencyResult.cs" />
+    <Compile Include="helper\EfficiencyHelper.cs" />
+    <Compile Include="helper\ExcelReportUtil.cs" />
+    <Compile Include="helper\StringUtil.cs" />
+    <Compile Include="helper\MeshHelper .cs" />
     <Compile Include="helper\controlhelper.cs" />
     <Compile Include="helper\stringhelper.cs" />
-    <Compile Include="helper\excelhelper.cs" />
     <Compile Include="MaterialSelectForm.cs">
       <SubType>Form</SubType>
     </Compile>

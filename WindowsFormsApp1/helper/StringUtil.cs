@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public static class ParseHelper
+public static class StringUtil
 {
-    public static List<string> SplitStr(string raw)
+    public static List<string> Split(string raw)
     {
-        var sep = new[] { '/', ',', '、', '|' };
+        var sep = new[] { '/', ',', '、', '|', ' ', '\r', '\n', ';' };
         return (raw ?? "")
             .Split(sep, StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())
@@ -15,8 +15,9 @@ public static class ParseHelper
 
     public static List<double> SplitDouble(string raw)
     {
-        return SplitStr(raw)
-            .Select(s => double.TryParse(s, out var v) ? v : 0)
+        return Split(raw)
+            .Select(s => double.TryParse(s, out var v) ? v : double.NaN)
+            .Where(v => !double.IsNaN(v))
             .ToList();
     }
 }
