@@ -45,7 +45,7 @@ public static class Page4ReportExporter
 
             using (var wb = new XLWorkbook(savePath))
             {
-                var ws = wb.Worksheet("濾網半成品報告");
+                var ws = wb.Worksheet("濾網原料報告");
 
                 int idx = d.SelectedIndex;
                 if (idx < 0 || idx >= g.Efficiencies11.Count)
@@ -60,8 +60,6 @@ public static class Page4ReportExporter
                 ws.Cell("C6").Value = d.TestingDate;
                 ws.Cell("E5").Value = d.Material;
                 ws.Cell("E6").Value = d.QtyText;
-                ws.Cell("H10").Value = d.PressureDrops[idx];
-                ws.Cell("F12").Value = g.Concentration;
 
                 // 批次資料
                 const int COL_FIRST = 3;
@@ -78,13 +76,6 @@ public static class Page4ReportExporter
                     ws.Cell(18, col).Value =
                         (i == idx) ? g.Eff0 : "N.D.";
                 }
-
-                // 11 點效率
-                for (int i = 0; i < g.Efficiencies11.Count; i++)
-                {
-                    ws.Cell(20 + i, 11).Value = g.Efficiencies11[i];
-                }
-
                 wb.Save();
             }
         }

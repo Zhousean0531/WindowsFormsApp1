@@ -8,6 +8,7 @@ public class Page1ExportData
     public string QtyText { get; set; }
     public string Material { get; set; }
     public string ArrivalDate { get; set; }
+    public string MaterialNo { get; set; }
     public string TestingDate { get; set; }
     public List<string> LotFulls { get; set; }
     public List<double> Densities { get; set; }

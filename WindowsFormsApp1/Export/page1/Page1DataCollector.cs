@@ -22,7 +22,7 @@ public static class Page1DataCollector
         var tbBg = ControlHelper.Find<TextBox>(tab, "FilterRawBackGroundBox");
         var tbVal = ControlHelper.Find<TextBox>(tab, "FilterRawEffvalueBox");
         var particleSizes = new Dictionary<string, string>();
-
+        
         var dgv = ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox");
         if (dgv != null)
         {
@@ -66,14 +66,16 @@ public static class Page1DataCollector
         string testingDate = testPicker.Value.ToString("yyyy.MM.dd");
         string material = materialBox.Text.Trim();
         string reportNo = reportNoBox?.Text.Trim() ?? "";
-        string quantity = ControlHelper.GetText(tab, "FilterRawQtyBox");
-        string quantityweight = ControlHelper.GetText(tab, "FilterRawQtyWeight");
+        string qtyPack = ControlHelper.GetText(tab, "FilterRawQuantityBox");
+        string qtyWeight = ControlHelper.GetText(tab, "FilterRawQtyWeight");
         string rawType =
                 ControlHelper.Find<TextBox>(tab, "FilterRawTypeBox")?.Text
                 ?.Trim()
                 ?.ToUpperInvariant();
         string gasName = GasMappingHelper.GetGasNameFromRawType(rawType);
-        string qtyText = QuantityHelper.BuildQuantityText(ProductKind.Filter,material, quantity,quantityweight);
+        string qtyText = QuantityHelper.BuildQuantityText(ProductKind.Filter,material, qtyPack, qtyWeight);
+        var matInfo = MaterialMasterHelper.Get(material);
+        string materialNo = matInfo?.MaterialNo ?? "";
         // ─────────────────────────────
         // (B) 多筆欄位解析
         // ─────────────────────────────
@@ -175,6 +177,7 @@ public static class Page1DataCollector
             MeshSummaries = meshSummaries,
             LotFulls = lotFulls,
             QtyText = qtyText,
+            MaterialNo = materialNo,
             Densities = densities,
             DeltaPs = deltaPs,
             VocIns = vocIns,

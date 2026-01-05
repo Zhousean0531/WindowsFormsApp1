@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
 
 public static class ExcelReportUtil
 {
@@ -25,7 +26,11 @@ public static class ExcelReportUtil
 
         try
         {
+            // ─────────────────────────────
+            // (A) 一定要寫的資料（不管有沒有簽名）
+            // ─────────────────────────────
             ws.Range["C4"].Value = d.ReportNo;
+            ws.Range["E4"].Value = d.MaterialNo;
             ws.Range["E5"].Value = d.Material;
             ws.Range["C5"].Value = d.ArrivalDate;
             ws.Range["C6"].Value = d.TestingDate;
@@ -49,9 +54,36 @@ public static class ExcelReportUtil
                 ws.Cells[ROW_VIN, col].Value = d.VocIns[i];
                 ws.Cells[ROW_VOUT, col].Value = d.VocOuts[i];
                 ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
-
                 ws.Cells[ROW_EFF, col].Value =
                     (i == d.SelectedIndex) ? d.Eff0 : "N.D.";
+            }
+
+            // ─────────────────────────────
+            // (B) 簽名：有就加，沒有就略過
+            // ─────────────────────────────
+            string sigPath = SignatureHelper.FindSignaturePath();
+            if (!string.IsNullOrEmpty(sigPath) && File.Exists(sigPath))
+            {
+                Excel.Range target = ws.Range["E25"];
+
+                ws.Shapes.AddPicture(
+                    sigPath,
+                    Microsoft.Office.Core.MsoTriState.msoFalse,
+                    Microsoft.Office.Core.MsoTriState.msoTrue,
+                    (float)target.Left,
+                    (float)target.Top,
+                    -1,
+                    -1
+                );
+            }
+            else
+            {
+                MessageBox.Show(
+                    $"找不到使用者 {Environment.UserName} 的簽名檔，將略過簽名。",
+                    "簽名檔不存在",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
             }
 
             wb.Save();
@@ -66,3 +98,4 @@ public static class ExcelReportUtil
         }
     }
 }
+

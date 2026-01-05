@@ -1,0 +1,19 @@
+{
+  "SI013": { "MaterialNo": "3210A04000001" },
+  "IER101": { "MaterialNo": "3210B02000002" },
+  "IKP101": { "MaterialNo": "3210D02000001" },
+  "SG001": { "MaterialNo": "3210P02000001" },
+  "SG009": { "MaterialNo": "3210P02000003" },
+  "SG032": { "MaterialNo": "3210P02000004" },
+  "SG042": { "MaterialNo": "3210P02000005" },
+
+  "IKP201": { "MaterialNo": "3110D00000002" },
+  "IKP205": { "MaterialNo": "3110D00000004" },
+  "IKP210": { "MaterialNo": "3110D00000005" },
+  "SG017_A": { "MaterialNo": "3110P00000002" },
+  "SG017_B": { "MaterialNo": "3110T00000001" },
+  "SG035_4x8": { "MaterialNo": "3110T00000004" },
+  "SG029_4x8": { "MaterialNo": "3110T00000005" },
+  "SG017_C": { "MaterialNo": "3110T00000001" },
+  "SG017_D": { "MaterialNo": "3110T00000002" }
+}

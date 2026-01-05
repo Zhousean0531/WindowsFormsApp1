@@ -33,6 +33,11 @@ namespace WindowsFormsApp1
             ToggleMoistureUI();
             ToggleAshUI();
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            MaterialMasterHelper.Load();
+        }
+
         private void FilterRawTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string m = (FilterRawTypeBox.Text ?? "").Trim().ToUpperInvariant();
