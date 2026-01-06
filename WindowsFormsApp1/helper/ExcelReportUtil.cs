@@ -1,7 +1,9 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static SignatureHelper;
 using Excel = Microsoft.Office.Interop.Excel;
 
 public static class ExcelReportUtil
@@ -57,35 +59,8 @@ public static class ExcelReportUtil
                 ws.Cells[ROW_EFF, col].Value =
                     (i == d.SelectedIndex) ? d.Eff0 : "N.D.";
             }
-
-            // ─────────────────────────────
             // (B) 簽名：有就加，沒有就略過
-            // ─────────────────────────────
-            string sigPath = SignatureHelper.FindSignaturePath();
-            if (!string.IsNullOrEmpty(sigPath) && File.Exists(sigPath))
-            {
-                Excel.Range target = ws.Range["E25"];
-
-                ws.Shapes.AddPicture(
-                    sigPath,
-                    Microsoft.Office.Core.MsoTriState.msoFalse,
-                    Microsoft.Office.Core.MsoTriState.msoTrue,
-                    (float)target.Left,
-                    (float)target.Top,
-                    -1,
-                    -1
-                );
-            }
-            else
-            {
-                MessageBox.Show(
-                    $"找不到使用者 {Environment.UserName} 的簽名檔，將略過簽名。",
-                    "簽名檔不存在",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-            }
-
+            ExcelSignatureHelper.TryAddSignature(ws, "E25");
             wb.Save();
         }
         finally
@@ -98,4 +73,3 @@ public static class ExcelReportUtil
         }
     }
 }
-

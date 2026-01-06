@@ -1,10 +1,9 @@
-﻿using ClosedXML.Excel;
-using Google.Protobuf.WellKnownTypes;
-using System;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static SignatureHelper;
+using Excel = Microsoft.Office.Interop.Excel;
 
 public static class Page4ReportExporter
 {
@@ -27,8 +26,17 @@ public static class Page4ReportExporter
             return;
         }
 
+        // ─────────────────────────────
+        // 多氣體 → 多份報告
+        // ─────────────────────────────
         foreach (var g in d.EfficiencyGroups)
         {
+            if (g.Efficiencies11 == null || g.Efficiencies11.Count == 0)
+            {
+                MessageBox.Show($"氣體 {g.GasName} 的效率資料為空");
+                continue;
+            }
+
             string savePath;
             using (var sfd = new SaveFileDialog())
             {
@@ -43,9 +51,15 @@ public static class Page4ReportExporter
 
             File.Copy(templatePath, savePath, true);
 
-            using (var wb = new XLWorkbook(savePath))
+            Excel.Application app = null;
+            Excel.Workbook wb = null;
+            Excel.Worksheet ws = null;
+
+            try
             {
-                var ws = wb.Worksheet("濾網原料報告");
+                app = new Excel.Application();
+                wb = app.Workbooks.Open(savePath);
+                ws = (Excel.Worksheet)wb.Sheets["濾網原料報告"];
 
                 int idx = d.SelectedIndex;
                 if (idx < 0 || idx >= g.Efficiencies11.Count)
@@ -54,29 +68,58 @@ public static class Page4ReportExporter
                     continue;
                 }
 
-                // 基本資料
-                ws.Cell("C4").Value = d.ReportNo;
-                ws.Cell("C5").Value = d.ArrivalDate;
-                ws.Cell("C6").Value = d.TestingDate;
-                ws.Cell("E5").Value = d.Material;
-                ws.Cell("E6").Value = d.QtyText;
+                // ─────────────────────────────
+                // (A) 基本資料
+                // ─────────────────────────────
+                ws.Range["C4"].Value = d.ReportNo;
+                ws.Range["C5"].Value = d.ArrivalDate;
+                ws.Range["C6"].Value = d.TestingDate;
+                ws.Range["E4"].Value = d.MaterialNo;
+                ws.Range["E5"].Value = d.Material;
+                ws.Range["E6"].Value = d.QtyText;
 
-                // 批次資料
+                // ─────────────────────────────
+                // (B) 批次資料
+                // ─────────────────────────────
                 const int COL_FIRST = 3;
+                const int ROW_LOT = 10;
+                const int ROW_DEN = 13;
+                const int ROW_DP = 14;
+                const int ROW_VIN = 15;
+                const int ROW_VOUT = 16;
+                const int ROW_OUTG = 17;
+                const int ROW_EFF = 18;
+
                 for (int i = 0; i < d.LotFulls.Count; i++)
                 {
                     int col = COL_FIRST + i;
-                    ws.Cell(10, col).Value = d.LotFulls[i];
-                    ws.Cell(13, col).Value = d.Densities[i];
-                    ws.Cell(14, col).Value = d.DeltaPs[i];
-                    ws.Cell(15, col).Value = d.VocIns[i];
-                    ws.Cell(16, col).Value = d.VocOuts[i];
-                    ws.Cell(17, col).Value = d.OutgassingList[i];
 
-                    ws.Cell(18, col).Value =
+                    ws.Cells[ROW_LOT, col].Value = d.LotFulls[i];
+                    ws.Cells[ROW_DEN, col].Value = d.Densities[i];
+                    ws.Cells[ROW_DP, col].Value = d.DeltaPs[i];
+                    ws.Cells[ROW_VIN, col].Value = d.VocIns[i];
+                    ws.Cells[ROW_VOUT, col].Value = d.VocOuts[i];
+                    ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
+
+                    ws.Cells[ROW_EFF, col].Value =
                         (i == idx) ? g.Eff0 : "N.D.";
                 }
+
+                // ─────────────────────────────
+                // (C) 簽名檔
+                // ─────────────────────────────
+                ExcelSignatureHelper.TryAddSignature(ws, "E25");
+
                 wb.Save();
+            }
+            finally
+            {
+                if (wb != null) wb.Close(false);
+                if (app != null) app.Quit();
+
+                if (ws != null) Marshal.ReleaseComObject(ws);
+                if (wb != null) Marshal.ReleaseComObject(wb);
+                if (app != null) Marshal.ReleaseComObject(app);
             }
         }
     }

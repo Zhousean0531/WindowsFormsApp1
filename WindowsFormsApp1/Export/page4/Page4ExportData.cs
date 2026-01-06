@@ -12,6 +12,7 @@ public class Page4ExportData
     public List<string> LotFulls { get; set; }
     public List<double> Weights { get; set; }
     public List<double> PressureDrops { get; set; }
+    public string MaterialNo { get; set; }
     public List<double> Densities { get; set; }
     public List<double> DeltaPs { get; set; }
     public List<double> VocIns { get; set; }

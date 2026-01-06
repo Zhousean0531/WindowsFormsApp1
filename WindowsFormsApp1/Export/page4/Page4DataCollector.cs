@@ -52,6 +52,8 @@ public static class Page4DataCollector
         var vocOut = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
         var deltas = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
         var pressure = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
+        var matInfo = MaterialMasterHelper.Get(material);
+        string materialNo = matInfo?.MaterialNo ?? "";
         int n = new[] { nos.Count, weights.Count, vocIn.Count, vocOut.Count, deltas.Count }.Min();
         if (n <= 0)
         {
@@ -167,7 +169,8 @@ public static class Page4DataCollector
             PressureDrops= pressure,
             EfficiencyGroups = effGroups,
             LotFulls = lotFulls,
-            LotNos=lotNos,
+            MaterialNo = materialNo,
+            LotNos =lotNos,
             Densities = densities,
             DeltaPs = deltas,
             VocIns = vocIn,
