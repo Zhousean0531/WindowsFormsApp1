@@ -1,4 +1,7 @@
-﻿using Microsoft.Office.Interop.PowerPoint;
+﻿using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Office.Core;
+using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,13 +9,12 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Core;
-using System.Runtime.InteropServices;
 
 namespace WindowsFormsApp1
 {
@@ -37,7 +39,6 @@ namespace WindowsFormsApp1
         {
             MaterialMasterHelper.Load();
         }
-
         private void FilterRawTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string m = (FilterRawTypeBox.Text ?? "").Trim().ToUpperInvariant();
@@ -64,7 +65,7 @@ namespace WindowsFormsApp1
         private void FilterRawTestDateBox_ValueChange(object sender, EventArgs e)
         {
             var FilterRawReportNo = FilterRawTestDateBox.Value.ToString("yyMMdd");
-            FilterRawReportNoTB.Text = $"YS-Q-M11-"+ FilterRawReportNo;
+            FilterRawReportNoTB.Text = $"YS-Q-M11-" + FilterRawReportNo;
         }
         private void CylinderRawTestDateBox_ValueChange(object sender, EventArgs e)
         {
@@ -87,7 +88,7 @@ namespace WindowsFormsApp1
 
             // 格式：YS-Q-M30-yymmdd（yy 為西元後兩碼）
             string formattedDate = selectedDate.ToString("yyMMdd");
-            
+
             FilterReportBox.Text = "YS-Q-M30-" + formattedDate;
         }
         private void CylinderTestDateBox_ValueChanged(object sender, EventArgs e)
@@ -98,6 +99,15 @@ namespace WindowsFormsApp1
             string formattedDate = selectedDate.ToString("yyMMdd");
 
             CylinderReportNOBox.Text = "YS-Q-C30-" + formattedDate;
+        }
+        private void MaterialTestDateBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (MaterialTypeTB.SelectedItem == null) return;
+
+            string typeCode = MaterialTypeTB.Text == "濾網" ? "M" : "C";
+            string datePart = MaterialTestDateBox.Value.ToString("yyMMdd");
+
+            MaterialReportNOTB.Text = $"YS-Q-{typeCode}12-{datePart}";
         }
         private void CylinderBox_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
@@ -220,7 +230,7 @@ namespace WindowsFormsApp1
             var sb = new StringBuilder();
             sb.AppendLine($"[目前分頁]: {currentTab.Name}");
 
-            foreach (Control control in currentTab.Controls)
+            foreach (System.Windows.Forms.Control control in currentTab.Controls)
             {
                 if (control is TextBox tb)
                 {
@@ -262,38 +272,58 @@ namespace WindowsFormsApp1
             bool on = chkAsh.Checked;
             if (!on) CylinderRawAshTB.Clear();
         }
-        private bool _isDialogOpen = false;
         private void TxtMoisture_Click(object sender, EventArgs e)
         {
-            if (!chkMoisture.Checked) return;        // ✅ 沒勾就不彈
-            if (_isDialogOpen) return;               // 防雙彈
-            _isDialogOpen = true;
-            try
-            {
-                using (var f = new FormCalcMoistureAsh(CalcMode.Moisture))
-                {
-                    if (f.ShowDialog() == DialogResult.OK && f.AverageResult.HasValue)
-                        CylinderRawMoistureTB.Text = f.AverageResult.Value.ToString("F2");
-                }
-            }
-            finally { _isDialogOpen = false; }
+
         }
         private void TxtAsh_Click(object sender, EventArgs e)
         {
-            if (!chkAsh.Checked) return;             // ✅ 沒勾就不彈
-            if (_isDialogOpen) return;
-            _isDialogOpen = true;
-            try
-            {
-                using (var f = new FormCalcMoistureAsh(CalcMode.Ash))
-                {
-                    if (f.ShowDialog() == DialogResult.OK && f.AverageResult.HasValue)
-                        CylinderRawAshTB.Text = f.AverageResult.Value.ToString("F2");
-                }
-            }
-            finally { _isDialogOpen = false; }
 
+        }
+
+        private void AddMaterialToDgv(MaterialInfo info)
+        {
+            string materialDisplay =
+                info.MaterialNo + Environment.NewLine +
+                info.MaterialName;
+
+            string inDate = MaterialTestDateBox.Value.ToString("yyyy.MM.dd");
+
+            RawMaterialdgv.Rows.Add(
+                inDate,
+                materialDisplay,
+                "",
+                info.InUnit,
+                info.SampleQty,
+                info.InspectUnit,
+                "V",
+                info.Spec,
+                info.Spec,
+                "合格",
+                "N/A"
+            );
+        }
+
+        private void RawMaterialNOtb_keyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            e.SuppressKeyPress = true; // 防止嗶聲
+
+            string materialNo = RawMaterialNOtb.Text.Trim();
+
+            var info = MaterialMasterHelper.Get(materialNo);
+
+            if (info == null)
+            {
+                MessageBox.Show("查無此料號");
+                return;
+            }
+
+            AddMaterialToDgv(info);
         }
     }
 }
+
 

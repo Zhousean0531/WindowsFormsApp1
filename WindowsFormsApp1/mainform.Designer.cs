@@ -281,7 +281,7 @@
             this.FilterRawTestDate = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.RawMaterialdgv = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -293,12 +293,12 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
+            this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.execute = new System.Windows.Forms.Button();
@@ -316,7 +316,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.FilterRawParticleSizeBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RawMaterialdgv)).BeginInit();
             this.SuspendLayout();
             // 
             // CylinderPage
@@ -339,7 +339,7 @@
             this.CylinderPage.Controls.Add(this.CylinderTestDate);
             this.CylinderPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderPage.Name = "CylinderPage";
-            this.CylinderPage.Size = new System.Drawing.Size(1034, 627);
+            this.CylinderPage.Size = new System.Drawing.Size(1018, 625);
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
             // 
@@ -376,7 +376,6 @@
             // 
             this.CylinderBox.AllowUserToResizeColumns = false;
             this.CylinderBox.AllowUserToResizeRows = false;
-            this.CylinderBox.BackgroundColor = System.Drawing.SystemColors.Control;
             this.CylinderBox.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.CylinderBox.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.CYLSN,
@@ -611,7 +610,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawParticle);
             this.CylinderRawPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderRawPage.Name = "CylinderRawPage";
-            this.CylinderRawPage.Size = new System.Drawing.Size(1034, 627);
+            this.CylinderRawPage.Size = new System.Drawing.Size(1018, 625);
             this.CylinderRawPage.TabIndex = 3;
             this.CylinderRawPage.Text = "濾筒原料";
             // 
@@ -1444,7 +1443,7 @@
             this.FilterPage.Controls.Add(this.FilterTestDate);
             this.FilterPage.Location = new System.Drawing.Point(4, 29);
             this.FilterPage.Name = "FilterPage";
-            this.FilterPage.Size = new System.Drawing.Size(1034, 627);
+            this.FilterPage.Size = new System.Drawing.Size(1018, 625);
             this.FilterPage.TabIndex = 2;
             this.FilterPage.Text = "濾網成品";
             // 
@@ -1808,7 +1807,7 @@
             this.FilterInProcessPage.Location = new System.Drawing.Point(4, 29);
             this.FilterInProcessPage.Name = "FilterInProcessPage";
             this.FilterInProcessPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterInProcessPage.Size = new System.Drawing.Size(1034, 627);
+            this.FilterInProcessPage.Size = new System.Drawing.Size(1018, 625);
             this.FilterInProcessPage.TabIndex = 1;
             this.FilterInProcessPage.Text = "濾網半成品";
             // 
@@ -2614,7 +2613,7 @@
             this.FilterRawPage.Location = new System.Drawing.Point(4, 29);
             this.FilterRawPage.Name = "FilterRawPage";
             this.FilterRawPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterRawPage.Size = new System.Drawing.Size(1034, 627);
+            this.FilterRawPage.Size = new System.Drawing.Size(1018, 625);
             this.FilterRawPage.TabIndex = 0;
             this.FilterRawPage.Text = "濾網原料";
             // 
@@ -2930,35 +2929,34 @@
             this.tabControl1.Location = new System.Drawing.Point(1, 71);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1042, 660);
+            this.tabControl1.Size = new System.Drawing.Size(1026, 658);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
-            this.tabPage1.Controls.Add(this.comboBox1);
+            this.tabPage1.Controls.Add(this.RawMaterialdgv);
+            this.tabPage1.Controls.Add(this.MaterialTypeTB);
             this.tabPage1.Controls.Add(this.label12);
-            this.tabPage1.Controls.Add(this.dateTimePicker1);
-            this.tabPage1.Controls.Add(this.textBox1);
+            this.tabPage1.Controls.Add(this.MaterialTestDateBox);
+            this.tabPage1.Controls.Add(this.RawMaterialNOtb);
             this.tabPage1.Controls.Add(this.label23);
-            this.tabPage1.Controls.Add(this.textBox2);
+            this.tabPage1.Controls.Add(this.MaterialReportNOTB);
             this.tabPage1.Controls.Add(this.label22);
             this.tabPage1.Controls.Add(this.label21);
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1034, 627);
+            this.tabPage1.Size = new System.Drawing.Size(1018, 625);
             this.tabPage1.TabIndex = 5;
             this.tabPage1.Text = "物料";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // RawMaterialdgv
             // 
-            this.dataGridView1.AllowUserToResizeColumns = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.RawMaterialdgv.AllowUserToResizeColumns = false;
+            this.RawMaterialdgv.AllowUserToResizeRows = false;
+            this.RawMaterialdgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.RawMaterialdgv.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3,
@@ -2970,141 +2968,146 @@
             this.dataGridViewTextBoxColumn9,
             this.dataGridViewTextBoxColumn10,
             this.dataGridViewTextBoxColumn11});
-            this.dataGridView1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.dataGridView1.Location = new System.Drawing.Point(60, 178);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(915, 341);
-            this.dataGridView1.TabIndex = 26;
+            this.RawMaterialdgv.Cursor = System.Windows.Forms.Cursors.Default;
+            this.RawMaterialdgv.Location = new System.Drawing.Point(44, 164);
+            this.RawMaterialdgv.Name = "RawMaterialdgv";
+            this.RawMaterialdgv.RowTemplate.Height = 24;
+            this.RawMaterialdgv.Size = new System.Drawing.Size(929, 341);
+            this.RawMaterialdgv.TabIndex = 26;
             // 
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn1.Frozen = true;
-            this.dataGridViewTextBoxColumn1.HeaderText = "生產序號";
+            this.dataGridViewTextBoxColumn1.HeaderText = "進貨日期";
+            this.dataGridViewTextBoxColumn1.MinimumWidth = 50;
             this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // dataGridViewTextBoxColumn2
             // 
             this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn2.HeaderText = "重量";
+            this.dataGridViewTextBoxColumn2.HeaderText = "料號/物料名稱";
             this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.Width = 65;
+            this.dataGridViewTextBoxColumn2.Width = 250;
             // 
             // dataGridViewTextBoxColumn3
             // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Particle_In";
+            this.dataGridViewTextBoxColumn3.HeaderText = "進貨數量";
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             this.dataGridViewTextBoxColumn3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // dataGridViewTextBoxColumn4
             // 
-            this.dataGridViewTextBoxColumn4.HeaderText = "Particle_Out";
+            this.dataGridViewTextBoxColumn4.HeaderText = "單位";
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.Width = 105;
+            this.dataGridViewTextBoxColumn4.Width = 70;
             // 
             // dataGridViewTextBoxColumn5
             // 
-            this.dataGridViewTextBoxColumn5.HeaderText = "IPA_In";
+            this.dataGridViewTextBoxColumn5.HeaderText = "抽檢數";
             this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
             this.dataGridViewTextBoxColumn5.Width = 65;
             // 
             // dataGridViewTextBoxColumn6
             // 
-            this.dataGridViewTextBoxColumn6.HeaderText = "IPA_Out";
+            this.dataGridViewTextBoxColumn6.HeaderText = "單位";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.Width = 78;
+            this.dataGridViewTextBoxColumn6.Width = 70;
             // 
             // dataGridViewTextBoxColumn7
             // 
-            this.dataGridViewTextBoxColumn7.HeaderText = "Acetone_In";
+            this.dataGridViewTextBoxColumn7.HeaderText = "外觀";
             this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.Width = 70;
             // 
             // dataGridViewTextBoxColumn8
             // 
-            this.dataGridViewTextBoxColumn8.HeaderText = "Acetone_Out";
+            this.dataGridViewTextBoxColumn8.HeaderText = "規格值";
             this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
             this.dataGridViewTextBoxColumn8.Width = 120;
             // 
             // dataGridViewTextBoxColumn9
             // 
-            this.dataGridViewTextBoxColumn9.HeaderText = "Nontarget_In";
+            this.dataGridViewTextBoxColumn9.HeaderText = "測量值";
             this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
             this.dataGridViewTextBoxColumn9.Width = 125;
             // 
             // dataGridViewTextBoxColumn10
             // 
-            this.dataGridViewTextBoxColumn10.HeaderText = "Nontarget_Out";
+            this.dataGridViewTextBoxColumn10.HeaderText = "合格/不合格";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
             this.dataGridViewTextBoxColumn10.Width = 130;
             // 
             // dataGridViewTextBoxColumn11
             // 
-            this.dataGridViewTextBoxColumn11.HeaderText = "Pressure_Drop";
+            this.dataGridViewTextBoxColumn11.HeaderText = "備註";
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
             this.dataGridViewTextBoxColumn11.Width = 140;
             // 
-            // comboBox1
+            // MaterialTypeTB
             // 
-            this.comboBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.MaterialTypeTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialTypeTB.FormattingEnabled = true;
+            this.MaterialTypeTB.Items.AddRange(new object[] {
             "濾筒",
             "濾網"});
-            this.comboBox1.Location = new System.Drawing.Point(182, 14);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(100, 28);
-            this.comboBox1.TabIndex = 24;
+            this.MaterialTypeTB.Location = new System.Drawing.Point(175, 25);
+            this.MaterialTypeTB.Name = "MaterialTypeTB";
+            this.MaterialTypeTB.Size = new System.Drawing.Size(100, 28);
+            this.MaterialTypeTB.TabIndex = 24;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(47, 17);
+            this.label12.Location = new System.Drawing.Point(40, 30);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(73, 20);
             this.label12.TabIndex = 25;
             this.label12.Text = "物料種類";
             // 
-            // dateTimePicker1
+            // MaterialTestDateBox
             // 
-            this.dateTimePicker1.Checked = false;
-            this.dateTimePicker1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.dateTimePicker1.CustomFormat = "yyyy.MM.dd";
-            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(182, 48);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(100, 29);
-            this.dateTimePicker1.TabIndex = 20;
+            this.MaterialTestDateBox.Checked = false;
+            this.MaterialTestDateBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialTestDateBox.CustomFormat = "yyyy.MM.dd";
+            this.MaterialTestDateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.MaterialTestDateBox.Location = new System.Drawing.Point(175, 59);
+            this.MaterialTestDateBox.Name = "MaterialTestDateBox";
+            this.MaterialTestDateBox.Size = new System.Drawing.Size(100, 29);
+            this.MaterialTestDateBox.TabIndex = 20;
+            this.MaterialTestDateBox.ValueChanged += new System.EventHandler(this.MaterialTestDateBox_ValueChanged);
             // 
-            // textBox1
+            // RawMaterialNOtb
             // 
-            this.textBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox1.Location = new System.Drawing.Point(182, 118);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 29);
-            this.textBox1.TabIndex = 21;
+            this.RawMaterialNOtb.Cursor = System.Windows.Forms.Cursors.Default;
+            this.RawMaterialNOtb.Location = new System.Drawing.Point(175, 129);
+            this.RawMaterialNOtb.Name = "RawMaterialNOtb";
+            this.RawMaterialNOtb.Size = new System.Drawing.Size(100, 29);
+            this.RawMaterialNOtb.TabIndex = 21;
+            this.RawMaterialNOtb.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
+            this.RawMaterialNOtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(47, 121);
+            this.label23.Location = new System.Drawing.Point(40, 132);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(41, 20);
             this.label23.TabIndex = 22;
             this.label23.Text = "料號";
             // 
-            // textBox2
+            // MaterialReportNOTB
             // 
-            this.textBox2.Cursor = System.Windows.Forms.Cursors.Default;
-            this.textBox2.Location = new System.Drawing.Point(182, 83);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 29);
-            this.textBox2.TabIndex = 21;
+            this.MaterialReportNOTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialReportNOTB.Location = new System.Drawing.Point(175, 94);
+            this.MaterialReportNOTB.Name = "MaterialReportNOTB";
+            this.MaterialReportNOTB.Size = new System.Drawing.Size(100, 29);
+            this.MaterialReportNOTB.TabIndex = 21;
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(47, 86);
+            this.label22.Location = new System.Drawing.Point(40, 97);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(73, 20);
             this.label22.TabIndex = 22;
@@ -3113,7 +3116,7 @@
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(47, 53);
+            this.label21.Location = new System.Drawing.Point(40, 64);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(73, 20);
             this.label21.TabIndex = 23;
@@ -3178,7 +3181,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RawMaterialdgv)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3439,15 +3442,15 @@
         private System.Windows.Forms.TextBox FilterSizeTB;
         private System.Windows.Forms.Label FilterSize;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker MaterialTestDateBox;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox MaterialTypeTB;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox MaterialReportNOTB;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox RawMaterialNOtb;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView RawMaterialdgv;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
-namespace YourNamespace   // ← 改成你的命名空間，需與 Designer 檔一致
+//選擇檢驗樣品表單
+namespace YourNamespace   
 {
     public partial class Form2 : Form
     {
@@ -24,7 +24,7 @@ namespace YourNamespace   // ← 改成你的命名空間，需與 Designer 檔�
             comboBox1.DataSource = items;
         }
 
-        private void okButton_Click(object sender, EventArgs e)
+        private void OKButton_Click(object sender, EventArgs e)
         {
             if (comboBox1.SelectedIndex >= 0)
             {
