@@ -21,7 +21,7 @@ namespace WindowsFormsApp1
 
     public partial class Form1 : Form
     {
-
+        private const int MAX_ROWS = 13;
         public Form1()
         {
             InitializeComponent();
@@ -223,6 +223,9 @@ namespace WindowsFormsApp1
                 case "CylinderPage":
                     ExportHelper_Page5.Handle(currentTab);
                     break;
+                case "RawMaterialPage":
+                    ExportHelper_Page6.Handle(currentTab);
+                    break;
                 default:
                     MessageBox.Show("找不到對應頁面模組");
                     break;
@@ -280,15 +283,22 @@ namespace WindowsFormsApp1
         {
 
         }
-
+        
         private void AddMaterialToDgv(MaterialInfo info)
         {
             string materialDisplay =
                 info.MaterialNo + Environment.NewLine +
                 info.MaterialName;
-
+            RawMaterialdgv.Columns[1].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            RawMaterialdgv.Columns[7].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            RawMaterialdgv.Columns[8].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            RawMaterialdgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             string inDate = MaterialTestDateBox.Value.ToString("yyyy.MM.dd");
-
+            if (RawMaterialdgv.Rows.Count >= MAX_ROWS)
+            {
+                MessageBox.Show($"最多只能新增 {MAX_ROWS} 筆資料");
+                return;
+            }
             RawMaterialdgv.Rows.Add(
                 inDate,
                 materialDisplay,
@@ -315,13 +325,34 @@ namespace WindowsFormsApp1
 
             var info = MaterialMasterHelper.Get(materialNo);
 
-            if (info == null)
-            {
-                MessageBox.Show("查無此料號");
+            if(info == null)
+    {
+                var r = MessageBox.Show(
+                    "查無此物料，是否需要新增？",
+                    "查無資料",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (r == DialogResult.Yes)
+                {
+                    AddMaterial(materialNo);
+                }
+
                 return;
             }
-
+            // ===== 找到了 =====
             AddMaterialToDgv(info);
+        }
+        private void AddMaterial(string materialNo)
+        {
+            using (var f = new FormAddMaterial(materialNo))
+            {
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    MaterialMasterHelper.Add(f.Result);
+                    AddMaterialToDgv(f.Result);
+                }
+            }
         }
     }
 }

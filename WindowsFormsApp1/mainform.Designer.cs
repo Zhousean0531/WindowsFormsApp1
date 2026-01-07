@@ -280,8 +280,18 @@
             this.FilterRawArriveDate = new System.Windows.Forms.Label();
             this.FilterRawTestDate = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.RawMaterialPage = new System.Windows.Forms.TabPage();
             this.RawMaterialdgv = new System.Windows.Forms.DataGridView();
+            this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
+            this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.execute = new System.Windows.Forms.Button();
+            this.TrendChartBtn = new System.Windows.Forms.Button();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -293,16 +303,6 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
-            this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.execute = new System.Windows.Forms.Button();
-            this.TrendChartBtn = new System.Windows.Forms.Button();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -315,7 +315,7 @@
             this.FilterRawPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FilterRawParticleSizeBox)).BeginInit();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.RawMaterialPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RawMaterialdgv)).BeginInit();
             this.SuspendLayout();
             // 
@@ -2923,7 +2923,7 @@
             this.tabControl1.Controls.Add(this.FilterPage);
             this.tabControl1.Controls.Add(this.CylinderRawPage);
             this.tabControl1.Controls.Add(this.CylinderPage);
-            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.RawMaterialPage);
             this.tabControl1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.tabControl1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.tabControl1.Location = new System.Drawing.Point(1, 71);
@@ -2932,24 +2932,24 @@
             this.tabControl1.Size = new System.Drawing.Size(1026, 658);
             this.tabControl1.TabIndex = 2;
             // 
-            // tabPage1
+            // RawMaterialPage
             // 
-            this.tabPage1.Controls.Add(this.RawMaterialdgv);
-            this.tabPage1.Controls.Add(this.MaterialTypeTB);
-            this.tabPage1.Controls.Add(this.label12);
-            this.tabPage1.Controls.Add(this.MaterialTestDateBox);
-            this.tabPage1.Controls.Add(this.RawMaterialNOtb);
-            this.tabPage1.Controls.Add(this.label23);
-            this.tabPage1.Controls.Add(this.MaterialReportNOTB);
-            this.tabPage1.Controls.Add(this.label22);
-            this.tabPage1.Controls.Add(this.label21);
-            this.tabPage1.Location = new System.Drawing.Point(4, 29);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1018, 625);
-            this.tabPage1.TabIndex = 5;
-            this.tabPage1.Text = "物料";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.RawMaterialPage.Controls.Add(this.RawMaterialdgv);
+            this.RawMaterialPage.Controls.Add(this.MaterialTypeTB);
+            this.RawMaterialPage.Controls.Add(this.label12);
+            this.RawMaterialPage.Controls.Add(this.MaterialTestDateBox);
+            this.RawMaterialPage.Controls.Add(this.RawMaterialNOtb);
+            this.RawMaterialPage.Controls.Add(this.label23);
+            this.RawMaterialPage.Controls.Add(this.MaterialReportNOTB);
+            this.RawMaterialPage.Controls.Add(this.label22);
+            this.RawMaterialPage.Controls.Add(this.label21);
+            this.RawMaterialPage.Location = new System.Drawing.Point(4, 29);
+            this.RawMaterialPage.Name = "RawMaterialPage";
+            this.RawMaterialPage.Padding = new System.Windows.Forms.Padding(3);
+            this.RawMaterialPage.Size = new System.Drawing.Size(1018, 625);
+            this.RawMaterialPage.TabIndex = 5;
+            this.RawMaterialPage.Text = "物料";
+            this.RawMaterialPage.UseVisualStyleBackColor = true;
             // 
             // RawMaterialdgv
             // 
@@ -2973,7 +2973,108 @@
             this.RawMaterialdgv.Name = "RawMaterialdgv";
             this.RawMaterialdgv.RowTemplate.Height = 24;
             this.RawMaterialdgv.Size = new System.Drawing.Size(929, 341);
-            this.RawMaterialdgv.TabIndex = 26;
+            this.RawMaterialdgv.TabIndex = 5;
+            // 
+            // MaterialTypeTB
+            // 
+            this.MaterialTypeTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialTypeTB.FormattingEnabled = true;
+            this.MaterialTypeTB.Items.AddRange(new object[] {
+            "濾筒",
+            "濾網"});
+            this.MaterialTypeTB.Location = new System.Drawing.Point(175, 25);
+            this.MaterialTypeTB.Name = "MaterialTypeTB";
+            this.MaterialTypeTB.Size = new System.Drawing.Size(100, 28);
+            this.MaterialTypeTB.TabIndex = 1;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(40, 30);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(73, 20);
+            this.label12.TabIndex = 25;
+            this.label12.Text = "物料種類";
+            // 
+            // MaterialTestDateBox
+            // 
+            this.MaterialTestDateBox.Checked = false;
+            this.MaterialTestDateBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialTestDateBox.CustomFormat = "yyyy.MM.dd";
+            this.MaterialTestDateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.MaterialTestDateBox.Location = new System.Drawing.Point(175, 59);
+            this.MaterialTestDateBox.Name = "MaterialTestDateBox";
+            this.MaterialTestDateBox.Size = new System.Drawing.Size(100, 29);
+            this.MaterialTestDateBox.TabIndex = 2;
+            this.MaterialTestDateBox.ValueChanged += new System.EventHandler(this.MaterialTestDateBox_ValueChanged);
+            // 
+            // RawMaterialNOtb
+            // 
+            this.RawMaterialNOtb.Cursor = System.Windows.Forms.Cursors.Default;
+            this.RawMaterialNOtb.Location = new System.Drawing.Point(175, 129);
+            this.RawMaterialNOtb.Name = "RawMaterialNOtb";
+            this.RawMaterialNOtb.Size = new System.Drawing.Size(164, 29);
+            this.RawMaterialNOtb.TabIndex = 4;
+            this.RawMaterialNOtb.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
+            this.RawMaterialNOtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(40, 132);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(41, 20);
+            this.label23.TabIndex = 22;
+            this.label23.Text = "料號";
+            // 
+            // MaterialReportNOTB
+            // 
+            this.MaterialReportNOTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.MaterialReportNOTB.Location = new System.Drawing.Point(175, 94);
+            this.MaterialReportNOTB.Name = "MaterialReportNOTB";
+            this.MaterialReportNOTB.Size = new System.Drawing.Size(164, 29);
+            this.MaterialReportNOTB.TabIndex = 3;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(40, 97);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(73, 20);
+            this.label22.TabIndex = 22;
+            this.label22.Text = "報告編號";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(40, 64);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(73, 20);
+            this.label21.TabIndex = 23;
+            this.label21.Text = "測試日期";
+            // 
+            // execute
+            // 
+            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.execute.Location = new System.Drawing.Point(814, 12);
+            this.execute.Name = "execute";
+            this.execute.Size = new System.Drawing.Size(121, 53);
+            this.execute.TabIndex = 3;
+            this.execute.Text = "執行";
+            this.execute.UseVisualStyleBackColor = true;
+            this.execute.Click += new System.EventHandler(this.Execute_Click);
+            // 
+            // TrendChartBtn
+            // 
+            this.TrendChartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.TrendChartBtn.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.TrendChartBtn.Location = new System.Drawing.Point(22, 12);
+            this.TrendChartBtn.Name = "TrendChartBtn";
+            this.TrendChartBtn.Size = new System.Drawing.Size(121, 53);
+            this.TrendChartBtn.TabIndex = 1;
+            this.TrendChartBtn.Text = "趨勢圖";
+            this.TrendChartBtn.UseVisualStyleBackColor = true;
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -3024,13 +3125,13 @@
             // 
             this.dataGridViewTextBoxColumn8.HeaderText = "規格值";
             this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
-            this.dataGridViewTextBoxColumn8.Width = 120;
+            this.dataGridViewTextBoxColumn8.Width = 150;
             // 
             // dataGridViewTextBoxColumn9
             // 
             this.dataGridViewTextBoxColumn9.HeaderText = "測量值";
             this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
-            this.dataGridViewTextBoxColumn9.Width = 125;
+            this.dataGridViewTextBoxColumn9.Width = 150;
             // 
             // dataGridViewTextBoxColumn10
             // 
@@ -3043,107 +3144,6 @@
             this.dataGridViewTextBoxColumn11.HeaderText = "備註";
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
             this.dataGridViewTextBoxColumn11.Width = 140;
-            // 
-            // MaterialTypeTB
-            // 
-            this.MaterialTypeTB.Cursor = System.Windows.Forms.Cursors.Default;
-            this.MaterialTypeTB.FormattingEnabled = true;
-            this.MaterialTypeTB.Items.AddRange(new object[] {
-            "濾筒",
-            "濾網"});
-            this.MaterialTypeTB.Location = new System.Drawing.Point(175, 25);
-            this.MaterialTypeTB.Name = "MaterialTypeTB";
-            this.MaterialTypeTB.Size = new System.Drawing.Size(100, 28);
-            this.MaterialTypeTB.TabIndex = 24;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(40, 30);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(73, 20);
-            this.label12.TabIndex = 25;
-            this.label12.Text = "物料種類";
-            // 
-            // MaterialTestDateBox
-            // 
-            this.MaterialTestDateBox.Checked = false;
-            this.MaterialTestDateBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.MaterialTestDateBox.CustomFormat = "yyyy.MM.dd";
-            this.MaterialTestDateBox.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.MaterialTestDateBox.Location = new System.Drawing.Point(175, 59);
-            this.MaterialTestDateBox.Name = "MaterialTestDateBox";
-            this.MaterialTestDateBox.Size = new System.Drawing.Size(100, 29);
-            this.MaterialTestDateBox.TabIndex = 20;
-            this.MaterialTestDateBox.ValueChanged += new System.EventHandler(this.MaterialTestDateBox_ValueChanged);
-            // 
-            // RawMaterialNOtb
-            // 
-            this.RawMaterialNOtb.Cursor = System.Windows.Forms.Cursors.Default;
-            this.RawMaterialNOtb.Location = new System.Drawing.Point(175, 129);
-            this.RawMaterialNOtb.Name = "RawMaterialNOtb";
-            this.RawMaterialNOtb.Size = new System.Drawing.Size(100, 29);
-            this.RawMaterialNOtb.TabIndex = 21;
-            this.RawMaterialNOtb.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
-            this.RawMaterialNOtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(40, 132);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(41, 20);
-            this.label23.TabIndex = 22;
-            this.label23.Text = "料號";
-            // 
-            // MaterialReportNOTB
-            // 
-            this.MaterialReportNOTB.Cursor = System.Windows.Forms.Cursors.Default;
-            this.MaterialReportNOTB.Location = new System.Drawing.Point(175, 94);
-            this.MaterialReportNOTB.Name = "MaterialReportNOTB";
-            this.MaterialReportNOTB.Size = new System.Drawing.Size(100, 29);
-            this.MaterialReportNOTB.TabIndex = 21;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(40, 97);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(73, 20);
-            this.label22.TabIndex = 22;
-            this.label22.Text = "報告編號";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(40, 64);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(73, 20);
-            this.label21.TabIndex = 23;
-            this.label21.Text = "測試日期";
-            // 
-            // execute
-            // 
-            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.execute.Location = new System.Drawing.Point(814, 12);
-            this.execute.Name = "execute";
-            this.execute.Size = new System.Drawing.Size(121, 53);
-            this.execute.TabIndex = 3;
-            this.execute.Text = "執行";
-            this.execute.UseVisualStyleBackColor = true;
-            this.execute.Click += new System.EventHandler(this.Execute_Click);
-            // 
-            // TrendChartBtn
-            // 
-            this.TrendChartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.TrendChartBtn.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.TrendChartBtn.Location = new System.Drawing.Point(22, 12);
-            this.TrendChartBtn.Name = "TrendChartBtn";
-            this.TrendChartBtn.Size = new System.Drawing.Size(121, 53);
-            this.TrendChartBtn.TabIndex = 1;
-            this.TrendChartBtn.Text = "趨勢圖";
-            this.TrendChartBtn.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -3179,8 +3179,8 @@
             this.FilterRawPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FilterRawParticleSizeBox)).EndInit();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.RawMaterialPage.ResumeLayout(false);
+            this.RawMaterialPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RawMaterialdgv)).EndInit();
             this.ResumeLayout(false);
 
@@ -3441,7 +3441,7 @@
         private System.Windows.Forms.Label FilterInProcessReportNO;
         private System.Windows.Forms.TextBox FilterSizeTB;
         private System.Windows.Forms.Label FilterSize;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage RawMaterialPage;
         private System.Windows.Forms.DateTimePicker MaterialTestDateBox;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.ComboBox MaterialTypeTB;

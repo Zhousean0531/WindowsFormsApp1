@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
+using Microsoft.VisualBasic.FileIO;
 public static class MaterialMasterHelper
 {
     private static Dictionary<string, MaterialInfo> _map;
@@ -45,40 +45,81 @@ public static class MaterialMasterHelper
             _map = new Dictionary<string, MaterialInfo>();
         }
     }
+    public static void Add(MaterialInfo info)
+    {
+        if (_map == null)
+            Load();
 
+        if (_map.ContainsKey(info.MaterialNo))
+            return;
+
+        _map.Add(info.MaterialNo, info);
+
+        string line = string.Join(",",
+        CsvEscape(info.MaterialNo),
+        CsvEscape(info.MaterialName),
+        CsvEscape(info.InUnit),
+        CsvEscape(info.SampleQty),
+        CsvEscape(info.InspectUnit),
+        CsvEscape(info.Spec)
+        );
+
+        File.AppendAllText(CsvPath, Environment.NewLine + line);
+    }
     // ===== CSV 讀取
     private static void LoadFromCsv()
     {
+        if (!File.Exists(CsvPath))
+            return;
+
         try
         {
-            var lines = File.ReadAllLines(CsvPath).Skip(1).ToList();
-            foreach (var line in lines)
+            using (var parser = new TextFieldParser(CsvPath))
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
+                parser.TextFieldType = FieldType.Delimited;
+                parser.SetDelimiters(",");
+                parser.HasFieldsEnclosedInQuotes = true;
 
-                var c = line.Split(',');
-                if (c.Length < 6) continue;
+                // 跳過 header
+                if (!parser.EndOfData)
+                    parser.ReadFields();
 
-                string materialNo = c[0].Trim();
-
-                if (_map.ContainsKey(materialNo)) continue;
-
-                _map.Add(materialNo, new MaterialInfo
+                while (!parser.EndOfData)
                 {
-                    MaterialNo = materialNo,
-                    MaterialName = c[1].Trim(),
-                    InUnit = c[2].Trim(),
-                    SampleQty = c[3].Trim(),
-                    InspectUnit = c[4].Trim(),
-                    Spec = c[5].Trim()
-                });
+                    var c = parser.ReadFields();
+                    if (c == null || c.Length < 6) continue;
+
+                    string materialNo = c[0]
+                        .Trim()
+                        .Trim('\uFEFF')
+                        .ToUpper();
+
+                    if (_map.ContainsKey(materialNo)) continue;
+
+                    _map.Add(materialNo, new MaterialInfo
+                    {
+                        MaterialNo = materialNo,
+                        MaterialName = c[1].Trim(),
+                        InUnit = c[2].Trim(),
+                        SampleQty = c[3].Trim(),
+                        InspectUnit = c[4].Trim(),
+                        Spec = c[5]   
+                    });
+                }
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("CSV 讀取失敗\n" + ex.Message);
-            return;
+            MessageBox.Show("MaterialList.csv 讀取失敗\n" + ex.Message);
         }
+    }
+    private static string CsvEscape(string value)
+    {
+        if (value.Contains(",") || value.Contains("\n") || value.Contains("\""))
+        {
+            return "\"" + value.Replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 
     // ===== 查詢 =====

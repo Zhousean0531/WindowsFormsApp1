@@ -225,3 +225,23 @@ public static class ExportHelper_Page5
         }
     }
 }
+public static class ExportHelper_Page6
+{
+    public static void Handle(TabPage tab)
+    {
+        try
+        {
+            var data = Page6DataCollector.Collect(tab);
+            if (data == null) return;
+            Page6MasterExporter.Export(data);
+            Page6ReportExporter.Export(data);
+
+            MessageBox.Show("匯出完成");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("匯出錯誤：" + ex.Message);
+        }
+    }
+}
+

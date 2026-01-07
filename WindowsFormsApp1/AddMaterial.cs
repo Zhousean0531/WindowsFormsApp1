@@ -125,12 +125,15 @@ namespace WindowsFormsApp1
         // ================= 確認按鈕 =================
         private void BtnOk_Click(object sender, EventArgs e)
         {
-            if (!ValidateInput())
+            if (string.IsNullOrWhiteSpace(tbMaterialName.Text))
+            {
+                MessageBox.Show("請填寫物料名稱");
                 return;
+            }
 
             Result = new MaterialInfo
             {
-                MaterialNo = tbMaterialNo.Text.Trim(),
+                MaterialNo = tbMaterialNo.Text.Trim().ToUpper(),
                 MaterialName = tbMaterialName.Text.Trim(),
                 InUnit = tbInUnit.Text.Trim(),
                 SampleQty = tbSampleQty.Text.Trim(),
