@@ -42,12 +42,13 @@ public static class Page2ReportExporter
                 MessageBox.Show($"氣體 {g.GasName} 的效率資料為空");
                 continue;
             }
-
+            DateTime testDt = DateTime.Parse(d.TestDate);
+            DateTime prodDt = DateTime.Parse(d.ProductionDate);
             string savePath;
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
-                sfd.FileName = $"{d.ReportNo}_{g.GasName}.xlsx";
+                sfd.FileName = $"{d.ReportNo}_{d.ProductName}_{d.Gsm}_{d.OrderDisplay}({testDt:MMdd}生產)-{g.GasName}.xlsx";
 
                 if (sfd.ShowDialog() != DialogResult.OK)
                     continue;
@@ -73,7 +74,8 @@ public static class Page2ReportExporter
                     MessageBox.Show($"氣體 {g.GasName} 的效率資料與壓損索引不符");
                     continue;
                 }
-
+                
+                string l1Text =$"{testDt:MM.dd} " +$"{d.ProductType} " +$"{d.TestWeights[idx]}gsm " +$"({d.PressureDrops[idx]}Pa) " +$"-{prodDt:MMdd}生產";
                 // ─────────────────────────────
                 // (A) 基本資料
                 // ─────────────────────────────
@@ -97,6 +99,7 @@ public static class Page2ReportExporter
                 // ─────────────────────────────
                 // (B) 11 點效率明細（從 M2 開始）
                 // ─────────────────────────────
+                ws.Range["L1"].Value = l1Text;
                 int startRow = 2;
                 for (int i = 0; i < g.Efficiencies11.Count; i++)
                 {

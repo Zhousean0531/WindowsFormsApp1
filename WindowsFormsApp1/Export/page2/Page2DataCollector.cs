@@ -20,7 +20,9 @@ public static class Page2DataCollector
         string productType = ControlHelper.GetText(tab, "FilterInProcessTypeBox");
         string gsm = ControlHelper.GetText(tab, "FilterInProcessgsmBox");
         string type = ControlHelper.GetText(tab, "FilterInProcessTypeBox");
-        string prodMmdd = reportNo.Length >= 4? reportNo.Substring(reportNo.Length - 4):reportNo;
+        string prodMmdd = reportNo.Length > 6
+    ? reportNo.Substring(reportNo.Length - 6, 4)
+    : reportNo;
         string productDisplay =$"{type} {gsm}gsm ({prodMmdd}生產)";
         string filterSize = ControlHelper.GetText(tab, "FilterSizeTB");
         string carbonOrder =ControlHelper.GetText(tab, "FilterInProcessCarbonOrderBox");
@@ -112,7 +114,7 @@ public static class Page2DataCollector
 
             double.TryParse(tbBg.Text, out double bg);
 
-            var readings = StringUtil.SplitDouble(tbVal.Text);
+            List<double?> readings = EfficiencyHelper.ParseReadings(tbVal.Text);
             if (readings.Count < 11)
             {
                 MessageBox.Show($"{gasKey} 需輸入至少 11 筆讀值");

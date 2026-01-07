@@ -1046,9 +1046,9 @@
             this.CylinderRawValue.AutoSize = true;
             this.CylinderRawValue.Location = new System.Drawing.Point(279, 1);
             this.CylinderRawValue.Name = "CylinderRawValue";
-            this.CylinderRawValue.Size = new System.Drawing.Size(119, 20);
+            this.CylinderRawValue.Size = new System.Drawing.Size(41, 20);
             this.CylinderRawValue.TabIndex = 23;
-            this.CylinderRawValue.Text = "讀值(0~10min)";
+            this.CylinderRawValue.Text = "讀值";
             // 
             // CylinderRawSO2
             // 
@@ -1923,7 +1923,7 @@
             this.FilterInValue.Name = "FilterInValue";
             this.FilterInValue.Size = new System.Drawing.Size(126, 27);
             this.FilterInValue.TabIndex = 23;
-            this.FilterInValue.Text = "讀值(0~10min)";
+            this.FilterInValue.Text = "讀值";
             // 
             // FilterInSO2
             // 
@@ -2687,9 +2687,9 @@
             this.FilterRawEffvalue.AutoSize = true;
             this.FilterRawEffvalue.Location = new System.Drawing.Point(612, 71);
             this.FilterRawEffvalue.Name = "FilterRawEffvalue";
-            this.FilterRawEffvalue.Size = new System.Drawing.Size(119, 20);
+            this.FilterRawEffvalue.Size = new System.Drawing.Size(41, 20);
             this.FilterRawEffvalue.TabIndex = 3;
-            this.FilterRawEffvalue.Text = "讀值(0~10min)";
+            this.FilterRawEffvalue.Text = "讀值";
             // 
             // FilterRawBackGround
             // 

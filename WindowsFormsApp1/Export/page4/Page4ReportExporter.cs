@@ -36,12 +36,12 @@ public static class Page4ReportExporter
                 MessageBox.Show($"氣體 {g.GasName} 的效率資料為空");
                 continue;
             }
-
+            DateTime prodDt = DateTime.Parse(d.ArrivalDate);
             string savePath;
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
-                sfd.FileName = $"{d.ReportNo}_{g.GasName}.xlsx";
+                sfd.FileName = $"{d.ReportNo}_{d.Material}_({prodDt:MMdd}到廠)_{g.GasName}.xlsx";
 
                 if (sfd.ShowDialog() != DialogResult.OK)
                     continue;

@@ -133,7 +133,7 @@ public static class Page4DataCollector
 
             double.TryParse(tbBg?.Text, out double bg);
 
-            var readings = StringUtil.SplitDouble(tbVal?.Text);
+            List<double?> readings = EfficiencyHelper.ParseReadings(tbVal.Text);
             if (readings.Count < 11)
                 continue;
 
@@ -180,24 +180,5 @@ public static class Page4DataCollector
             SelectedIndex = selectedIdx,
             MeshSummaries = meshSummaries,
         };
-    }
-
-    // ─────────────────────────────
-    // 小工具：進貨數量字串
-    // ─────────────────────────────
-    private static string BuildQuantityText(string material, string weightText, string packText)
-    {
-        bool useLb =
-            material.IndexOf("IKP201", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            material.IndexOf("IKP205", StringComparison.OrdinalIgnoreCase) >= 0;
-
-        string unit = useLb ? "lb" : "kg";
-
-        string left = string.IsNullOrWhiteSpace(weightText) ? "" : $"{weightText} {unit}";
-        string right = string.IsNullOrWhiteSpace(packText) ? "" : $"{packText}包";
-
-        if (left == "" && right == "") return "";
-        if (left != "" && right != "") return $"{left}/{right}";
-        return left + right;
     }
 }
