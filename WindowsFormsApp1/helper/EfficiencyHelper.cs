@@ -4,7 +4,6 @@ using System.Linq;
 
 public static class EfficiencyHelper
 {
-    // 只負責：字串 → 11 筆數值
     public static List<double?> ParseReadings(string tbVal)
     {
         return (tbVal ?? "")
@@ -19,7 +18,6 @@ public static class EfficiencyHelper
             .ToList();
     }
 
-    // 只負責：濃度 + 背景 + 11 筆 → 計算結果
     public static EfficiencyResult Compute11Points(
     double concentration,
     double background,

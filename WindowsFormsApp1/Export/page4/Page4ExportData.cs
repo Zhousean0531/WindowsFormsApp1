@@ -8,6 +8,7 @@ public class Page4ExportData
     public string Material { get; set; }
     public string ArrivalDate { get; set; }
     public string TestingDate { get; set; }
+    public string Lot { get; set; }
     public string QtyText { get; set; }
     public List<string> LotFulls { get; set; }
     public List<double> Weights { get; set; }

@@ -114,9 +114,8 @@ public static class Page4ReportExporter
             }
             finally
             {
-                if (wb != null) wb.Close(false);
-                if (app != null) app.Quit();
-
+                wb?.Close(false);
+                app?.Quit();
                 if (ws != null) Marshal.ReleaseComObject(ws);
                 if (wb != null) Marshal.ReleaseComObject(wb);
                 if (app != null) Marshal.ReleaseComObject(app);

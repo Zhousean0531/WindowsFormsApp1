@@ -1,6 +1,7 @@
 ﻿using ClosedXML.Excel;
 using System;
 using System.Linq;
+using System.Windows.Forms;
 
 public static class Page4MasterExporter
 {
@@ -17,6 +18,9 @@ public static class Page4MasterExporter
 
 
             int row = (ws.Column(2).CellsUsed().LastOrDefault()?.Address.RowNumber ?? 4) + 1;
+            MessageBox.Show(
+    string.Join(", ", d.EfficiencyGroups.Select(g => g.GasName))
+);
 
             foreach (var eff in d.EfficiencyGroups)
             {

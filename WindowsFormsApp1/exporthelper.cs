@@ -199,7 +199,7 @@ public static class ExportHelper_Page4
 
             Page4MasterExporter.Export(data);
             Page4ReportExporter.Export(data);
-
+            Page4ReportExporterForNanJing.Export(data);
             MessageBox.Show("匯出完成");
         }
         catch (Exception ex)

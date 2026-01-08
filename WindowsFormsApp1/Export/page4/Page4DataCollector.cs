@@ -61,12 +61,19 @@ public static class Page4DataCollector
             return null;
         }
 
-        nos = nos.Take(n).ToList();
+        if (lotNos.Count == 1 && lotNos[0] == "-")
+        {
+            lotNos = Enumerable.Repeat("-", n).ToList();
+        }
+        else
+        {
+            lotNos = lotNos.Take(n).ToList();
+        }
         weights = weights.Take(n).ToList();
         vocIn = vocIn.Take(n).ToList();
         vocOut = vocOut.Take(n).ToList();
         deltas = deltas.Take(n).ToList();
-        lotNos=lotNos.Take(n).ToList();
+        nos=nos.Take(n).ToList();
         pressure = pressure.Take(n).ToList();
         // 密度（固定體積 50）
         const double VOL = 50.0;
@@ -76,7 +83,7 @@ public static class Page4DataCollector
         var lotFulls = nos.Select(no =>
             $"B-{arrivePicker.Value:yyyyMMdd}-001#{no.PadLeft(2, '0')}"
         ).ToList();
-
+        var lot= $"B-{arrivePicker.Value:yyyyMMdd}-001";
         // Out - In
         var outStrings = vocOut.Zip(vocIn, (o, i) =>
         {
@@ -169,6 +176,7 @@ public static class Page4DataCollector
             PressureDrops= pressure,
             EfficiencyGroups = effGroups,
             LotFulls = lotFulls,
+            Lot=lot,
             MaterialNo = materialNo,
             LotNos =lotNos,
             Densities = densities,
