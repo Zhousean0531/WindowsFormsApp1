@@ -28,7 +28,7 @@ public static class Page1MasterExporter
                 ws.Cell(row, 12).Value = d.VocOuts[i];
                 ws.Cell(row, 14).Value = d.DeltaPs[i];
                 ws.Cell(row, 18).Value = d.MeshSummaries[i];
-
+                ws.Cell(row, 19).Value = d.UserName;
                 if (i == d.SelectedIndex)
                     ws.Cell(row, 15).Value = d.Eff0;
                 row++;

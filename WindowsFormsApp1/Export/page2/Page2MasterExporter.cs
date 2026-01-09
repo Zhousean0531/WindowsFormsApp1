@@ -48,33 +48,32 @@ public static class Page2MasterExporter
                 for (int i = 0; i < n; i++)
                 {
                     // ───── 共通欄位（每一列都要寫） ─────
-                    ws.Cell(rowIdx, 19).Value = d.ProductionDate;
-                    ws.Cell(rowIdx, 20).Value = d.TestDate;
-                    ws.Cell(rowIdx, 21).Value = d.CarbonOrder;
-                    ws.Cell(rowIdx, 22).Value = d.Gsm;
-                    ws.Cell(rowIdx, 23).Value = d.Gile;
-                    ws.Cell(rowIdx, 24).Value = d.Speed;
-                    ws.Cell(rowIdx, 25).Value = d.Upper;
-                    ws.Cell(rowIdx, 26).Value = d.Lower;
-                    ws.Cell(rowIdx, 27).Value = d.Pressure;
-                    ws.Cell(rowIdx, 28).Value = d.Wind;
-
-                    ws.Cell(rowIdx, 29).Value = d.TestWeights[i];
-                    ws.Cell(rowIdx, 30).Value = d.PressureDrops[i];
-                    ws.Cell(rowIdx, 34).Value = d.CarbonInfo;
-
+                    ws.Cell(rowIdx, 20).Value = d.ProductionDate;
+                    ws.Cell(rowIdx, 21).Value = d.TestDate;
+                    ws.Cell(rowIdx, 22).Value = d.CarbonOrder;
+                    ws.Cell(rowIdx, 23).Value = d.Gsm;
+                    ws.Cell(rowIdx, 24).Value = d.Gile;
+                    ws.Cell(rowIdx, 25).Value = d.Speed;
+                    ws.Cell(rowIdx, 26).Value = d.Upper;
+                    ws.Cell(rowIdx, 27).Value = d.Lower;
+                    ws.Cell(rowIdx, 28).Value = d.Pressure;
+                    ws.Cell(rowIdx, 29).Value = d.Wind;
+                    ws.Cell(rowIdx, 30).Value = d.TestWeights[i];
+                    ws.Cell(rowIdx, 31).Value = d.PressureDrops[i];
+                    ws.Cell(rowIdx, 35).Value = d.CarbonInfo;
+                    ws.Cell(rowIdx, 36).Value = d.UserName;
                     // ───── 只有選定壓損那一列才寫效率 ─────
                     if (i == d.SelectedIndex)
                     {
-                        ws.Cell(rowIdx, 31).Value = g.GasName;
-                        ws.Cell(rowIdx, 32).Value = g.Eff0;
-                        ws.Cell(rowIdx, 33).Value = g.Eff10;
+                        ws.Cell(rowIdx, 32).Value = g.GasName;
+                        ws.Cell(rowIdx, 33).Value = g.Eff0;
+                        ws.Cell(rowIdx, 34).Value = g.Eff10;
                     }
                     else
                     {
-                        ws.Cell(rowIdx, 31).Value = "";
                         ws.Cell(rowIdx, 32).Value = "";
                         ws.Cell(rowIdx, 33).Value = "";
+                        ws.Cell(rowIdx, 34).Value = "";
                     }
 
                     rowIdx++; // ⭐ rowIdx 只在這裡 +1

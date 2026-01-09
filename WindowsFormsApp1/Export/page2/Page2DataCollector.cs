@@ -59,6 +59,7 @@ public static class Page2DataCollector
             orderDisplay = $"{carbonOrder}_{order}";
         }
         string wind =ControlHelper.GetText(tab, "FilterInProcessWindBox");
+        string userName = Environment.UserName;
         var weights = StringUtil.SplitDouble(
             ControlHelper.GetText(tab, "FilterInProcessTestGsmBox"));
 
@@ -163,7 +164,8 @@ public static class Page2DataCollector
             Speed=speed,
             Upper=upper,
             Lower=lower,
-            EfficiencyGroups = effGroups   // ← 關鍵：不再用單一 Efficiency
+            EfficiencyGroups = effGroups,
+            UserName=userName
         };
     }
 }

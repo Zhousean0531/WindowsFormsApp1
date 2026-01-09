@@ -96,7 +96,7 @@ namespace WindowsFormsApp1.Helpers
                     },
                     [GasPageType.CylinderRawPage] = new GasUiConfig
                     {
-                        CheckBoxName = "CylinderTolueneCheckBox",
+                        CheckBoxName = "CylinderRawTolueneCheckBox",
                         ConcBox = "CylinderRawTolueneConcertrationBox",
                         BgBox = "CylinderRawTolueneBackGroundBox",
                         ValueBox = "CylinderRawTolueneValueBox"
@@ -140,7 +140,7 @@ namespace WindowsFormsApp1.Helpers
                     },
                     [GasPageType.CylinderRawPage] = new GasUiConfig
                     {
-                        CheckBoxName = "CylinderIPACheckBox",
+                        CheckBoxName = "CylinderRawIPACheckBox",
                         ConcBox = "CylinderRawIPAConcertrationBox",
                         BgBox = "CylinderRawIPABackGroundBox",
                         ValueBox = "CylinderRawIPAValueBox"
@@ -162,7 +162,7 @@ namespace WindowsFormsApp1.Helpers
                     },
                     [GasPageType.CylinderRawPage] = new GasUiConfig
                     {
-                        CheckBoxName = "CylinderAcetoneCheckBox",
+                        CheckBoxName = "CylindeRawAcetoneCheckBox",
                         ConcBox = "CylinderRawAcetoneConcertrationBox",
                         BgBox = "CylinderRawAcetoneBackGroundBox",
                         ValueBox = "CylinderRawAcetoneValueBox"

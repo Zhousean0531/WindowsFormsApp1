@@ -3,7 +3,7 @@ using static EfficiencyHelper;
 
 public class Page4ExportData
 {
-    // ===== 基本資訊 =====
+    public string UserName { get; set; }
     public string ReportNo { get; set; }
     public string Material { get; set; }
     public string ArrivalDate { get; set; }

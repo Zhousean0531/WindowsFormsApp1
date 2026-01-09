@@ -38,7 +38,7 @@ public static class SignatureHelper
             {
                 Excel.Range target = ws.Range[cellAddress];
 
-                ws.Shapes.AddPicture(
+                var pic=ws.Shapes.AddPicture(
                     sigPath,
                     Microsoft.Office.Core.MsoTriState.msoFalse,
                     Microsoft.Office.Core.MsoTriState.msoTrue,
@@ -47,6 +47,8 @@ public static class SignatureHelper
                     -1,
                     -1
                 );
+                pic.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+                pic.Width = 110;
             }
             else
             {

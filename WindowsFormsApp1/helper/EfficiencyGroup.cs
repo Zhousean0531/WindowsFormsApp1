@@ -9,4 +9,5 @@ public class EfficiencyGroup
     public string Eff10 { get; set; }
     public List<double> Readings11 { get; set; }
     public List<double> Efficiencies11 { get; set; }
+
 }

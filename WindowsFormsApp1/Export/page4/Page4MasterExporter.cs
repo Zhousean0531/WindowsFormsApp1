@@ -40,6 +40,7 @@ public static class Page4MasterExporter
                     ws.Cell(row, 14).Value = d.OutgassingList[i];
                     ws.Cell(row, 15).Value = d.DeltaPs[i];
                     ws.Cell(row, 19).Value = d.MeshSummaries[i];
+                    ws.Cell(row, 20).Value = d.UserName;
                     if (i == d.SelectedIndex)
                     {
                         ws.Cell(row, 16).Value = eff.Eff0;

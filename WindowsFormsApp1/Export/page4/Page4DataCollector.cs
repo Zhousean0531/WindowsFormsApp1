@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using WindowsFormsApp1.Helpers;
@@ -42,6 +43,7 @@ public static class Page4DataCollector
         string qtyWeight = ControlHelper.GetText(tab, "CylinderRawQtyWeightBox");//進貨重量
         string qtyPack = ControlHelper.GetText(tab, "CylinderRawQtyPackBox");//進貨數量
         string qtyText = QuantityHelper.BuildQuantityText(ProductKind.Cylinder, material, qtyWeight, qtyPack);
+        string userName = Environment.UserName;
 
         // ─────────────────────────────
         // (C) 多筆資料欄位
@@ -54,7 +56,30 @@ public static class Page4DataCollector
         var pressure = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
         var matInfo = MaterialMasterHelper.Get(material);
         string materialNo = matInfo?.MaterialNo ?? "";
-        int n = new[] { nos.Count, weights.Count, vocIn.Count, vocOut.Count, deltas.Count }.Min();
+        var countMap = new Dictionary<string, int>
+{
+    { "原料編號 (nos)", nos.Count },
+    { "重量 (weights)", weights.Count },
+    { "VOC In (vocIn)", vocIn.Count },
+    { "VOC Out (vocOut)", vocOut.Count },
+    { "壓損 (deltas)", deltas.Count }
+};
+
+        // 取得不重複的 Count
+        var distinctCounts = countMap.Values.Distinct().ToList();
+
+        if (distinctCounts.Count > 1)
+        {
+            var msg = "資料筆數不一致，請確認以下欄位：\n\n" +
+                      string.Join("\n", countMap.Select(kv => $"{kv.Key}：{kv.Value} 筆"));
+
+            MessageBox.Show(msg, "資料筆數錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return null;
+        }
+
+        // ✔ 全部一致才計算 n
+        int n = distinctCounts[0];
+
         if (n <= 0)
         {
             MessageBox.Show("沒有可匯出的測試資料");
@@ -121,28 +146,55 @@ public static class Page4DataCollector
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "CylinderRawEffPanel");
         foreach (var chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
         {
+            if (!(chk.Tag is string gasKey))
+                continue;
 
-            if (!chk.Checked) continue;
-            if (!(chk.Tag is string gasKey)) continue;
+            Debug.WriteLine($"[Gas] {gasKey}, Checked={chk.Checked}");
+
+            if (!chk.Checked)
+                continue;
 
             var gasCfg = GasMappingHelper.Get(gasKey);
             if (gasCfg == null)
+            {
+                Debug.WriteLine($"[Gas] {gasKey} skipped: no GasConfig");
                 continue;
+            }
 
             if (!gasCfg.UiMap.TryGetValue(pageType, out var ui))
+            {
+                Debug.WriteLine($"[Gas] {gasKey} skipped: no UiMap for page {pageType}");
                 continue;
+            }
 
-            var uiChk = ControlHelper.Find<System.Windows.Forms.CheckBox>(panel, ui.CheckBoxName); var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
+            var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
+
+            Debug.WriteLine(
+                $"[Gas] {gasKey}, ConcText='{tbConc?.Text}', ValText='{tbVal?.Text}'"
+            );
+
             if (!double.TryParse(tbConc?.Text, out double conc))
+            {
+                Debug.WriteLine($"[Gas] {gasKey} skipped: concentration invalid");
                 continue;
+            }
 
             double.TryParse(tbBg?.Text, out double bg);
 
-            List<double?> readings = EfficiencyHelper.ParseReadings(tbVal.Text);
+            var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
+
+            Debug.WriteLine(
+                $"[Gas] {gasKey}, ReadingsCount={readings.Count}, " +
+                $"First={(readings.FirstOrDefault()?.ToString() ?? "null")}"
+            );
+
             if (readings.Count < 11)
+            {
+                Debug.WriteLine($"[Gas] {gasKey} skipped: readings < 11");
                 continue;
+            }
 
             var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
 
@@ -155,7 +207,12 @@ public static class Page4DataCollector
                 Readings11 = eff.Readings,
                 Efficiencies11 = eff.Efficiencies
             });
+
+            Debug.WriteLine(
+                $"[Gas] {gasKey} added, EffCount={eff.Efficiencies.Count}"
+            );
         }
+
 
         if (effGroups.Count == 0)
         {
@@ -187,6 +244,7 @@ public static class Page4DataCollector
             OutgassingList = outStrings,
             SelectedIndex = selectedIdx,
             MeshSummaries = meshSummaries,
+            UserName=userName
         };
     }
 }

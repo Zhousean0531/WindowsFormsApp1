@@ -76,6 +76,7 @@ public static class Page1DataCollector
         string qtyText = QuantityHelper.BuildQuantityText(ProductKind.Filter,material, qtyPack, qtyWeight);
         var matInfo = MaterialMasterHelper.Get(material);
         string materialNo = matInfo?.MaterialNo ?? "";
+        string userName = Environment.UserName;
         // ─────────────────────────────
         // (B) 多筆欄位解析
         // ─────────────────────────────
@@ -185,7 +186,8 @@ public static class Page1DataCollector
             OutgassingList = outgassing,
             SelectedIndex = selectedIndex,
             Eff0 = eff.Eff0,
-            Eff10 = eff.Eff10
+            Eff10 = eff.Eff10,
+            UserName=userName
         };
     }
 }

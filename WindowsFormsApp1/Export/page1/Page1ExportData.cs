@@ -2,6 +2,7 @@
 
 public class Page1ExportData
 {
+    public string UserName { get; set; }
     public string ReportNo { get; set; }
     public string FilterRawQtyWeight { get; set; }
     public string FilterRawQuantity { get; set; }
