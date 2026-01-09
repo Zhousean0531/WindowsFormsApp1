@@ -7,12 +7,7 @@ public static class Page5DataCollector
 {
     public static Page5ExportData Collect(TabPage tab)
     {
-        if (!ValidationHelper.CheckRequiredFields(tab))
-        {
-            MessageBox.Show("請填寫所有欄位再執行");
-            return null;
-        }
-
+       
         var data = new Page5ExportData
         {
             TestDate = ControlHelper.GetText(tab, "CylinderTestDateBox"),

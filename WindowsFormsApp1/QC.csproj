@@ -171,7 +171,7 @@
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
     <Compile Include="helper\CalibrationHelper.cs" />
-    <Compile Include="helper\CodeFile1.cs" />
+    <Compile Include="helper\EfficiencyFinder.cs" />
     <Compile Include="helper\SignatureHelper.cs" />
     <Compile Include="helper\MaterialMasterHelper.cs" />
     <Compile Include="helper\MaterialInfo.cs" />

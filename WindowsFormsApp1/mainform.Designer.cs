@@ -291,7 +291,6 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.execute = new System.Windows.Forms.Button();
-            this.TrendChartBtn = new System.Windows.Forms.Button();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -3065,17 +3064,6 @@
             this.execute.UseVisualStyleBackColor = true;
             this.execute.Click += new System.EventHandler(this.Execute_Click);
             // 
-            // TrendChartBtn
-            // 
-            this.TrendChartBtn.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.TrendChartBtn.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.TrendChartBtn.Location = new System.Drawing.Point(22, 12);
-            this.TrendChartBtn.Name = "TrendChartBtn";
-            this.TrendChartBtn.Size = new System.Drawing.Size(121, 53);
-            this.TrendChartBtn.TabIndex = 1;
-            this.TrendChartBtn.Text = "趨勢圖";
-            this.TrendChartBtn.UseVisualStyleBackColor = true;
-            // 
             // dataGridViewTextBoxColumn1
             // 
             this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
@@ -3150,7 +3138,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1010, 706);
-            this.Controls.Add(this.TrendChartBtn);
             this.Controls.Add(this.execute);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -3313,7 +3300,6 @@
         private System.Windows.Forms.Label CylinderRawIPA;
         private System.Windows.Forms.Label CylinderRawAcetone;
         private System.Windows.Forms.Button execute;
-        private System.Windows.Forms.Button TrendChartBtn;
         private System.Windows.Forms.TextBox CylinderRawSO2ConcertrationBox;
         private System.Windows.Forms.CheckBox FilterInTolueneCheckBox;
         private System.Windows.Forms.TextBox CylinderRawSO2BackGroundBox;

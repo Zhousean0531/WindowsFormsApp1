@@ -277,13 +277,38 @@ namespace WindowsFormsApp1
         }
         private void TxtMoisture_Click(object sender, EventArgs e)
         {
+            // 沒勾選 → 當一般 TextBox，不做任何事
+            if (!chkMoisture.Checked)
+                return;
 
+            // 有勾選 → 攔截點擊，改成開計算視窗
+            using (var f = new FormCalcMoistureAsh(CalcMode.Moisture))
+            {
+                if (f.ShowDialog(this) == DialogResult.OK &&
+                    f.AverageResult.HasValue)
+                {
+                    CylinderRawMoistureTB.Text =
+                        f.AverageResult.Value.ToString("F2");
+                }
+            }
         }
+
         private void TxtAsh_Click(object sender, EventArgs e)
         {
+            if (!chkAsh.Checked)
+                return;
 
+            using (var f = new FormCalcMoistureAsh(CalcMode.Ash))
+            {
+                if (f.ShowDialog(this) == DialogResult.OK &&
+                    f.AverageResult.HasValue)
+                {
+                    CylinderRawAshTB.Text =
+                        f.AverageResult.Value.ToString("F2");
+                }
+            }
         }
-        
+
         private void AddMaterialToDgv(MaterialInfo info)
         {
             string materialDisplay =
@@ -313,7 +338,6 @@ namespace WindowsFormsApp1
                 "N/A"
             );
         }
-
         private void RawMaterialNOtb_keyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter)
