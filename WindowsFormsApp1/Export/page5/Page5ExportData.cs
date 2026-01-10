@@ -2,7 +2,7 @@
 
 public class Page5ExportData
 {
-    // 表單欄位
+    public string UserName { get; set; }
     public string TestDate { get; set; }
     public string ReportNo { get; set; }
     public string CylinderNo { get; set; }
@@ -10,7 +10,7 @@ public class Page5ExportData
     public string FilterType { get; set; }
     public string ReCylinderNo { get; set; }
     public string CarbonLot { get; set; }
-
+    public string Adsorption { get; set; }
     // DGV 解析後的列資料
     public List<Page5RowData> Rows { get; set; }
 }

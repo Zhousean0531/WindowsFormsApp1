@@ -44,12 +44,10 @@
             this.CYL_Nontarget_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Nontarget_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Pressure_Drop = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYLMaterialSNBox = new System.Windows.Forms.TextBox();
             this.ReCylinderNOBox = new System.Windows.Forms.TextBox();
             this.CylinderCustmorBox = new System.Windows.Forms.TextBox();
             this.CylinderNOBox = new System.Windows.Forms.TextBox();
             this.CYLType = new System.Windows.Forms.Label();
-            this.CylinderMaterialSN = new System.Windows.Forms.Label();
             this.CylinderReportNOBox = new System.Windows.Forms.TextBox();
             this.ReCylinderNO = new System.Windows.Forms.Label();
             this.CylinderCustmor = new System.Windows.Forms.Label();
@@ -302,6 +300,8 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CylinderMaterialSN = new System.Windows.Forms.Label();
+            this.CYLMaterialSNBox = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -463,14 +463,6 @@
             this.CYL_Pressure_Drop.Name = "CYL_Pressure_Drop";
             this.CYL_Pressure_Drop.Width = 140;
             // 
-            // CYLMaterialSNBox
-            // 
-            this.CYLMaterialSNBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.CYLMaterialSNBox.Location = new System.Drawing.Point(175, 265);
-            this.CYLMaterialSNBox.Name = "CYLMaterialSNBox";
-            this.CYLMaterialSNBox.Size = new System.Drawing.Size(100, 29);
-            this.CYLMaterialSNBox.TabIndex = 8;
-            // 
             // ReCylinderNOBox
             // 
             this.ReCylinderNOBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -504,15 +496,6 @@
             this.CYLType.Size = new System.Drawing.Size(73, 20);
             this.CYLType.TabIndex = 13;
             this.CYLType.Text = "原料種類";
-            // 
-            // CylinderMaterialSN
-            // 
-            this.CylinderMaterialSN.AutoSize = true;
-            this.CylinderMaterialSN.Location = new System.Drawing.Point(40, 268);
-            this.CylinderMaterialSN.Name = "CylinderMaterialSN";
-            this.CylinderMaterialSN.Size = new System.Drawing.Size(73, 20);
-            this.CylinderMaterialSN.TabIndex = 13;
-            this.CylinderMaterialSN.Text = "原料批號";
             // 
             // CylinderReportNOBox
             // 
@@ -3133,6 +3116,23 @@
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
             this.dataGridViewTextBoxColumn11.Width = 140;
             // 
+            // CylinderMaterialSN
+            // 
+            this.CylinderMaterialSN.AutoSize = true;
+            this.CylinderMaterialSN.Location = new System.Drawing.Point(40, 268);
+            this.CylinderMaterialSN.Name = "CylinderMaterialSN";
+            this.CylinderMaterialSN.Size = new System.Drawing.Size(73, 20);
+            this.CylinderMaterialSN.TabIndex = 13;
+            this.CylinderMaterialSN.Text = "原料批號";
+            // 
+            // CYLMaterialSNBox
+            // 
+            this.CYLMaterialSNBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CYLMaterialSNBox.Location = new System.Drawing.Point(175, 265);
+            this.CYLMaterialSNBox.Name = "CYLMaterialSNBox";
+            this.CYLMaterialSNBox.Size = new System.Drawing.Size(100, 29);
+            this.CYLMaterialSNBox.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -3333,11 +3333,9 @@
         private System.Windows.Forms.TextBox FilterInValueTolueneBox;
         private System.Windows.Forms.TextBox FilterMaterialNOBox;
         private System.Windows.Forms.Label FilterMaterialNO;
-        private System.Windows.Forms.Label CylinderMaterialSN;
         private System.Windows.Forms.TextBox FilterCarbonLotBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox FilterRawQuantityBox;
-        private System.Windows.Forms.TextBox CYLMaterialSNBox;
         private System.Windows.Forms.Label CYLType;
         private System.Windows.Forms.TextBox FilterInProcessCarbonOrderBox;
         private System.Windows.Forms.Label label3;
@@ -3448,6 +3446,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.TextBox CYLMaterialSNBox;
+        private System.Windows.Forms.Label CylinderMaterialSN;
     }
 }
 
