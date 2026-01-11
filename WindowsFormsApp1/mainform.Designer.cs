@@ -44,10 +44,12 @@
             this.CYL_Nontarget_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Nontarget_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Pressure_Drop = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ReCylinderNOBox = new System.Windows.Forms.TextBox();
+            this.CYLRawMaterialBox = new System.Windows.Forms.TextBox();
+            this.ReCylinderBox = new System.Windows.Forms.TextBox();
             this.CylinderCustmorBox = new System.Windows.Forms.TextBox();
-            this.CylinderNOBox = new System.Windows.Forms.TextBox();
+            this.CylinderNoBox = new System.Windows.Forms.TextBox();
             this.CYLType = new System.Windows.Forms.Label();
+            this.CylinderMaterialSN = new System.Windows.Forms.Label();
             this.CylinderReportNOBox = new System.Windows.Forms.TextBox();
             this.ReCylinderNO = new System.Windows.Forms.Label();
             this.CylinderCustmor = new System.Windows.Forms.Label();
@@ -280,15 +282,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.RawMaterialPage = new System.Windows.Forms.TabPage();
             this.RawMaterialdgv = new System.Windows.Forms.DataGridView();
-            this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
-            this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.execute = new System.Windows.Forms.Button();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -300,8 +293,17 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CylinderMaterialSN = new System.Windows.Forms.Label();
-            this.CYLMaterialSNBox = new System.Windows.Forms.TextBox();
+            this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
+            this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.execute = new System.Windows.Forms.Button();
+            this.label24 = new System.Windows.Forms.Label();
+            this.CYLRawEffTB = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -324,10 +326,12 @@
             this.CylinderPage.Controls.Add(this.CYLTypeBox);
             this.CylinderPage.Controls.Add(this.CylinderTestDateBox);
             this.CylinderPage.Controls.Add(this.CylinderBox);
-            this.CylinderPage.Controls.Add(this.CYLMaterialSNBox);
-            this.CylinderPage.Controls.Add(this.ReCylinderNOBox);
+            this.CylinderPage.Controls.Add(this.CYLRawEffTB);
+            this.CylinderPage.Controls.Add(this.CYLRawMaterialBox);
+            this.CylinderPage.Controls.Add(this.ReCylinderBox);
             this.CylinderPage.Controls.Add(this.CylinderCustmorBox);
-            this.CylinderPage.Controls.Add(this.CylinderNOBox);
+            this.CylinderPage.Controls.Add(this.CylinderNoBox);
+            this.CylinderPage.Controls.Add(this.label24);
             this.CylinderPage.Controls.Add(this.CYLType);
             this.CylinderPage.Controls.Add(this.CylinderMaterialSN);
             this.CylinderPage.Controls.Add(this.CylinderReportNOBox);
@@ -463,13 +467,21 @@
             this.CYL_Pressure_Drop.Name = "CYL_Pressure_Drop";
             this.CYL_Pressure_Drop.Width = 140;
             // 
-            // ReCylinderNOBox
+            // CYLRawMaterialBox
             // 
-            this.ReCylinderNOBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.ReCylinderNOBox.Location = new System.Drawing.Point(175, 185);
-            this.ReCylinderNOBox.Name = "ReCylinderNOBox";
-            this.ReCylinderNOBox.Size = new System.Drawing.Size(100, 29);
-            this.ReCylinderNOBox.TabIndex = 6;
+            this.CYLRawMaterialBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CYLRawMaterialBox.Location = new System.Drawing.Point(175, 265);
+            this.CYLRawMaterialBox.Name = "CYLRawMaterialBox";
+            this.CYLRawMaterialBox.Size = new System.Drawing.Size(100, 29);
+            this.CYLRawMaterialBox.TabIndex = 8;
+            // 
+            // ReCylinderBox
+            // 
+            this.ReCylinderBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.ReCylinderBox.Location = new System.Drawing.Point(175, 185);
+            this.ReCylinderBox.Name = "ReCylinderBox";
+            this.ReCylinderBox.Size = new System.Drawing.Size(100, 29);
+            this.ReCylinderBox.TabIndex = 6;
             // 
             // CylinderCustmorBox
             // 
@@ -480,13 +492,14 @@
             this.CylinderCustmorBox.TabIndex = 4;
             this.CylinderCustmorBox.Text = "General";
             // 
-            // CylinderNOBox
+            // CylinderNoBox
             // 
-            this.CylinderNOBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.CylinderNOBox.Location = new System.Drawing.Point(175, 107);
-            this.CylinderNOBox.Name = "CylinderNOBox";
-            this.CylinderNOBox.Size = new System.Drawing.Size(100, 29);
-            this.CylinderNOBox.TabIndex = 3;
+            this.CylinderNoBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CylinderNoBox.Location = new System.Drawing.Point(175, 107);
+            this.CylinderNoBox.Name = "CylinderNoBox";
+            this.CylinderNoBox.Size = new System.Drawing.Size(100, 29);
+            this.CylinderNoBox.TabIndex = 3;
+            this.CylinderNoBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CylinderNOBox_KeyDown);
             // 
             // CYLType
             // 
@@ -496,6 +509,15 @@
             this.CYLType.Size = new System.Drawing.Size(73, 20);
             this.CYLType.TabIndex = 13;
             this.CYLType.Text = "原料種類";
+            // 
+            // CylinderMaterialSN
+            // 
+            this.CylinderMaterialSN.AutoSize = true;
+            this.CylinderMaterialSN.Location = new System.Drawing.Point(40, 268);
+            this.CylinderMaterialSN.Name = "CylinderMaterialSN";
+            this.CylinderMaterialSN.Size = new System.Drawing.Size(73, 20);
+            this.CylinderMaterialSN.TabIndex = 13;
+            this.CylinderMaterialSN.Text = "原料批號";
             // 
             // CylinderReportNOBox
             // 
@@ -2957,6 +2979,75 @@
             this.RawMaterialdgv.Size = new System.Drawing.Size(929, 341);
             this.RawMaterialdgv.TabIndex = 5;
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn1.HeaderText = "進貨日期";
+            this.dataGridViewTextBoxColumn1.MinimumWidth = 50;
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn2.HeaderText = "料號/物料名稱";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.Width = 250;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "進貨數量";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.HeaderText = "單位";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.HeaderText = "抽檢數";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.Width = 65;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.HeaderText = "單位";
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.HeaderText = "外觀";
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.Width = 70;
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            this.dataGridViewTextBoxColumn8.HeaderText = "規格值";
+            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            this.dataGridViewTextBoxColumn8.Width = 150;
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            this.dataGridViewTextBoxColumn9.HeaderText = "測量值";
+            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
+            this.dataGridViewTextBoxColumn9.Width = 150;
+            // 
+            // dataGridViewTextBoxColumn10
+            // 
+            this.dataGridViewTextBoxColumn10.HeaderText = "合格/不合格";
+            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
+            this.dataGridViewTextBoxColumn10.Width = 130;
+            // 
+            // dataGridViewTextBoxColumn11
+            // 
+            this.dataGridViewTextBoxColumn11.HeaderText = "備註";
+            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
+            this.dataGridViewTextBoxColumn11.Width = 140;
+            // 
             // MaterialTypeTB
             // 
             this.MaterialTypeTB.Cursor = System.Windows.Forms.Cursors.Default;
@@ -3047,91 +3138,22 @@
             this.execute.UseVisualStyleBackColor = true;
             this.execute.Click += new System.EventHandler(this.Execute_Click);
             // 
-            // dataGridViewTextBoxColumn1
+            // label24
             // 
-            this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn1.HeaderText = "進貨日期";
-            this.dataGridViewTextBoxColumn1.MinimumWidth = 50;
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(295, 28);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(73, 20);
+            this.label24.TabIndex = 13;
+            this.label24.Text = "原料效率";
             // 
-            // dataGridViewTextBoxColumn2
+            // CYLRawEffTB
             // 
-            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn2.HeaderText = "料號/物料名稱";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.Width = 250;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "進貨數量";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.HeaderText = "單位";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.HeaderText = "抽檢數";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.Width = 65;
-            // 
-            // dataGridViewTextBoxColumn6
-            // 
-            this.dataGridViewTextBoxColumn6.HeaderText = "單位";
-            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.HeaderText = "外觀";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
-            this.dataGridViewTextBoxColumn7.Width = 70;
-            // 
-            // dataGridViewTextBoxColumn8
-            // 
-            this.dataGridViewTextBoxColumn8.HeaderText = "規格值";
-            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
-            this.dataGridViewTextBoxColumn8.Width = 150;
-            // 
-            // dataGridViewTextBoxColumn9
-            // 
-            this.dataGridViewTextBoxColumn9.HeaderText = "測量值";
-            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
-            this.dataGridViewTextBoxColumn9.Width = 150;
-            // 
-            // dataGridViewTextBoxColumn10
-            // 
-            this.dataGridViewTextBoxColumn10.HeaderText = "合格/不合格";
-            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
-            this.dataGridViewTextBoxColumn10.Width = 130;
-            // 
-            // dataGridViewTextBoxColumn11
-            // 
-            this.dataGridViewTextBoxColumn11.HeaderText = "備註";
-            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
-            this.dataGridViewTextBoxColumn11.Width = 140;
-            // 
-            // CylinderMaterialSN
-            // 
-            this.CylinderMaterialSN.AutoSize = true;
-            this.CylinderMaterialSN.Location = new System.Drawing.Point(40, 268);
-            this.CylinderMaterialSN.Name = "CylinderMaterialSN";
-            this.CylinderMaterialSN.Size = new System.Drawing.Size(73, 20);
-            this.CylinderMaterialSN.TabIndex = 13;
-            this.CylinderMaterialSN.Text = "原料批號";
-            // 
-            // CYLMaterialSNBox
-            // 
-            this.CYLMaterialSNBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.CYLMaterialSNBox.Location = new System.Drawing.Point(175, 265);
-            this.CYLMaterialSNBox.Name = "CYLMaterialSNBox";
-            this.CYLMaterialSNBox.Size = new System.Drawing.Size(100, 29);
-            this.CYLMaterialSNBox.TabIndex = 8;
+            this.CYLRawEffTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CYLRawEffTB.Location = new System.Drawing.Point(384, 25);
+            this.CYLRawEffTB.Name = "CYLRawEffTB";
+            this.CYLRawEffTB.Size = new System.Drawing.Size(100, 29);
+            this.CYLRawEffTB.TabIndex = 8;
             // 
             // Form1
             // 
@@ -3178,9 +3200,9 @@
         private System.Windows.Forms.TabPage CylinderPage;
         private System.Windows.Forms.DateTimePicker CylinderTestDateBox;
         private System.Windows.Forms.DataGridView CylinderBox;
-        private System.Windows.Forms.TextBox ReCylinderNOBox;
+        private System.Windows.Forms.TextBox ReCylinderBox;
         private System.Windows.Forms.TextBox CylinderCustmorBox;
-        private System.Windows.Forms.TextBox CylinderNOBox;
+        private System.Windows.Forms.TextBox CylinderNoBox;
         private System.Windows.Forms.TextBox CylinderReportNOBox;
         private System.Windows.Forms.Label ReCylinderNO;
         private System.Windows.Forms.Label CylinderCustmor;
@@ -3446,8 +3468,10 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.TextBox CYLMaterialSNBox;
+        private System.Windows.Forms.TextBox CYLRawMaterialBox;
         private System.Windows.Forms.Label CylinderMaterialSN;
+        private System.Windows.Forms.TextBox CYLRawEffTB;
+        private System.Windows.Forms.Label label24;
     }
 }
 

@@ -35,6 +35,10 @@ namespace WindowsFormsApp1
             ToggleMoistureUI();
             ToggleAshUI();
         }
+        private void ClearPage5Dgv()
+        {
+            CylinderBox.Rows.Clear();
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             MaterialMasterHelper.Load();
@@ -76,6 +80,23 @@ namespace WindowsFormsApp1
         {
             var FilterSemiRawReportNo = FilterInProcessTestBox.Value.ToString("yyMMdd");
             FilterInProcessReportNOTB.Text = $"YS-Q-M20-" + FilterSemiRawReportNo;
+        }
+        private void FillDgvFromLookup(Page5LookupResult result)
+        {
+            var dgv = CylinderBox;
+
+            dgv.Rows.Clear();
+
+            foreach (var rowData in result.Rows)
+            {
+                int rowIndex = dgv.Rows.Add();
+                var dgvRow = dgv.Rows[rowIndex];
+
+                foreach (var kv in rowData)
+                {
+                    dgvRow.Cells[kv.Key - 1].Value = kv.Value;
+                }
+            }
         }
         private void FilterRawArriveDateBox_ValueChanged(object sender, EventArgs e)
         {
@@ -292,7 +313,6 @@ namespace WindowsFormsApp1
                 }
             }
         }
-
         private void TxtAsh_Click(object sender, EventArgs e)
         {
             if (!chkAsh.Checked)
@@ -308,7 +328,6 @@ namespace WindowsFormsApp1
                 }
             }
         }
-
         private void AddMaterialToDgv(MaterialInfo info)
         {
             string materialDisplay =
@@ -378,6 +397,72 @@ namespace WindowsFormsApp1
                 }
             }
         }
+        private void CylinderNOBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
+
+            string cylinderNo = CylinderNoBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(cylinderNo))
+                return;
+
+            var result = Page5LookupHelper.SearchByCylinderNo(cylinderNo);
+
+            if (!result.Found || result.Rows.Count == 0)
+            {
+                MessageBox.Show("總表中查無此單號資料。");
+                ClearPage5Dgv();
+                return;
+            }
+
+            // 先帶入基本欄位
+            FillHeaderFromLookup(result);
+
+            // 再帶入 DGV
+            FillDgvFromLookup(result);
+
+            // ===== 有資料 =====
+            MessageBox.Show(
+                $"總表中已存在相同單號資料，將全部帶入。",
+                "資料已存在",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            FillDgvFromLookup(result);
+        }
+        private void FillHeaderFromLookup(Page5LookupResult result)
+        {
+            CylinderTestDateBox.Text = result.HeaderValues.GetValueOrDefault("U");
+            CylinderReportNOBox.Text = result.HeaderValues.GetValueOrDefault("V");
+            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("X");
+            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("Z");
+            ReCylinderBox.Text = result.HeaderValues.GetValueOrDefault("AA");
+
+            string ah = result.HeaderValues.GetValueOrDefault("AH");
+            string ai = result.HeaderValues.GetValueOrDefault("AI");
+            string aj = result.HeaderValues.GetValueOrDefault("AJ");
+
+            string materialLot = new[] { ah, ai, aj }
+                .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v) && v != "N/A");
+
+            if (string.IsNullOrWhiteSpace(materialLot))
+            {
+                CYLRawEffTB.Text = "";
+
+                MessageBox.Show(
+                    "此單號尚未填入原料批號。",
+                    "原料批號提醒",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+            else
+            {
+                CYLRawMaterialBox.Text = materialLot;
+            }
+        }
+
     }
 }
 

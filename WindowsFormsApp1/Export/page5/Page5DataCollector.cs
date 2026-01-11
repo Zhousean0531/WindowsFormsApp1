@@ -13,11 +13,11 @@ public static class Page5DataCollector
         {
             TestDate = ControlHelper.GetText(tab, "CylinderTestDateBox"),
             ReportNo = ControlHelper.GetText(tab, "CylinderReportNOBox"),
-            CylinderNo = ControlHelper.GetText(tab, "CylinderNOBox"),
+            CylinderNo = ControlHelper.GetText(tab, "CylinderNoBox"),
             Customer = ControlHelper.GetText(tab, "CylinderCustmorBox"),
             FilterType = ControlHelper.GetText(tab, "CYLTypeBox"),
-            ReCylinderNo = ControlHelper.GetText(tab, "ReCylinderNOBox"),
-            CarbonLot = ControlHelper.GetText(tab, "CYLMaterialSNBox"),
+            ReCylinderNo = ControlHelper.GetText(tab, "ReCylinderBox"),
+            CarbonLot = ControlHelper.GetText(tab, "CYLRawMaterialBox"),
             Rows = new List<Page5RowData>(),
             UserName = userName
         };
@@ -187,28 +187,28 @@ public static class Page5DataCollector
 
         return new Dictionary<int, string>
         {
-            [35] = Get("CYL_Particle_In"),
-            [36] = Get("CYL_Particle_out"),
-            [37] = DiffUtil.GetDiff(Get("CYL_Particle_out"), Get("CYL_Particle_In")),
+            [38] = Get("CYL_Particle_In"),
+            [39] = Get("CYL_Particle_out"),
+            [40] = DiffUtil.GetDiff(Get("CYL_Particle_out"), Get("CYL_Particle_In")),
 
-            [38] = Get("CYL_IPA_in"),
-            [39] = Get("CYL_IPA_out"),
-            [40] = DiffUtil.GetDiff(Get("CYL_IPA_out"), Get("CYL_IPA_in")),
+            [41] = Get("CYL_IPA_in"),
+            [42] = Get("CYL_IPA_out"),
+            [43] = DiffUtil.GetDiff(Get("CYL_IPA_out"), Get("CYL_IPA_in")),
 
-            [41] = Get("CYL_Acetone_In"),
-            [42] = Get("CYL_Acetone_out"),
-            [43] = DiffUtil.GetDiff(Get("CYL_Acetone_out"), Get("CYL_Acetone_In")),
+            [44] = Get("CYL_Acetone_In"),
+            [45] = Get("CYL_Acetone_out"),
+            [46] = DiffUtil.GetDiff(Get("CYL_Acetone_out"), Get("CYL_Acetone_In")),
 
-            [44] = Get("CYL_Nontarget_in"),
-            [45] = Get("CYL_Nontarget_out"),
-            [46] = DiffUtil.GetDiff(Get("CYL_Nontarget_out"), Get("CYL_Nontarget_in")),
+            [47] = Get("CYL_Nontarget_in"),
+            [48] = Get("CYL_Nontarget_out"),
+            [49] = DiffUtil.GetDiff(Get("CYL_Nontarget_out"), Get("CYL_Nontarget_in")),
 
-            [47] = DiffUtil.GetSumDiff(
+            [50] = DiffUtil.GetSumDiff(
                 Get("CYL_IPA_out"), Get("CYL_Acetone_out"), Get("CYL_Nontarget_out"),
                 Get("CYL_IPA_in"), Get("CYL_Acetone_In"), Get("CYL_Nontarget_in")
             ),
 
-            [51] = Get("CYL_Pressure_Drop")
+            [54] = Get("CYL_Pressure_Drop")
         };
     }
 }
