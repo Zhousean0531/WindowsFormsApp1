@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System;
 
 public static class Page5MasterExporter
 {
+
     public static void Export(Page5ExportData d)
     {
         var wb = new XLWorkbook(@"C:\Users\User\Desktop\總表.xlsx");
@@ -13,6 +15,25 @@ public static class Page5MasterExporter
         var targetTypes = d.FilterType.Split('+')
                                       .Select(s => s.Trim())
                                       .ToList();
+        var existedRows = ws.RowsUsed()
+            .Where(r => r.Cell(21).GetString().Trim() == d.CylinderNo)
+            .ToList();
+        if (existedRows.Any())
+        {
+            var result = MessageBox.Show(
+                "總表已有相同單號的檢驗結果，是否繼續執行並覆蓋原資料？",
+                "資料重複確認",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (result == DialogResult.No)
+            {
+                // 使用者選擇不覆蓋 → 直接中止匯出
+                return;
+            }
+        }
+
         Dictionary<string, string> eff = null;
 
         if (!string.IsNullOrWhiteSpace(d.CarbonLot))
@@ -42,7 +63,7 @@ public static class Page5MasterExporter
             ws.Cell(row, 34).Value = "V";
             ws.Cell(row, 53).Value = "130";
             ws.Cell(row, 55).Value = d.UserName;
-
+            ws.Cell(row, 56).Value = DateTime.Now;
             foreach (var kv in r.ControlValues)
             {
                 ws.Cell(row, kv.Key).Value = kv.Value;

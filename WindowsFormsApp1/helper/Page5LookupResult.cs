@@ -26,33 +26,57 @@ public static class Page5LookupHelper
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             "總表.xlsx"
         );
+
         using (var wb = new XLWorkbook(summaryPath))
         {
             var ws = wb.Worksheet("濾筒");
-            var matchedRows = ws.RowsUsed()
-        .Where(r => r.Cell("W").GetString().Trim() == cylinderNo)
-        .ToList();
 
+            var matchedRows = ws.RowsUsed()
+                .Where(r => r.Cell("W").GetString().Trim() == cylinderNo)
+                .ToList();
             if (!matchedRows.Any())
                 return new Page5LookupResult();
+            var emptyTimeRows = matchedRows
+                .Where(r => r.Cell("BD").IsEmpty())
+                .ToList();
 
+            // ===== 1️⃣ 找出最新的更新時間 =====
+            List<IXLRow> latestRows;
+
+            if (emptyTimeRows.Any())
+            {
+                // ★ 規則 1：只要有空時間 → 視為最新
+                latestRows = emptyTimeRows;
+            }
+            else
+            {
+                // ★ 規則 2：全部都有時間 → 取時間最大的那一組
+                var latestTime = matchedRows
+                    .Max(r => r.Cell("BD").GetDateTime());
+
+                latestRows = matchedRows
+                    .Where(r => r.Cell("BD").GetDateTime() == latestTime)
+                    .ToList();
+            }
             var result = new Page5LookupResult();
 
-            // ===== 基本欄位（取第一筆）=====
-            var first = matchedRows.First();
+            // ===== 3️⃣ HeaderValues（用最新那一筆）=====
+            var headerRow = latestRows.First();
 
-            string Get(string col) => first.Cell(col).GetString().Trim();
+            string Get(string col) => headerRow.Cell(col).GetString().Trim();
+
 
             result.HeaderValues["U"] = Get("U");   // TestDate
             result.HeaderValues["V"] = Get("V");   // ReportNo
             result.HeaderValues["X"] = Get("X");
             result.HeaderValues["Y"] = Get("Y");   // Customer
-            result.HeaderValues["AA"] = Get("AA");   // Type
-            result.HeaderValues["AB"] = Get("AB"); // ReCylinderNo
+            result.HeaderValues["AA"] = Get("AA");  // Type
+            result.HeaderValues["AB"] = Get("AB");  // ReCylinderNo
             result.HeaderValues["AI"] = Get("AI");
             result.HeaderValues["AJ"] = Get("AJ");
             result.HeaderValues["AK"] = Get("AK");
-            // ===== DGV 欄位 =====
+
+            // ===== 4️⃣ DGV 欄位（只用最新那組）=====
             var map = new Dictionary<string, int>
             {
                 ["AC"] = 1,
@@ -64,11 +88,11 @@ public static class Page5LookupHelper
                 ["AR"] = 7,
                 ["AS"] = 8,
                 ["AU"] = 9,
-                ["AV"]=10,
-                ["BB"]=11
+                ["AV"] = 10,
+                ["BB"] = 11
             };
 
-            foreach (var excelRow in matchedRows)
+            foreach (var excelRow in latestRows)
             {
                 var dict = new Dictionary<int, string>();
                 foreach (var kv in map)

@@ -412,30 +412,30 @@ namespace WindowsFormsApp1
             if (string.IsNullOrWhiteSpace(cylinderNo))
                 return;
 
+            // ★ 查詢總表（可能回多筆）
             var result = Page5LookupHelper.SearchByCylinderNo(cylinderNo);
 
+            // ---- 查無資料 ----
             if (!result.Found || result.Rows.Count == 0)
             {
-                MessageBox.Show("總表中查無此單號資料。");
+                MessageBox.Show(
+                    "總表中查無此單號資料。",
+                    "查詢結果",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
                 ClearPage5();
                 return;
             }
-
-            // 先帶入基本欄位
             FillHeaderFromLookup(result);
-
-            // 再帶入 DGV
             FillDgvFromLookup(result);
 
-            // ===== 有資料 =====
             MessageBox.Show(
-                $"總表中已存在相同單號資料，將全部帶入。",
-                "資料已存在",
+                "已帶入該單號最新的檢驗結果。",
+                "查詢完成",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );
-
-            FillDgvFromLookup(result);
         }
         private void FillHeaderFromLookup(Page5LookupResult result)
         {
@@ -478,7 +478,7 @@ namespace WindowsFormsApp1
         {
             if (e.KeyCode != Keys.Enter)
                 return;
-
+            CYLRawEffTB.Clear();
             string materialLot = CYLRawMaterialBox.Text?.Trim();
 
             // ---- 無效輸入：直接不做事 ----
@@ -537,17 +537,17 @@ namespace WindowsFormsApp1
                     }
 
                     // ---------- 取出第一個有效效率 ----------
-                    string effValue = eff.Values.FirstOrDefault(v =>
-                        !string.IsNullOrWhiteSpace(v) &&
-                        v != "-" &&
-                        !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
-                    );
+                    string effValueRaw = eff.Values.FirstOrDefault(v =>
+                !string.IsNullOrWhiteSpace(v) &&
+                v != "-" &&
+                !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
+            );
 
                     // ---------- 狀況 2：有批號，但效率無效 ----------
-                    if (string.IsNullOrWhiteSpace(effValue))
+                    if (string.IsNullOrWhiteSpace(effValueRaw))
                     {
                         MessageBox.Show(
-                            "此原料批號尚無有效效率資料，請確認批號是否正確或資料是否已建檔。",
+                            "查無此批號",
                             "效率資料提醒",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information
@@ -556,7 +556,15 @@ namespace WindowsFormsApp1
                     }
 
                     // ---------- 狀況 3：成功 ----------
-                    CYLRawEffTB.Text = effValue;
+                    if (double.TryParse(effValueRaw, out double effValue))
+                    {
+                        CYLRawEffTB.Text = effValue.ToString("0.0");
+                    }
+                    else
+                    {
+                        // 理論上不該發生，保險處理
+                        CYLRawEffTB.Text = effValue.ToString("0.0"); ;
+                    }
                 }
             }
             catch
