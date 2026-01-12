@@ -44,10 +44,12 @@
             this.CYL_Nontarget_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Nontarget_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYL_Pressure_Drop = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYLRawEffTB = new System.Windows.Forms.TextBox();
             this.CYLRawMaterialBox = new System.Windows.Forms.TextBox();
             this.ReCylinderBox = new System.Windows.Forms.TextBox();
             this.CylinderCustmorBox = new System.Windows.Forms.TextBox();
             this.CylinderNoBox = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
             this.CYLType = new System.Windows.Forms.Label();
             this.CylinderMaterialSN = new System.Windows.Forms.Label();
             this.CylinderReportNOBox = new System.Windows.Forms.TextBox();
@@ -302,8 +304,6 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.execute = new System.Windows.Forms.Button();
-            this.label24 = new System.Windows.Forms.Label();
-            this.CYLRawEffTB = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -467,6 +467,14 @@
             this.CYL_Pressure_Drop.Name = "CYL_Pressure_Drop";
             this.CYL_Pressure_Drop.Width = 140;
             // 
+            // CYLRawEffTB
+            // 
+            this.CYLRawEffTB.Cursor = System.Windows.Forms.Cursors.Default;
+            this.CYLRawEffTB.Location = new System.Drawing.Point(384, 25);
+            this.CYLRawEffTB.Name = "CYLRawEffTB";
+            this.CYLRawEffTB.Size = new System.Drawing.Size(100, 29);
+            this.CYLRawEffTB.TabIndex = 8;
+            // 
             // CYLRawMaterialBox
             // 
             this.CYLRawMaterialBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -474,6 +482,7 @@
             this.CYLRawMaterialBox.Name = "CYLRawMaterialBox";
             this.CYLRawMaterialBox.Size = new System.Drawing.Size(100, 29);
             this.CYLRawMaterialBox.TabIndex = 8;
+            this.CYLRawMaterialBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CYLRawMaterialBox_KeyDown);
             // 
             // ReCylinderBox
             // 
@@ -500,6 +509,15 @@
             this.CylinderNoBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderNoBox.TabIndex = 3;
             this.CylinderNoBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CylinderNOBox_KeyDown);
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(295, 28);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(73, 20);
+            this.label24.TabIndex = 13;
+            this.label24.Text = "原料效率";
             // 
             // CYLType
             // 
@@ -3137,23 +3155,6 @@
             this.execute.Text = "執行";
             this.execute.UseVisualStyleBackColor = true;
             this.execute.Click += new System.EventHandler(this.Execute_Click);
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(295, 28);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(73, 20);
-            this.label24.TabIndex = 13;
-            this.label24.Text = "原料效率";
-            // 
-            // CYLRawEffTB
-            // 
-            this.CYLRawEffTB.Cursor = System.Windows.Forms.Cursors.Default;
-            this.CYLRawEffTB.Location = new System.Drawing.Point(384, 25);
-            this.CYLRawEffTB.Name = "CYLRawEffTB";
-            this.CYLRawEffTB.Size = new System.Drawing.Size(100, 29);
-            this.CYLRawEffTB.TabIndex = 8;
             // 
             // Form1
             // 

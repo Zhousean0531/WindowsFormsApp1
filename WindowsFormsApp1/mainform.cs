@@ -374,8 +374,8 @@ namespace WindowsFormsApp1
 
             var info = MaterialMasterHelper.Get(materialNo);
 
-            if(info == null)
-    {
+            if (info == null)
+            {
                 var r = MessageBox.Show(
                     "查無此物料，是否需要新增？",
                     "查無資料",
@@ -452,7 +452,7 @@ namespace WindowsFormsApp1
             string aj = result.HeaderValues.GetValueOrDefault("AJ");
             string ak = result.HeaderValues.GetValueOrDefault("AK");
 
-            string materialLot = new[] {  ai, aj ,ak}
+            string materialLot = new[] { ai, aj, ak }
                 .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v) && v != "N/A");
 
             if (!string.IsNullOrWhiteSpace(materialLot))
@@ -474,7 +474,97 @@ namespace WindowsFormsApp1
             }
 
         }
+        private void CYLRawMaterialBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+                return;
 
+            string materialLot = CYLRawMaterialBox.Text?.Trim();
+
+            // ---- 無效輸入：直接不做事 ----
+            if (string.IsNullOrWhiteSpace(materialLot) ||
+                materialLot == "-" ||
+                materialLot.Equals("N/A", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            LookupRawMaterialEfficiency(materialLot);
+        }
+        private void LookupRawMaterialEfficiency(string materialLot)
+        {
+            string type = CYLTypeBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                MessageBox.Show(
+                    "請先選擇原料種類。",
+                    "必要欄位未填",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+
+                CYLTypeBox.Focus(); // 導引使用者
+                return;
+            }
+
+            var targetTypes = new List<string> { type };
+
+            string totalPath = @"C:\Users\User\Desktop\總表.xlsx";
+
+            try
+            {
+                using (var wb = new ClosedXML.Excel.XLWorkbook(totalPath))
+                {
+                    var ws = wb.Worksheet("濾筒");
+
+                    var eff = EfficiencyFinder.FindMinEfficiencyByCarbonLot(
+                        ws,
+                        materialLot,
+                        targetTypes
+                    );
+
+                    // ---------- 狀況 1：查無此批號 ----------
+                    if (eff == null || eff.Count == 0)
+                    {
+                        MessageBox.Show(
+                            "查無此原料批號的歷史效率資料，請確認批號是否正確。",
+                            "查詢結果",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                        return;
+                    }
+
+                    // ---------- 取出第一個有效效率 ----------
+                    string effValue = eff.Values.FirstOrDefault(v =>
+                        !string.IsNullOrWhiteSpace(v) &&
+                        v != "-" &&
+                        !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                    // ---------- 狀況 2：有批號，但效率無效 ----------
+                    if (string.IsNullOrWhiteSpace(effValue))
+                    {
+                        MessageBox.Show(
+                            "此原料批號尚無有效效率資料，請確認批號是否正確或資料是否已建檔。",
+                            "效率資料提醒",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                        return;
+                    }
+
+                    // ---------- 狀況 3：成功 ----------
+                    CYLRawEffTB.Text = effValue;
+                }
+            }
+            catch
+            {
+                // 依你目前的設計哲學：錯誤時不干擾使用者
+                return;
+            }
+        }
     }
 }
 
