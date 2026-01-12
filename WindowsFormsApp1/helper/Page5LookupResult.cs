@@ -45,27 +45,27 @@ public static class Page5LookupHelper
 
             result.HeaderValues["U"] = Get("U");   // TestDate
             result.HeaderValues["V"] = Get("V");   // ReportNo
-            result.HeaderValues["X"] = Get("X");   // Customer
-            result.HeaderValues["Z"] = Get("Z");   // Type
-            result.HeaderValues["AA"] = Get("AA"); // ReCylinderNo
-            result.HeaderValues["AH"] = Get("AH");
+            result.HeaderValues["X"] = Get("X");
+            result.HeaderValues["Y"] = Get("Y");   // Customer
+            result.HeaderValues["AA"] = Get("AA");   // Type
+            result.HeaderValues["AB"] = Get("AB"); // ReCylinderNo
             result.HeaderValues["AI"] = Get("AI");
             result.HeaderValues["AJ"] = Get("AJ");
-
+            result.HeaderValues["AK"] = Get("AK");
             // ===== DGV 欄位 =====
             var map = new Dictionary<string, int>
             {
-                ["AB"] = 1,
-                ["AC"] = 2,
-                ["AK"] = 3,
-                ["AL"] = 4,
-                ["AN"] = 5,
-                ["AO"] = 6,
-                ["AQ"] = 7,
-                ["AR"] = 8,
-                ["AT"] = 9,
-                ["AU"] = 10,
-                ["BA"] = 11
+                ["AC"] = 1,
+                ["AD"] = 2,
+                ["AL"] = 3,
+                ["AM"] = 4,
+                ["AO"] = 5,
+                ["AP"] = 6,
+                ["AR"] = 7,
+                ["AS"] = 8,
+                ["AU"] = 9,
+                ["AV"]=10,
+                ["BB"]=11
             };
 
             foreach (var excelRow in matchedRows)

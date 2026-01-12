@@ -26,13 +26,10 @@ public static class Page5MasterExporter
 
         foreach (var r in d.Rows)
         {
-            MessageBox.Show(
-    $"即將寫入 row={row}\nCylinderNo={d.CylinderNo}"
-);
             ws.Cell(row, 21).Value = d.TestDate;
             ws.Cell(row, 22).Value = d.ReportNo;
             ws.Cell(row, 23).Value = d.CylinderNo;
-            ws.Cell(row, 24).Value = d.CylinderNo;
+            ws.Cell(row, 24).Value = d.CarbonLot;
             ws.Cell(row, 25).Value = d.Customer;
             ws.Cell(row, 26).Value = "CYL";
             ws.Cell(row, 27).Value = d.FilterType;

@@ -35,9 +35,15 @@ namespace WindowsFormsApp1
             ToggleMoistureUI();
             ToggleAshUI();
         }
-        private void ClearPage5Dgv()
+        private void ClearPage5()
         {
             CylinderBox.Rows.Clear();
+            CylinderReportNOBox.Clear();
+            CylinderCustmorBox.Clear();
+            ReCylinderBox.Clear();
+            CYLTypeBox.Text = "";
+            CYLRawMaterialBox.Clear();
+            CYLRawEffTB.Clear();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -411,7 +417,7 @@ namespace WindowsFormsApp1
             if (!result.Found || result.Rows.Count == 0)
             {
                 MessageBox.Show("總表中查無此單號資料。");
-                ClearPage5Dgv();
+                ClearPage5();
                 return;
             }
 
@@ -435,19 +441,28 @@ namespace WindowsFormsApp1
         {
             CylinderTestDateBox.Text = result.HeaderValues.GetValueOrDefault("U");
             CylinderReportNOBox.Text = result.HeaderValues.GetValueOrDefault("V");
-            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("X");
-            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("Z");
-            ReCylinderBox.Text = result.HeaderValues.GetValueOrDefault("AA");
-
-            string ah = result.HeaderValues.GetValueOrDefault("AH");
+            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("Y");
+            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("AA");
+            ReCylinderBox.Text =
+                result.HeaderValues.ContainsKey("AB")
+                    ? result.HeaderValues["AB"]
+                    : "";
+            CYLRawMaterialBox.Text = result.HeaderValues.GetValueOrDefault("X");
             string ai = result.HeaderValues.GetValueOrDefault("AI");
             string aj = result.HeaderValues.GetValueOrDefault("AJ");
+            string ak = result.HeaderValues.GetValueOrDefault("AK");
 
-            string materialLot = new[] { ah, ai, aj }
+            string materialLot = new[] {  ai, aj ,ak}
                 .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v) && v != "N/A");
 
-            if (string.IsNullOrWhiteSpace(materialLot))
+            if (!string.IsNullOrWhiteSpace(materialLot))
             {
+                // 有原料批號 → 直接帶入
+                CYLRawEffTB.Text = materialLot;
+            }
+            else
+            {
+                // 沒有原料批號 → 清空並提醒
                 CYLRawEffTB.Text = "";
 
                 MessageBox.Show(
@@ -457,10 +472,7 @@ namespace WindowsFormsApp1
                     MessageBoxIcon.Information
                 );
             }
-            else
-            {
-                CYLRawMaterialBox.Text = materialLot;
-            }
+
         }
 
     }
