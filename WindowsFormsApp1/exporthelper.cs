@@ -144,7 +144,33 @@ public static class ExportHelper_Page5
             var data = Page5DataCollector.Collect(tab);
             if (data == null) return;
 
+            // 匯入主表
             Page5MasterExporter.Export(data);
+
+            // 以收集到的單號查總表（取 lookup 結果）
+            Page5LookupResult lookupResult = null;
+            if (!string.IsNullOrWhiteSpace(data.CylinderNo))
+            {
+                try
+                {
+                    lookupResult = Page5LookupHelper.SearchByCylinderNo(data.CylinderNo);
+                }
+                catch (Exception)
+                {
+                    // 若查詢總表失敗，仍然保證有一個空的結果傳給報表匯出
+                    lookupResult = new Page5LookupResult();
+                }
+            }
+            else
+            {
+                lookupResult = new Page5LookupResult();
+            }
+
+            // 匯出報表（以 MA 為範例；若需要依 data.CYLType 動態決定可再改）
+            Page5ReportExporter.Export(
+                data,
+                lookupResult,
+                "MA");
         }
         catch (Exception ex)
         {

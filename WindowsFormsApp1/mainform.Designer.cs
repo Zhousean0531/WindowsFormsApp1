@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.CylinderPage = new System.Windows.Forms.TabPage();
+            this.execute = new System.Windows.Forms.Button();
             this.CYLTypeBox = new System.Windows.Forms.ComboBox();
             this.CylinderTestDateBox = new System.Windows.Forms.DateTimePicker();
             this.CylinderBox = new System.Windows.Forms.DataGridView();
@@ -303,7 +304,6 @@
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.execute = new System.Windows.Forms.Button();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -345,6 +345,18 @@
             this.CylinderPage.Size = new System.Drawing.Size(1018, 625);
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
+            // 
+            // execute
+            // 
+            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.execute.Location = new System.Drawing.Point(838, 12);
+            this.execute.Name = "execute";
+            this.execute.Size = new System.Drawing.Size(121, 53);
+            this.execute.TabIndex = 3;
+            this.execute.Text = "執行";
+            this.execute.UseVisualStyleBackColor = true;
+            this.execute.Click += new System.EventHandler(this.Execute_Click);
             // 
             // CYLTypeBox
             // 
@@ -2948,7 +2960,7 @@
             this.tabControl1.Controls.Add(this.RawMaterialPage);
             this.tabControl1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.tabControl1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.tabControl1.Location = new System.Drawing.Point(1, 71);
+            this.tabControl1.Location = new System.Drawing.Point(0, 50);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1026, 658);
@@ -3144,23 +3156,12 @@
             this.label21.TabIndex = 23;
             this.label21.Text = "測試日期";
             // 
-            // execute
-            // 
-            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.execute.Location = new System.Drawing.Point(814, 12);
-            this.execute.Name = "execute";
-            this.execute.Size = new System.Drawing.Size(121, 53);
-            this.execute.TabIndex = 3;
-            this.execute.Text = "執行";
-            this.execute.UseVisualStyleBackColor = true;
-            this.execute.Click += new System.EventHandler(this.Execute_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1010, 706);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(990, 706);
             this.Controls.Add(this.execute);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -3168,7 +3169,8 @@
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "QC";
+            this.Text = "QC Report";
+            this.TransparencyKey = System.Drawing.Color.WhiteSmoke;
             this.Load += new System.EventHandler(this.Form1_Load);
             this.CylinderPage.ResumeLayout(false);
             this.CylinderPage.PerformLayout();

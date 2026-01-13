@@ -21,6 +21,7 @@ namespace WindowsFormsApp1
 
     public partial class Form1 : Form
     {
+        private Page5LookupResult _page5LookupResult;
         private const int MAX_ROWS = 13;
         public Form1()
         {
