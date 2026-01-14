@@ -31,7 +31,7 @@ public static class Page6ReportExporter
         {
             sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
             sfd.FileName =
-                $"{d.ReportNo}{d.TestDate:MMdd}到廠.xlsx";
+                $"{d.ReportNo}({d.TestDate:MMdd}到廠).xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
@@ -62,12 +62,12 @@ public static class Page6ReportExporter
             int startRow = 6;
             int startCol = 2; // B
 
-            for (int r = 0; r < d.DataGrid.Rows.Count; r++)
+            for (int r = 0; r <12; r++)
             {
                 var row = d.DataGrid.Rows[r];
                 if (row.IsNewRow) continue;
 
-                for (int c = 0; c < d.DataGrid.Columns.Count; c++)
+                for (int c = 0; c < 12; c++)
                 {
                     ws.Cells[startRow + r, startCol + c].Value =
                         row.Cells[c].Value?.ToString();
@@ -75,7 +75,7 @@ public static class Page6ReportExporter
             }
 
             // ===== 簽名（跟 Page2 一樣）=====
-            ExcelSignatureHelper.TryAddSignature(ws, "K18");
+            ExcelSignatureHelper.TryAddSignature(ws, "L18");
 
             wb.Save();
         }

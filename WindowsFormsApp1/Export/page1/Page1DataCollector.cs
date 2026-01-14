@@ -66,8 +66,8 @@ public static class Page1DataCollector
         string testingDate = testPicker.Value.ToString("yyyy.MM.dd");
         string material = materialBox.Text.Trim();
         string reportNo = reportNoBox?.Text.Trim() ?? "";
-        string qtyPack = ControlHelper.GetText(tab, "FilterRawQuantityBox");
-        string qtyWeight = ControlHelper.GetText(tab, "FilterRawQtyWeight");
+        string qtyWeight = ControlHelper.GetText(tab, "FilterRawQuantityBox");
+        string qtyPack = ControlHelper.GetText(tab, "FilterRawQtyWeight");
         string rawType =
                 ControlHelper.Find<TextBox>(tab, "FilterRawTypeBox")?.Text
                 ?.Trim()
