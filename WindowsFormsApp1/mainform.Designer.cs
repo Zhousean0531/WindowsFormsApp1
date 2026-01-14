@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.CylinderPage = new System.Windows.Forms.TabPage();
-            this.execute = new System.Windows.Forms.Button();
             this.CYLTypeBox = new System.Windows.Forms.ComboBox();
             this.CylinderTestDateBox = new System.Windows.Forms.DateTimePicker();
             this.CylinderBox = new System.Windows.Forms.DataGridView();
@@ -59,6 +58,7 @@
             this.CylinderNO = new System.Windows.Forms.Label();
             this.CylinderReportNO = new System.Windows.Forms.Label();
             this.CylinderTestDate = new System.Windows.Forms.Label();
+            this.execute = new System.Windows.Forms.Button();
             this.CylinderRawPage = new System.Windows.Forms.TabPage();
             this.chkAsh = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
@@ -346,18 +346,6 @@
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
             // 
-            // execute
-            // 
-            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.execute.Location = new System.Drawing.Point(838, 12);
-            this.execute.Name = "execute";
-            this.execute.Size = new System.Drawing.Size(121, 53);
-            this.execute.TabIndex = 3;
-            this.execute.Text = "執行";
-            this.execute.UseVisualStyleBackColor = true;
-            this.execute.Click += new System.EventHandler(this.Execute_Click);
-            // 
             // CYLTypeBox
             // 
             this.CYLTypeBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -601,6 +589,18 @@
             this.CylinderTestDate.Size = new System.Drawing.Size(73, 20);
             this.CylinderTestDate.TabIndex = 19;
             this.CylinderTestDate.Text = "測試日期";
+            // 
+            // execute
+            // 
+            this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.execute.Location = new System.Drawing.Point(838, 12);
+            this.execute.Name = "execute";
+            this.execute.Size = new System.Drawing.Size(121, 53);
+            this.execute.TabIndex = 3;
+            this.execute.Text = "執行";
+            this.execute.UseVisualStyleBackColor = true;
+            this.execute.Click += new System.EventHandler(this.Execute_Click);
             // 
             // CylinderRawPage
             // 
@@ -1841,7 +1841,7 @@
             this.FilterInProcessPage.Location = new System.Drawing.Point(4, 29);
             this.FilterInProcessPage.Name = "FilterInProcessPage";
             this.FilterInProcessPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterInProcessPage.Size = new System.Drawing.Size(1018, 625);
+            this.FilterInProcessPage.Size = new System.Drawing.Size(1018, 626);
             this.FilterInProcessPage.TabIndex = 1;
             this.FilterInProcessPage.Text = "濾網半成品";
             // 
@@ -2647,7 +2647,7 @@
             this.FilterRawPage.Location = new System.Drawing.Point(4, 29);
             this.FilterRawPage.Name = "FilterRawPage";
             this.FilterRawPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterRawPage.Size = new System.Drawing.Size(1018, 625);
+            this.FilterRawPage.Size = new System.Drawing.Size(1018, 682);
             this.FilterRawPage.TabIndex = 0;
             this.FilterRawPage.Text = "濾網原料";
             // 
@@ -2963,7 +2963,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 50);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1026, 658);
+            this.tabControl1.Size = new System.Drawing.Size(1026, 659);
             this.tabControl1.TabIndex = 2;
             // 
             // RawMaterialPage
@@ -3161,13 +3161,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(990, 706);
+            this.ClientSize = new System.Drawing.Size(990, 669);
             this.Controls.Add(this.execute);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
             this.Name = "Form1";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QC Report";
             this.TransparencyKey = System.Drawing.Color.WhiteSmoke;

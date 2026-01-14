@@ -45,14 +45,6 @@ public static class Page5ReportExporter
             {
                 // ===== 4️⃣ 複製模板成新檔 =====
                 File.Copy(templatePath, sfd.FileName, true);
-
-                // 👉 先不要寫任何 Excel 內容
-                MessageBox.Show(
-                    "報告檔案已建立，接下來將寫入內容。",
-                    "步驟完成",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
             }
             catch (Exception ex)
             {

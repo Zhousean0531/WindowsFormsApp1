@@ -1,79 +1,69 @@
 ﻿using ClosedXML.Excel;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System;
 
 public static class Page5MasterExporter
 {
-
     public static void Export(Page5ExportData d)
     {
+        if (d == null || d.Rows == null || d.Rows.Count == 0)
+            return;
+
         var wb = new XLWorkbook(@"C:\Users\User\Desktop\總表.xlsx");
         var ws = wb.Worksheet("濾筒");
 
-        var targetTypes = d.FilterType.Split('+')
-                                      .Select(s => s.Trim())
-                                      .ToList();
-        var existedRows = ws.RowsUsed()
-            .Where(r => r.Cell(21).GetString().Trim() == d.CylinderNo)
-            .ToList();
-        if (existedRows.Any())
-        {
-            var result = MessageBox.Show(
-                "總表已有相同單號的檢驗結果，是否繼續執行並覆蓋原資料？",
-                "資料重複確認",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (result == DialogResult.No)
-            {
-                // 使用者選擇不覆蓋 → 直接中止匯出
-                return;
-            }
-        }
-
-        Dictionary<string, string> eff = null;
-
-        if (!string.IsNullOrWhiteSpace(d.CarbonLot))
-        {
-            eff = EfficiencyFinder
-                .FindMinEfficiencyByCarbonLot(ws, d.CarbonLot, targetTypes);
-        }
-
+        // 調整：欄位索引向右移 +2（與 Page5LookupHelper 使用欄位對齊）
         int row = (ws.Column(38).CellsUsed()
                      .LastOrDefault()?.Address.RowNumber ?? 3) + 1;
 
+        var targetTypes = (d.FilterType ?? "")
+            .Split('+')
+            .Select(s => s.Trim())
+            .ToList();
+
         foreach (var r in d.Rows)
         {
-            ws.Cell(row, 21).Value = d.TestDate;
+            ws.Cell(row, 21).Value = d.TestDate; 
             ws.Cell(row, 22).Value = d.ReportNo;
             ws.Cell(row, 23).Value = d.CylinderNo;
-            ws.Cell(row, 24).Value = d.CarbonLot;
+            ws.Cell(row, 24).Value = d.CylinderNo;
             ws.Cell(row, 25).Value = d.Customer;
             ws.Cell(row, 26).Value = "CYL";
             ws.Cell(row, 27).Value = d.FilterType;
             ws.Cell(row, 28).Value = d.ReCylinderNo;
             ws.Cell(row, 29).Value = r.SN;
             ws.Cell(row, 30).Value = r.Weight;
-            ws.Cell(row, 31).Value = "V";
-            ws.Cell(row, 32).Value = "V";
-            ws.Cell(row, 33).Value = "V";
-            ws.Cell(row, 34).Value = "V";
-            ws.Cell(row, 53).Value = "130";
-            ws.Cell(row, 55).Value = d.UserName;
-            ws.Cell(row, 56).Value = DateTime.Now;
-            foreach (var kv in r.ControlValues)
+            ws.Cell(row, 57).Value = d.UserName;
+
+            if (r.ControlValues != null)
             {
-                ws.Cell(row, kv.Key).Value = kv.Value;
+                foreach (var kv in r.ControlValues)
+                {
+                    // 控制列的 key 應與 BuildControlValues 對應（35..51），直接寫入
+                    if (kv.Key > 0)
+                        ws.Cell(row, kv.Key).Value = kv.Value;
+                }
             }
-            if (eff != null)
+
+            var eff = EfficiencyFinder
+                .FindMinEfficiencyByCarbonLot(ws, d.CarbonLot, targetTypes);
+            if (eff.ContainsKey("MA")) ws.Cell(row, 34).Value = eff["MA"]; // was 32 -> now 34
+            if (eff.ContainsKey("MB")) ws.Cell(row, 35).Value = eff["MB"]; // was 33 -> now 35
+            if (eff.ContainsKey("MC")) ws.Cell(row, 36).Value = eff["MC"]; // was 34 -> now 36
+
+            // 新增 MaterialInfo 相關欄位
+            var materialInfo = MaterialMasterHelper.Get(r.SN); // 根據 SN 查詢 MaterialInfo
+
+            if (materialInfo != null)
             {
-                ws.Cell(row, 35).Value = eff["MA"];
-                ws.Cell(row, 36).Value = eff["MB"];
-                ws.Cell(row, 37).Value = eff["MC"];
+                ws.Cell(row, 31).Value = materialInfo.MaterialNo;
+                ws.Cell(row, 32).Value = materialInfo.MaterialName;
+                ws.Cell(row, 33).Value = materialInfo.InUnit;
+                ws.Cell(row, 34).Value = materialInfo.SampleQty;
+                ws.Cell(row, 35).Value = materialInfo.InspectUnit;
+                ws.Cell(row, 36).Value = materialInfo.Spec;
             }
+
             row++;
         }
 
@@ -81,3 +71,4 @@ public static class Page5MasterExporter
         MessageBox.Show("匯入完成！");
     }
 }
+

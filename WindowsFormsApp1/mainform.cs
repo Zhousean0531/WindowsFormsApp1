@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
+using MySqlX.XDevAPI.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,12 +17,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
 
+
 namespace WindowsFormsApp1
 {
 
     public partial class Form1 : Form
     {
-        private Page5LookupResult _page5LookupResult;
         private const int MAX_ROWS = 13;
         public Form1()
         {
@@ -371,7 +372,8 @@ namespace WindowsFormsApp1
 
             e.SuppressKeyPress = true; // 防止嗶聲
 
-            string materialNo = RawMaterialNOtb.Text.Trim();
+            // 正規化使用者輸入為大寫（與 _map 儲存一致）
+            string materialNo = RawMaterialNOtb.Text.Trim().ToUpper();
 
             var info = MaterialMasterHelper.Get(materialNo);
 
@@ -576,5 +578,6 @@ namespace WindowsFormsApp1
         }
     }
 }
+
 
 
