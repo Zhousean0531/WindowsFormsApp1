@@ -107,7 +107,7 @@ public static class Page4ReportExporterForNanJing
                     ws.Range["G14"].Value = acetoneGroup.Efficiencies11[0];
                     ws.Range["G15"].Value = acetoneGroup.Efficiencies11[40];
                 }
-                System.Threading.Thread.Sleep(20);
+                System.Threading.Thread.Sleep(90);
                 Application.DoEvents();
                 // ───── 插入簽名 ─────
                 ExcelSignatureHelper.TryAddSignature(ws, "G26");

@@ -119,6 +119,8 @@ public static class Page4ReportExporter
 
                     ws.Cells[ROW_EFF, col].Value =
                         (i == idx) ? g.Eff0 : "N.D.";
+                    System.Threading.Thread.Sleep(90);
+                    Application.DoEvents();
                 }
 
                 // ───── 簽名 ─────

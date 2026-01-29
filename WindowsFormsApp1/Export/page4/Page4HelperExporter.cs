@@ -76,6 +76,8 @@ public static class Page4HelperExporter
                 ws.Cells[row, 12].Value = d.VocOuts[i];
                 ws.Cells[row, 13].Value = d.OutgassingList[i];
                 ws.Cells[row, 14].Value = d.PressureDrops[i];
+                System.Threading.Thread.Sleep(90);
+                Application.DoEvents();
             }
 
             // =====================================================

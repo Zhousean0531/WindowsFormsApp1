@@ -103,7 +103,7 @@ public static class Page6ReportExporter
                     excelCol++;
                 }
 
-                System.Threading.Thread.Sleep(20);
+                System.Threading.Thread.Sleep(90);
                 Application.DoEvents();
             }
             // ===== 簽名（跟 Page2 一樣）=====

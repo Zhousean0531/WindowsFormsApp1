@@ -158,6 +158,8 @@ public static class ExcelReportUtil
                 wshelper.Cells[row, 8].Value = d.DeltaPs[idx];
                 wshelper.Cells[row, 9].Value = d.Eff0;
                 wshelper.Cells[row, 10].Value = d.Eff10;
+                System.Threading.Thread.Sleep(90);
+                Application.DoEvents();
 
                 {
 

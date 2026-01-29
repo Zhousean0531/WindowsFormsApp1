@@ -105,7 +105,7 @@ public static class Page2ReportExporter
                 {
                     ws.Cells[startRow + i, 13].Value = g.Efficiencies11[i];
                 }
-                System.Threading.Thread.Sleep(20);
+                System.Threading.Thread.Sleep(90);
                 // ─────────────────────────────
                 // (C) 簽名
                 // ─────────────────────────────
