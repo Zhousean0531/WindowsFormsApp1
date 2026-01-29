@@ -342,7 +342,7 @@
             this.CylinderPage.Controls.Add(this.CylinderTestDate);
             this.CylinderPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderPage.Name = "CylinderPage";
-            this.CylinderPage.Size = new System.Drawing.Size(1018, 625);
+            this.CylinderPage.Size = new System.Drawing.Size(1018, 626);
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
             // 
@@ -644,7 +644,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawParticle);
             this.CylinderRawPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderRawPage.Name = "CylinderRawPage";
-            this.CylinderRawPage.Size = new System.Drawing.Size(1018, 625);
+            this.CylinderRawPage.Size = new System.Drawing.Size(1018, 626);
             this.CylinderRawPage.TabIndex = 3;
             this.CylinderRawPage.Text = "濾筒原料";
             // 
@@ -1477,7 +1477,7 @@
             this.FilterPage.Controls.Add(this.FilterTestDate);
             this.FilterPage.Location = new System.Drawing.Point(4, 29);
             this.FilterPage.Name = "FilterPage";
-            this.FilterPage.Size = new System.Drawing.Size(1018, 625);
+            this.FilterPage.Size = new System.Drawing.Size(1018, 626);
             this.FilterPage.TabIndex = 2;
             this.FilterPage.Text = "濾網成品";
             // 
@@ -2647,7 +2647,7 @@
             this.FilterRawPage.Location = new System.Drawing.Point(4, 29);
             this.FilterRawPage.Name = "FilterRawPage";
             this.FilterRawPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterRawPage.Size = new System.Drawing.Size(1018, 682);
+            this.FilterRawPage.Size = new System.Drawing.Size(1018, 626);
             this.FilterRawPage.TabIndex = 0;
             this.FilterRawPage.Text = "濾網原料";
             // 
@@ -2980,7 +2980,7 @@
             this.RawMaterialPage.Location = new System.Drawing.Point(4, 29);
             this.RawMaterialPage.Name = "RawMaterialPage";
             this.RawMaterialPage.Padding = new System.Windows.Forms.Padding(3);
-            this.RawMaterialPage.Size = new System.Drawing.Size(1018, 625);
+            this.RawMaterialPage.Size = new System.Drawing.Size(1018, 626);
             this.RawMaterialPage.TabIndex = 5;
             this.RawMaterialPage.Text = "物料";
             this.RawMaterialPage.UseVisualStyleBackColor = true;

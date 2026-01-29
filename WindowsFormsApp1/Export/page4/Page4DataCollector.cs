@@ -57,13 +57,13 @@ public static class Page4DataCollector
         var matInfo = MaterialMasterHelper.Get(material);
         string materialNo = matInfo?.MaterialNo ?? "";
         var countMap = new Dictionary<string, int>
-{
-    { "原料編號 (nos)", nos.Count },
-    { "重量 (weights)", weights.Count },
-    { "VOC In (vocIn)", vocIn.Count },
-    { "VOC Out (vocOut)", vocOut.Count },
-    { "壓損 (deltas)", deltas.Count }
-};
+        {
+            { "原料編號 (nos)", nos.Count },
+            { "重量 (weights)", weights.Count },
+            { "VOC In (vocIn)", vocIn.Count },
+            { "VOC Out (vocOut)", vocOut.Count },
+            { "壓損 (deltas)", deltas.Count }
+        };
 
         // 取得不重複的 Count
         var distinctCounts = countMap.Values.Distinct().ToList();
@@ -136,13 +136,9 @@ public static class Page4DataCollector
         // (E) 粒徑摘要
         // ─────────────────────────────
         var meshResult = MeshHelper.ParseFromTab(tab);
-        if (meshResult == null)
-            return null;
-
-        // 顯示用（原本 meshSummary / meshSummaries）
-        string meshSummary = meshResult.Summary;
-        var meshSummaries = Enumerable.Repeat(meshSummary, n).ToList();
-
+        if (meshResult == null) return null;
+        var particlePercents = meshResult.Percentages;
+        var meshSummary = meshResult.Summary;
         // ─────────────────────────────
         // (F) 效率（多氣體）
         // ─────────────────────────────
@@ -175,11 +171,6 @@ public static class Page4DataCollector
             var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
-
-            Debug.WriteLine(
-                $"[Gas] {gasKey}, ConcText='{tbConc?.Text}', ValText='{tbVal?.Text}'"
-            );
-
             if (!double.TryParse(tbConc?.Text, out double conc))
             {
                 Debug.WriteLine($"[Gas] {gasKey} skipped: concentration invalid");
@@ -189,19 +180,8 @@ public static class Page4DataCollector
             double.TryParse(tbBg?.Text, out double bg);
 
             var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
-
-            Debug.WriteLine(
-                $"[Gas] {gasKey}, ReadingsCount={readings.Count}, " +
-                $"First={(readings.FirstOrDefault()?.ToString() ?? "null")}"
-            );
-
-            if (readings.Count < 11)
-            {
-                Debug.WriteLine($"[Gas] {gasKey} skipped: readings < 11");
-                continue;
-            }
-
             var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
+            if (eff == null) return null;
 
             effGroups.Add(new EfficiencyGroup
             {
@@ -228,6 +208,7 @@ public static class Page4DataCollector
         // ─────────────────────────────
         // (G) 組 DTO
         // ─────────────────────────────
+
         return new Page4ExportData
         {
             ReportNo = reportNo,
@@ -248,8 +229,9 @@ public static class Page4DataCollector
             VocOuts = vocOut,
             OutgassingList = outStrings,
             SelectedIndex = selectedIdx,
-            MeshSummaries = meshSummaries,
-            UserName=userName
+            ParticleSizePercentages = particlePercents, 
+            MeshSummary = meshSummary,
+            UserName = userName
         };
     }
 }

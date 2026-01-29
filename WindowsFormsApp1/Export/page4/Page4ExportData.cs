@@ -20,7 +20,9 @@ public class Page4ExportData
     public List<double> VocOuts { get; set; }
     public List<string> LotNos { get; set; }
     public List<string> OutgassingList { get; set; }
-    public List<string> MeshSummaries { get; set; }
+
+    public Dictionary<string, double> ParticleSizePercentages { get; set; }
+    public string MeshSummary { get; set; }
     public int SelectedIndex { get; set; }
     public List<EfficiencyGroup> EfficiencyGroups { get; set; }
 }

@@ -2,8 +2,8 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using static SignatureHelper;
 using Excel = Microsoft.Office.Interop.Excel;
+using static SignatureHelper;
 
 public static class Page4ReportExporter
 {
@@ -15,6 +15,25 @@ public static class Page4ReportExporter
             return;
         }
 
+        // =====================================================
+        // (A) 先選擇 Helper 存檔路徑（只問一次）
+        // =====================================================
+        string helperSavePath;
+        using (var sfd = new SaveFileDialog())
+        {
+            sfd.Filter = "Excel Macro (*.xlsm)|*.xlsm";
+            sfd.FileName = "Helper.xlsm";
+            sfd.Title = "請選擇 Helper 檔案存放位置";
+
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            helperSavePath = sfd.FileName;
+        }
+
+        // =====================================================
+        // (B) 報告範本檢查
+        // =====================================================
         string templatePath = Path.Combine(
             Application.StartupPath,
             "QC_RawMaterial_Template.xlsx"
@@ -22,34 +41,35 @@ public static class Page4ReportExporter
 
         if (!File.Exists(templatePath))
         {
-            MessageBox.Show("找不到原料模板");
+            MessageBox.Show("找不到 QC_RawMaterial_Template.xlsx");
             return;
         }
 
-        // ─────────────────────────────
-        // 多氣體 → 多份報告
-        // ─────────────────────────────
+        // =====================================================
+        // (C) 多氣體 → 多份報告
+        // =====================================================
         foreach (var g in d.EfficiencyGroups)
         {
             if (g.Efficiencies11 == null || g.Efficiencies11.Count == 0)
-            {
-                MessageBox.Show($"氣體 {g.GasName} 的效率資料為空");
                 continue;
-            }
-            DateTime prodDt = DateTime.Parse(d.ArrivalDate);
-            string savePath;
+
+            DateTime arrivalDt = DateTime.Parse(d.ArrivalDate);
+            string reportSavePath;
+
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
-                sfd.FileName = $"{d.ReportNo}_{d.Material}_({prodDt:MMdd}到廠)_{g.GasName}.xlsx";
+                sfd.FileName =
+                    $"{d.ReportNo}_{d.Material}({arrivalDt:MMdd}到廠)_{g.GasName}.xlsx";
 
                 if (sfd.ShowDialog() != DialogResult.OK)
                     continue;
 
-                savePath = sfd.FileName;
+                reportSavePath = sfd.FileName;
             }
 
-            File.Copy(templatePath, savePath, true);
+            // ───── 複製範本 ─────
+            File.Copy(templatePath, reportSavePath, true);
 
             Excel.Application app = null;
             Excel.Workbook wb = null;
@@ -57,20 +77,18 @@ public static class Page4ReportExporter
 
             try
             {
-                app = new Excel.Application();
-                wb = app.Workbooks.Open(savePath);
-                ws = (Excel.Worksheet)wb.Sheets["濾網原料報告"];
+                app = new Excel.Application
+                {
+                    Visible = false,
+                    DisplayAlerts = false
+                };
+
+                wb = app.Workbooks.Open(reportSavePath);
+                ws = (Excel.Worksheet)wb.Worksheets["濾網原料報告"];
 
                 int idx = d.SelectedIndex;
-                if (idx < 0 || idx >= g.Efficiencies11.Count)
-                {
-                    MessageBox.Show($"氣體 {g.GasName} 的效率資料與壓損索引不符");
-                    continue;
-                }
 
-                // ─────────────────────────────
-                // (A) 基本資料
-                // ─────────────────────────────
+                // ───── 表頭 ─────
                 ws.Range["C4"].Value = d.ReportNo;
                 ws.Range["C5"].Value = d.ArrivalDate;
                 ws.Range["C6"].Value = d.TestingDate;
@@ -78,9 +96,7 @@ public static class Page4ReportExporter
                 ws.Range["E5"].Value = d.Material;
                 ws.Range["E6"].Value = d.QtyText;
 
-                // ─────────────────────────────
-                // (B) 批次資料
-                // ─────────────────────────────
+                // ───── 明細 ─────
                 const int COL_FIRST = 3;
                 const int ROW_LOT = 10;
                 const int ROW_DEN = 13;
@@ -104,11 +120,8 @@ public static class Page4ReportExporter
                     ws.Cells[ROW_EFF, col].Value =
                         (i == idx) ? g.Eff0 : "N.D.";
                 }
-                System.Threading.Thread.Sleep(20);
-                Application.DoEvents();
-                // ─────────────────────────────
-                // (C) 簽名檔
-                // ─────────────────────────────
+
+                // ───── 簽名 ─────
                 ExcelSignatureHelper.TryAddSignature(ws, "E25");
 
                 wb.Save();
@@ -122,5 +135,15 @@ public static class Page4ReportExporter
                 if (app != null) Marshal.ReleaseComObject(app);
             }
         }
+
+        // =====================================================
+        // (D) 最後再匯出一次 Helper（一次）
+        // =====================================================
+        Page4HelperExporter.Export(helperSavePath, d);
+
+        // =====================================================
+        // (E) 南京特規（如需要）
+        // =====================================================
+        Page4ReportExporterForNanJing.Export(d);
     }
 }

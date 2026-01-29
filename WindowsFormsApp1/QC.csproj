@@ -162,6 +162,7 @@
     <Compile Include="Export\page3\Page3MasterExporter.cs" />
     <Compile Include="Export\page3\Page3ExportData.cs" />
     <Compile Include="Export\page3\Page3DataCollector.cs" />
+    <Compile Include="Export\page4\Page4HelperExporter.cs" />
     <Compile Include="Export\page4\Page4ReportExporterForNanJing.cs" />
     <Compile Include="Export\page4\Page4DataCollector.cs" />
     <Compile Include="Export\page4\Page4ExportData.cs" />
