@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
+using WindowsFormsApp1.Export.Page1;
+
 
 public static class Page1ReportExporter
 {
     public static void Export(Page1ExportData d)
     {
-        DateTime arrivalDt = DateTime.Parse(d.ArrivalDate);
+        DateTime arrivalDt = d.ArrivalDate;
 
         // ───── 選擇「報告檔」存檔路徑 ─────
         string reportSavePath;

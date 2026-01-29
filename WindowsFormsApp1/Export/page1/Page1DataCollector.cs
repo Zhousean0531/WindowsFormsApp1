@@ -66,19 +66,33 @@ public static class Page1DataCollector
             return d <= 0 ? "N.D." : d.ToString("F1");
         }).ToList();
 
+        // 處理粒徑百分比（唯一來源）
+        Dictionary<string, double> particlePercentages;
+
+        if (meshResult.Percentages == null || meshResult.Percentages.Count == 0)
+        {
+            MessageBox.Show("粒徑資料不完整，請確認輸入");
+            return null;
+        }
+
+        particlePercentages = meshResult.Percentages;
+
+        // 顯示用 Summary（每筆明細共用）
+        var meshSummaries = Enumerable
+            .Repeat(meshResult.Summary ?? string.Empty, n)
+            .ToList();
         return new Page1ExportData
         {
             ReportNo = reportNoBox.Text.Trim(),
             Material = materialBox.Text.Trim(),
             MaterialNo = MaterialMasterHelper.Get(materialBox.Text)?.MaterialNo ?? "",
-            ArrivalDate = arrivePicker.Value.ToString("yyyy.MM.dd"),
-            TestingDate = testPicker.Value.ToString("yyyy.MM.dd"),
+            ArrivalDate = arrivePicker.Value,
+            TestingDate = testPicker.Value,
             QtyText = QuantityHelper.BuildQuantityText(
                 ProductKind.Filter,
                 materialBox.Text,
                 ControlHelper.GetText(tab, "FilterRawQtyWeight"),
                 ControlHelper.GetText(tab, "FilterRawQuantityBox")),
-
             LotFulls = lotFulls,
             Densities = densities,
             DeltaPs = deltaPs.Take(n).ToList(),
@@ -86,13 +100,9 @@ public static class Page1DataCollector
             VocOuts = vocOuts.Take(n).ToList(),
             OutgassingList = outgassing,
             SelectedIndex = selectedIndex,
-
-            ParticleSizePercentages = meshResult.Percentages,
-
-            Eff0 = eff.Eff0,
-            Eff10 = eff.Eff10,
+            ParticleSizePercentages = particlePercentages,
+            MeshSummaries = meshSummaries,
             Efficiencies11 = eff.Efficiencies,
-
             UserName = Environment.UserName
         };
     }

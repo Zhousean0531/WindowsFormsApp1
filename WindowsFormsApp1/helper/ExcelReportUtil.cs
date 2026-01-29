@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Protobuf.WellKnownTypes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -98,7 +99,7 @@ public static class ExcelReportUtil
                 ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
 
                 ws.Cells[ROW_EFF, col].Value =
-                    (i == d.SelectedIndex) ? d.Eff0 : "N.D.";
+                    (i == d.SelectedIndex) ? (object)d.Eff0 : "N.D.";
 
                 System.Threading.Thread.Sleep(20);
                 Application.DoEvents();
@@ -142,42 +143,41 @@ public static class ExcelReportUtil
         HelperWorkbookInterop.Append(
             helperSavePath,
             "濾網工作表",
-            (ws, row) =>
+            (wshelper, row) =>
             {
-                int i = d.SelectedIndex;
+                int idx = d.SelectedIndex;
 
                 // ===== 每筆資料（新增一列）=====
-                ws.Cells[row, 1].Value = d.TestingDate;
-                ws.Cells[row, 2].Value = d.Material;
-                ws.Cells[row, 3].Value = d.MaterialNo;
-                ws.Cells[row, 4].Value = d.LotFulls[i];
-                ws.Cells[row, 5].Value = d.VocIns[i];
-                ws.Cells[row, 6].Value = d.VocOuts[i];
-                ws.Cells[row, 7].Value = d.OutgassingList[i];
-                ws.Cells[row, 8].Value = d.DeltaPs[i];
-                ws.Cells[row, 9].Value = d.Eff0;
-                ws.Cells[row, 10].Value = d.Eff10;
+                wshelper.Cells[row, 1].Value = d.TestingDate;
+                wshelper.Cells[row, 2].Value = d.Material;
+                wshelper.Cells[row, 3].Value = d.MaterialNo;
+                wshelper.Cells[row, 4].Value = d.LotFulls[idx];
+                wshelper.Cells[row, 5].Value = d.VocIns[idx];
+                wshelper.Cells[row, 6].Value = d.VocOuts[idx];
+                wshelper.Cells[row, 7].Value = d.OutgassingList[idx];
+                wshelper.Cells[row, 8].Value = d.DeltaPs[idx];
+                wshelper.Cells[row, 9].Value = d.Eff0;
+                wshelper.Cells[row, 10].Value = d.Eff10;
 
-                // ===== 粒徑（固定區塊：B7 起）=====
-                int r = 7;
-                foreach (KeyValuePair<string, double> kv in d.ParticleSizePercentages)
                 {
-                    ws.Cells[r, 1].Value = kv.Key;
-                    ws.Cells[r, 2].Value = kv.Value / 100.0;
-                    ws.Cells[r, 2].NumberFormat = "0.0%";
-                    r++;
+
+                    int r = 7;
+                    foreach (var kv in d.ParticleSizePercentages)
+                    {
+                        wshelper.Cells[r, 1].Value = kv.Key;
+                        wshelper.Cells[r, 2].Value = kv.Value / 100.0;
+                        wshelper.Cells[r, 2].NumberFormat = "0.0%";
+                        r++;
+                    }
                 }
 
                 // ===== 效率 11 點（固定區塊：S3 起）=====
-                int effCol = 19; // S
-                int effStartRow = 3;
+                int startRow = 3;
+                int col = 19; // S
 
-                for (int k = 0;
-                     k < d.Efficiencies11.Count && k < 11;
-                     k++)
+                for (int i = 0; i < d.Efficiencies11.Count && i < 12; i++)
                 {
-                    ws.Cells[effStartRow + k, effCol].Value =
-                        d.Efficiencies11[k];
+                    wshelper.Cells[startRow + i, col].Value = d.Efficiencies11[i];
                 }
             }
         );

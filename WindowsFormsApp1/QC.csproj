@@ -210,7 +210,6 @@
     <Compile Include="helper\EfficiencyHelper.cs" />
     <Compile Include="helper\ExcelReportUtil.cs" />
     <Compile Include="helper\StringUtil.cs" />
-    <Compile Include="helper\MeshHelper .cs" />
     <Compile Include="helper\controlhelper.cs" />
     <Compile Include="helper\stringhelper.cs" />
     <Compile Include="MaterialSelectForm.cs">
