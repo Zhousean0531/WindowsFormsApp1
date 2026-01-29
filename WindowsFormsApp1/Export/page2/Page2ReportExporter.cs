@@ -48,7 +48,7 @@ public static class Page2ReportExporter
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
-                sfd.FileName = $"{d.ReportNo}_{d.ProductName}_{d.Gsm}_{d.OrderDisplay}({testDt:MMdd}生產)-{g.GasName}.xlsx";
+                sfd.FileName = $"{d.ReportNo}{d.ProductName}_{d.ProductType}_{d.Gsm}_{d.OrderDisplay}({testDt:MMdd}生產)-{g.GasName}.xlsx";
 
                 if (sfd.ShowDialog() != DialogResult.OK)
                     continue;
@@ -105,12 +105,12 @@ public static class Page2ReportExporter
                 {
                     ws.Cells[startRow + i, 13].Value = g.Efficiencies11[i];
                 }
-
+                System.Threading.Thread.Sleep(20);
                 // ─────────────────────────────
                 // (C) 簽名
                 // ─────────────────────────────
                 ExcelSignatureHelper.TryAddSignature(ws, "H28");
-
+                Application.DoEvents();
                 wb.Save();
             }
             finally

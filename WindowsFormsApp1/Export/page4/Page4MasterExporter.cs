@@ -2,13 +2,14 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
+using System.IO;
 
 public static class Page4MasterExporter
 {
     public static void Export(Page4ExportData d)
     {
-        string filePath = System.IO.Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+        string filePath = Path.Combine(
+            Application.StartupPath,
             "總表.xlsx"
         );
 

@@ -60,20 +60,52 @@ public static class Page6ReportExporter
 
             // ===== DGV 資料（B6 起）=====
             int startRow = 6;
-            int startCol = 2; // B
+            int maxRow = Math.Min(
+                12,
+                d.DataGrid.Rows.Count - 1   // 排除最後的新資料列
+            );
 
-            for (int r = 0; r <12; r++)
+            for (int r = 0; r < maxRow; r++)
             {
                 var row = d.DataGrid.Rows[r];
-                if (row.IsNewRow) continue;
+                int excelRow = startRow + r;
 
-                for (int c = 0; c < 12; c++)
+                // B 欄 ← DGV[0]
+                ws.Cells[excelRow, 2].Value =
+                    row.Cells[0].Value?.ToString();
+
+                // C 欄 ← DGV[1]
+                ws.Cells[excelRow, 3].Value =
+                    row.Cells[1].Value?.ToString();
+
+                // D 欄 ← DGV[2] + DGV[3]
+                ws.Cells[excelRow, 4].Value =
+                    $"{row.Cells[2].Value} {row.Cells[3].Value}".Trim();
+
+                // E 欄 ← DGV[4] + DGV[5]
+                ws.Cells[excelRow, 5].Value =
+                    $"{row.Cells[4].Value} {row.Cells[5].Value}".Trim();
+
+                // F 欄 ← DGV[6]
+                ws.Cells[excelRow, 6].Value =
+                    row.Cells[6].Value?.ToString();
+
+                // G 欄 ← DGV[7]
+                ws.Cells[excelRow, 7].Value =
+                    row.Cells[7].Value?.ToString();
+
+                // 如果後面還有欄位（8 之後）
+                int excelCol = 8; // H
+                for (int c = 8; c < row.Cells.Count; c++)
                 {
-                    ws.Cells[startRow + r, startCol + c].Value =
+                    ws.Cells[excelRow, excelCol].Value =
                         row.Cells[c].Value?.ToString();
+                    excelCol++;
                 }
-            }
 
+                System.Threading.Thread.Sleep(20);
+                Application.DoEvents();
+            }
             // ===== 簽名（跟 Page2 一樣）=====
             ExcelSignatureHelper.TryAddSignature(ws, "L18");
 

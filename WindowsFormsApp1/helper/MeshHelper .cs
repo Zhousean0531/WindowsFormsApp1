@@ -1,89 +1,94 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Linq;
+using System.Globalization;
 
 public static class MeshHelper
 {
-    public static string BuildMeshSummary(TabPage tab, string material)
+    public static MeshParseResult ParseFromTab(TabPage tab)
     {
         if (tab == null)
-            return "";
+            return null;
 
-        var dgv = ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox")?? ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
+        var dgv =
+            ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox")
+            ?? ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
+
         if (dgv == null)
-            return "";
+            return null;
 
-        double totalWeight = 0;
-        var weights = new Dictionary<string, double>();
-        string emptyKey = null;
+        // 取得非空的資料列（排除 NewRow）
+        var rows = dgv.Rows.Cast<DataGridViewRow>()
+                    .Where(r => !r.IsNewRow)
+                    .ToList();
 
-        foreach (DataGridViewRow row in dgv.Rows)
+        if (rows.Count == 0)
+            return null;
+
+        // 第二欄第一列為總重
+        string totalText = rows[0].Cells.Count > 1
+            ? rows[0].Cells[1].Value?.ToString()?.Trim()
+            : null;
+
+        if (string.IsNullOrWhiteSpace(totalText) ||
+            !double.TryParse(totalText, NumberStyles.Any, CultureInfo.CurrentCulture, out double totalWeight) &&
+            !double.TryParse(totalText, NumberStyles.Any, CultureInfo.InvariantCulture, out totalWeight))
         {
-            if (row.IsNewRow) continue;
+            MessageBox.Show("找不到或解析不到總重（請確認第二欄第一列為總重）");
+            return null;
+        }
 
-            string key = row.Cells[0].Value?.ToString()?.Trim();
-            string valText = row.Cells[1].Value?.ToString()?.Trim();
+        if (totalWeight <= 0)
+        {
+            MessageBox.Show("總重需為大於 0 的數值");
+            return null;
+        }
 
-            if (string.IsNullOrWhiteSpace(key))
-                continue;
+        var secondColWeights = new List<double>();
 
-            // ✅ 讀取「總重」
-            if (key.Contains("總重"))
+        // 從第二列開始讀取第二欄，遇到空白則停止
+        for (int i = 1; i < rows.Count; i++)
+        {
+            var r = rows[i];
+            string valText = r.Cells.Count > 1 ? r.Cells[1].Value?.ToString()?.Trim() : null;
+            if (string.IsNullOrWhiteSpace(valText))
+                break;
+
+            if (double.TryParse(valText, NumberStyles.Any, CultureInfo.CurrentCulture, out double v) ||
+                double.TryParse(valText, NumberStyles.Any, CultureInfo.InvariantCulture, out v))
             {
-                if (!double.TryParse(valText, out totalWeight))
-                    totalWeight = 0;
-
-                continue;
-            }
-
-            // 粒徑重量
-            if (!string.IsNullOrWhiteSpace(valText))
-            {
-                if (double.TryParse(valText, out double v))
-                    weights[key] = v;
+                secondColWeights.Add(v);
             }
             else
             {
-                // 記錄空白粒徑
-                emptyKey = key;
+                // 若解析失敗，可跳過或回報；此處跳過
+                continue;
             }
         }
 
-        // 🔴 防呆：沒有總重就不能算百分比
-        if (totalWeight <= 0)
+        // 計算百分比（每筆 / 總重 * 100）
+        var percentages = secondColWeights.Select(w => w / totalWeight * 100.0).ToList();
+
+        string summary = percentages.Count > 0
+            ? string.Join(" , ", percentages.Select(p => $"{p:F1}%"))
+            : "";
+
+        return new MeshParseResult
         {
-            MessageBox.Show("請先輸入總重，才能計算粒徑百分比");
-            return "";
-        }
-
-        // ✅ 自動補算空白粒徑重量
-        if (!string.IsNullOrWhiteSpace(emptyKey))
-        {
-            double sum = weights.Values.Sum();
-            double missing = totalWeight - sum;
-
-            if (missing < 0)
-            {
-                MessageBox.Show("粒徑重量加總大於總重，請確認資料");
-                return "";
-            }
-
-            weights[emptyKey] = missing;
-        }
-
-        if (weights.Count == 0)
-            return "";
-
-        // ✅ 重量 → 百分比
-        string summary = string.Join(" , ",
-            weights.Select(kv =>
-            {
-                double percent = kv.Value / totalWeight * 100.0;
-                return $"{kv.Key} {percent:F1}%";
-            })
-        );
-
-        return summary;
+            Weights = null,
+            Percentages = null,
+            Summary = summary,
+            SecondColumnPercentages = percentages
+        };
     }
+}
+
+public class MeshParseResult
+{
+    public Dictionary<string, double> Weights { get; set; }
+    public Dictionary<string, double> Percentages { get; set; }
+    public string Summary { get; set; }
+
+    // 新增：第二欄的百分比（對應 Excel B7,B8,...）
+    public List<double> SecondColumnPercentages { get; set; } = new List<double>();
 }

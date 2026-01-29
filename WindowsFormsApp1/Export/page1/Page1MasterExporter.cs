@@ -2,20 +2,25 @@
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
+using System.Windows.Forms;
+
 
 public static class Page1MasterExporter
 {
     public static void Export(Page1ExportData d)
     {
+        // ===== 來源：桌面總表 =====
         string filePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Application.StartupPath,
             "總表.xlsx"
         );
 
         using (var wb = new XLWorkbook(filePath))
         {
             var ws = wb.Worksheet("濾網");
+
             int row = (ws.Column(2).CellsUsed().LastOrDefault()?.Address.RowNumber ?? 4) + 1;
+
             for (int i = 0; i < d.LotFulls.Count; i++)
             {
                 ws.Cell(row, 1).Value = d.TestingDate;
@@ -29,11 +34,12 @@ public static class Page1MasterExporter
                 ws.Cell(row, 14).Value = d.DeltaPs[i];
                 ws.Cell(row, 18).Value = d.MeshSummaries[i];
                 ws.Cell(row, 19).Value = d.UserName;
+
                 if (i == d.SelectedIndex)
                     ws.Cell(row, 15).Value = d.Eff0;
+
                 row++;
             }
-
             wb.Save();
         }
     }

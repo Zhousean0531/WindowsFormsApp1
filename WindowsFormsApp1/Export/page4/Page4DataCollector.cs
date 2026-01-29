@@ -135,7 +135,12 @@ public static class Page4DataCollector
         // ─────────────────────────────
         // (E) 粒徑摘要
         // ─────────────────────────────
-        string meshSummary = MeshHelper.BuildMeshSummary(tab, material);
+        var meshResult = MeshHelper.ParseFromTab(tab);
+        if (meshResult == null)
+            return null;
+
+        // 顯示用（原本 meshSummary / meshSummaries）
+        string meshSummary = meshResult.Summary;
         var meshSummaries = Enumerable.Repeat(meshSummary, n).ToList();
 
         // ─────────────────────────────

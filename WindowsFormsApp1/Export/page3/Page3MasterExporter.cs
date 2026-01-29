@@ -8,7 +8,7 @@ public static class Page3MasterExporter
     public static void Export(Page3ExportData d)
     {
         string filePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Application.StartupPath,
             "總表.xlsx"
         );
 

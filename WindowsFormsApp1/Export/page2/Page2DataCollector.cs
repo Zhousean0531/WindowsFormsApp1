@@ -33,7 +33,6 @@ public static class Page2DataCollector
         string lower = ControlHelper.GetText(tab, "FilterInProcessLowerBox");
         string pressure = ControlHelper.GetText(tab, "FilterInProcessPressureBox");
         string carbonInfo = ControlHelper.GetText(tab, "FilterInProcessCarbonInfoBox");
-        
         string orderDisplay;
 
         if (order == "-")
@@ -65,8 +64,32 @@ public static class Page2DataCollector
 
         var deltas = StringUtil.SplitDouble(
             ControlHelper.GetText(tab, "FilterInProcessPressureDropBox"));
+        var materialNoRaw = (ControlHelper.GetText(tab, "FilterMaterialNOBox") ?? "")
+            .Split(new[] { '/', '／' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .ToList();
+
+        var types = (ControlHelper.GetText(tab, "FilterInProcessTypeBox") ?? "")
+            .Split(new[] { '+', '＋' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .ToList();
+        var typeMaterialMap = new Dictionary<string, string>();
+        for (int i = 0; i < types.Count; i++)
+        {
+            typeMaterialMap[types[i]] = $"{types[i]} {materialNoRaw[i]}";
+        }
 
         int n = Math.Min(weights.Count, deltas.Count);
+        if (materialNoRaw.Count != types.Count)
+        {
+            MessageBox.Show(
+                "料號數量與型號數量不一致，請確認輸入格式",
+                "輸入錯誤",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+            return null;
+        }
         if (n == 0)
         {
             MessageBox.Show("沒有可用的測試資料");
@@ -75,7 +98,6 @@ public static class Page2DataCollector
 
         weights = weights.Take(n).ToList();
         deltas = deltas.Take(n).ToList();
-
         // ───── 讓使用者選壓損 ─────
         int selectedIdx;
         using (var f = new Form2(deltas, "請選擇用哪一筆壓損"))
@@ -90,6 +112,8 @@ public static class Page2DataCollector
         var effGroups = new List<EfficiencyGroup>();
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "FilterInProcessEffPanel");
         var pageType = GasPageType.FilterInProcess;
+
+
         foreach (var chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
         {
 
@@ -131,7 +155,10 @@ public static class Page2DataCollector
                 Eff0 = eff.Eff0,
                 Eff10 = eff.Eff10,
                 Readings11 = eff.Readings,
-                Efficiencies11 = eff.Efficiencies
+                Efficiencies11 = eff.Efficiencies,
+                TypeMaterialDisplay = typeMaterialMap.TryGetValue(gasKey, out var v)
+                ? v
+                : gasKey
             });
         }
         var allChks = ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab);
@@ -145,6 +172,7 @@ public static class Page2DataCollector
         // ───── 回傳 DTO（多氣體版） ─────
         return new Page2ExportData
         {
+
             ReportNo = reportNo,
             ProductionDate = productionDate,
             TestDate = testDate,

@@ -358,7 +358,7 @@ namespace WindowsFormsApp1
                 info.InUnit,
                 info.SampleQty,
                 info.InspectUnit,
-                "V",
+                "Y",
                 info.Spec,
                 info.Spec,
                 "合格",

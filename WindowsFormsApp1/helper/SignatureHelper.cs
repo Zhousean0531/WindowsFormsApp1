@@ -28,9 +28,9 @@ public static class SignatureHelper
     public static class ExcelSignatureHelper
     {
         public static void TryAddSignature(
-            Excel.Worksheet ws,
-            string cellAddress
-        )
+    Excel.Worksheet ws,
+    string cellAddress
+)
         {
             string sigPath = SignatureHelper.FindSignaturePath();
 
@@ -38,7 +38,7 @@ public static class SignatureHelper
             {
                 Excel.Range target = ws.Range[cellAddress];
 
-                var pic=ws.Shapes.AddPicture(
+                var pic = ws.Shapes.AddPicture(
                     sigPath,
                     Microsoft.Office.Core.MsoTriState.msoFalse,
                     Microsoft.Office.Core.MsoTriState.msoTrue,
@@ -47,8 +47,13 @@ public static class SignatureHelper
                     -1,
                     -1
                 );
+
                 pic.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
                 pic.Width = 110;
+                if (cellAddress.Equals("L18", StringComparison.OrdinalIgnoreCase))
+                {
+                    pic.Width = 160; // Page6 要比較大的簽名
+                }
             }
             else
             {
@@ -63,5 +68,4 @@ public static class SignatureHelper
             }
         }
     }
-
 }
