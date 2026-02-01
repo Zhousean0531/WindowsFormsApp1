@@ -15,6 +15,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WindowsFormsApp1.Helpers;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -235,6 +236,22 @@ namespace WindowsFormsApp1
                 if (!CalibrationHelper.CheckCalibrationByColumns(columnsToCheck))
                     return; // 校正不合格 → 停止匯出
             }
+            var tab = tabControl1.SelectedTab;
+
+            // 只有 Page1 / Page4 才需要 mesh
+            if (tab.Name == "FilterRawPage" || tab.Name == "CylinderRawPage")
+            {
+                var dgv =
+                    ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox")
+                    ?? ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
+
+                if (!MeshGridHelper.RecalculateAndFill(dgv))
+                {
+                    MessageBox.Show("粒徑資料不完整，請確認");
+                    return;
+                }
+            }
+
             switch (currentTab.Name)
             {
                 case "FilterRawPage":

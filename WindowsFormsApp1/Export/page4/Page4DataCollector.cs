@@ -135,10 +135,47 @@ public static class Page4DataCollector
         // ─────────────────────────────
         // (E) 粒徑摘要
         // ─────────────────────────────
-        var meshResult = MeshHelper.ParseFromTab(tab);
-        if (meshResult == null) return null;
-        var particlePercents = meshResult.Percentages;
-        var meshSummary = meshResult.Summary;
+        var dgv = ControlHelper.Find<DataGridView>(
+            tab, "CylinderRawMeshBox");
+
+        if (dgv == null)
+        {
+            MessageBox.Show("找不到粒徑資料表");
+            return null;
+        }
+
+        var particleWeights = new Dictionary<string, double>();
+
+        foreach (DataGridViewRow row in dgv.Rows)
+        {
+            if (row.IsNewRow) continue;
+
+            string key = row.Cells[0].Value?.ToString()?.Trim();
+            string valText = row.Cells.Count > 1
+                ? row.Cells[1].Value?.ToString()?.Trim()
+                : null;
+
+            if (string.IsNullOrWhiteSpace(key))
+                continue;
+
+            if (!double.TryParse(valText, out double v))
+            {
+                MessageBox.Show($"粒徑 {key} 的重量無法解析");
+                return null;
+            }
+
+            particleWeights[key] = v;
+        }
+
+        double total = particleWeights.Values.Sum();
+        var particlePercentages = particleWeights.ToDictionary(
+            kv => kv.Key,
+            kv => kv.Value / total * 100.0
+        );
+
+        string meshSummary = string.Join(" , ",
+            particlePercentages.Select(
+                kv => $"{kv.Key} {kv.Value:F1}%"));
         // ─────────────────────────────
         // (F) 效率（多氣體）
         // ─────────────────────────────
@@ -229,7 +266,7 @@ public static class Page4DataCollector
             VocOuts = vocOut,
             OutgassingList = outStrings,
             SelectedIndex = selectedIdx,
-            ParticleSizePercentages = particlePercents, 
+            ParticleSizePercentages = particlePercentages,
             MeshSummary = meshSummary,
             UserName = userName
         };

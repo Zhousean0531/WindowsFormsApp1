@@ -1,7 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -138,48 +135,70 @@ public static class ExcelReportUtil
             return;
         }
 
+        // 永遠重新複製 template
         File.Copy(templatePath, helperSavePath, true);
 
         HelperWorkbookInterop.Append(
             helperSavePath,
             "濾網工作表",
-            (wshelper, row) =>
+            (wshelper, startRow) =>
             {
-                int idx = d.SelectedIndex;
+                int n = d.LotFulls.Count;
 
-                // ===== 每筆資料（新增一列）=====
-                wshelper.Cells[row, 1].Value = d.TestingDate;
-                wshelper.Cells[row, 2].Value = d.Material;
-                wshelper.Cells[row, 3].Value = d.MaterialNo;
-                wshelper.Cells[row, 4].Value = d.LotFulls[idx];
-                wshelper.Cells[row, 5].Value = d.VocIns[idx];
-                wshelper.Cells[row, 6].Value = d.VocOuts[idx];
-                wshelper.Cells[row, 7].Value = d.OutgassingList[idx];
-                wshelper.Cells[row, 8].Value = d.DeltaPs[idx];
-                wshelper.Cells[row, 9].Value = d.Eff0;
-                wshelper.Cells[row, 10].Value = d.Eff10;
-                System.Threading.Thread.Sleep(90);
-                Application.DoEvents();
-
+                // ===== 每一筆資料 → 一列（關鍵）=====
+                for (int i = 0; i < n; i++)
                 {
+                    int row = startRow + i;
 
+                    wshelper.Cells[row, 1].Value = d.TestingDate;
+                    wshelper.Cells[row, 2].Value = d.Material;
+                    wshelper.Cells[row, 3].Value = "";
+                    wshelper.Cells[row, 4].Value = d.LotFulls[i];
+                    wshelper.Cells[row, 5].Value = d.VocIns[i];
+                    wshelper.Cells[row, 6].Value = d.VocOuts[i];
+                    wshelper.Cells[row, 7].Value = d.OutgassingList[i];
+                    wshelper.Cells[row, 8].Value = d.DeltaPs[i];
+
+                    // ★ 只有 SelectedIndex 那一列才有效率
+                    if (i == d.SelectedIndex)
+                    {
+                        wshelper.Cells[row, 9].Value = d.Eff0;
+                        wshelper.Cells[row, 10].Value = d.Eff10;
+                    }
+                    else
+                    {
+                        wshelper.Cells[row, 9].Value = "N.D.";
+                        wshelper.Cells[row, 10].Value = "N.D.";
+                    }
+                }
+
+                // ===== Mesh（結構化百分比，固定區塊）=====
+                if (d.ParticleSizePercentages != null)
+                {
                     int r = 7;
                     foreach (var kv in d.ParticleSizePercentages)
                     {
+                        if (kv.Key.Contains("總重"))
+                            continue;
+
                         wshelper.Cells[r, 1].Value = kv.Key;
-                        wshelper.Cells[r, 2].Value = kv.Value / 100.0;
+                        wshelper.Cells[r, 2].Value = kv.Value/100;
                         wshelper.Cells[r, 2].NumberFormat = "0.0%";
                         r++;
                     }
                 }
 
-                // ===== 效率 11 點（固定區塊：S3 起）=====
-                int startRow = 3;
-                int col = 19; // S
-
-                for (int i = 0; i < d.Efficiencies11.Count && i < 12; i++)
+                // ===== 效率 11 點（S3 起，固定區塊）=====
+                if (d.Efficiencies11 != null)
                 {
-                    wshelper.Cells[startRow + i, col].Value = d.Efficiencies11[i];
+                    int startEffRow = 3;
+                    int col = 19; // S
+
+                    for (int i = 0; i < d.Efficiencies11.Count && i < 11; i++)
+                    {
+                        wshelper.Cells[startEffRow + i, col].Value =
+                            d.Efficiencies11[i];
+                    }
                 }
             }
         );

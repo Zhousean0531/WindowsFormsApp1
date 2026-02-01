@@ -30,9 +30,37 @@ public static class Page1DataCollector
         var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
         if (eff == null) return null;
 
-        // ───── 粒徑（唯一來源）─────
-        var meshResult = MeshHelper.ParseFromTab(tab);
-        if (meshResult == null) return null;
+        // ───── 粒徑（唯一來源：DGV 百分比）─────
+        var dgv = ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox");
+
+        var particlePercentages = new Dictionary<string, double>();
+
+        foreach (DataGridViewRow row in dgv.Rows)
+        {
+            if (row.IsNewRow) continue;
+
+            string key = row.Cells[0].Value?.ToString()?.Trim();
+            string valText = row.Cells[1].Value?.ToString()?.Trim();
+
+            if (string.IsNullOrWhiteSpace(key)) continue;
+            if (key.Contains("總重")) continue;
+
+            if (!double.TryParse(valText, out double percent))
+            {
+                MessageBox.Show($"粒徑 {key} 的百分比無法解析");
+                return null;
+            }
+
+            // ★ 已是百分比，禁止再計算
+            particlePercentages[key] = percent;
+        }
+
+        // ───── 組 summary（僅顯示用）─────
+        string meshSummary = string.Join(" , ",
+            particlePercentages.Select(
+                kv => $"{kv.Key} {kv.Value:F1}%"
+            )
+        );
 
         // ───── 多筆資料 ─────
         var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "FilterRawNumberBox"));
@@ -65,22 +93,6 @@ public static class Page1DataCollector
             double d = o - i;
             return d <= 0 ? "N.D." : d.ToString("F1");
         }).ToList();
-
-        // 處理粒徑百分比（唯一來源）
-        Dictionary<string, double> particlePercentages;
-
-        if (meshResult.Percentages == null || meshResult.Percentages.Count == 0)
-        {
-            MessageBox.Show("粒徑資料不完整，請確認輸入");
-            return null;
-        }
-
-        particlePercentages = meshResult.Percentages;
-
-        // 顯示用 Summary（每筆明細共用）
-        var meshSummaries = Enumerable
-            .Repeat(meshResult.Summary ?? string.Empty, n)
-            .ToList();
         return new Page1ExportData
         {
             ReportNo = reportNoBox.Text.Trim(),
@@ -93,6 +105,7 @@ public static class Page1DataCollector
                 materialBox.Text,
                 ControlHelper.GetText(tab, "FilterRawQtyWeight"),
                 ControlHelper.GetText(tab, "FilterRawQuantityBox")),
+            Weight=weights,
             LotFulls = lotFulls,
             Densities = densities,
             DeltaPs = deltaPs.Take(n).ToList(),
@@ -101,7 +114,9 @@ public static class Page1DataCollector
             OutgassingList = outgassing,
             SelectedIndex = selectedIndex,
             ParticleSizePercentages = particlePercentages,
-            MeshSummaries = meshSummaries,
+            MeshSummary = meshSummary,
+            Eff0 = eff.Eff0,
+            Eff10 = eff.Eff10,
             Efficiencies11 = eff.Efficiencies,
             UserName = Environment.UserName
         };

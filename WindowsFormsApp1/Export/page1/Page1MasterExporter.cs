@@ -29,16 +29,20 @@ public static class Page1MasterExporter
                 ws.Cell(row, 3).Value = d.Material;
                 ws.Cell(row, 4).Value = d.LotFulls[i];
                 ws.Cell(row, 5).Value = d.QtyText;
-                ws.Cell(row, 8).Value = d.Densities[i];
+                ws.Cell(row, 8).Value = d.Weight[i];
+                ws.Cell(row, 9).Value = d.Densities[i];
                 ws.Cell(row, 11).Value = d.VocIns[i];
                 ws.Cell(row, 12).Value = d.VocOuts[i];
+                ws.Cell(row, 13).Value = d.OutgassingList[i];
                 ws.Cell(row, 14).Value = d.DeltaPs[i];
-                ws.Cell(row, 18).Value = d.MeshSummaries[i];
+                ws.Cell(row, 18).Value = d.MeshSummary;
                 ws.Cell(row, 19).Value = d.UserName;
 
                 if (i == d.SelectedIndex)
+                {
                     ws.Cell(row, 15).Value = d.Eff0;
-
+                    ws.Cell(row, 16).Value = d.Eff10;
+                }
                 row++;
             }
             wb.Save();
