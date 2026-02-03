@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using WindowsFormsApp1.Helpers;
@@ -18,207 +17,160 @@ public static class Page4DataCollector
         var testPicker = ControlHelper.Find<DateTimePicker>(tab, "CylinderRawTestDateBox");
         var arrivePicker = ControlHelper.Find<DateTimePicker>(tab, "CylinderRawArriveDateBox");
         var materialBox = ControlHelper.Find<ComboBox>(tab, "CylinderRawTypeBox");
-        if (testPicker == null || arrivePicker == null || materialBox == null)
+        var reportNoBox = ControlHelper.Find<TextBox>(tab, "CylinderRawReportNoTB");
+
+        if (testPicker == null || arrivePicker == null || materialBox == null || reportNoBox == null)
         {
-            MessageBox.Show("找不到測試日期 / 到廠日期 / 原料種類");
+            MessageBox.Show("缺少必要欄位（日期 / 原料種類 / 報告編號）");
             return null;
         }
 
-        string testDate = testPicker.Value.ToString("yyyy.MM.dd");
-        string arriveDate = arrivePicker.Value.ToString("yyyy.MM.dd");
+        string testingDate = testPicker.Value.ToString("yyyy.MM.dd");
+        string arrivalDate = arrivePicker.Value.ToString("yyyy.MM.dd");
         string material = materialBox.Text.Trim();
-        
-
-        // 報告編號（允許空）
-        string reportNo =
-            ControlHelper.Find<TextBox>(tab, "CylinderRawReportNoTB")?.Text.Trim() ?? "";
-
-        // ─────────────────────────────
-        // (B) 批號 / 數量
-        // ─────────────────────────────
-        var lotNos = StringUtil.Split(
-            ControlHelper.GetText(tab, "CylinderRawLotBox")
-        );
-
-        string qtyWeight = ControlHelper.GetText(tab, "CylinderRawQtyWeightBox");//進貨重量
-        string qtyPack = ControlHelper.GetText(tab, "CylinderRawQtyPackBox");//進貨數量
-        string qtyText = QuantityHelper.BuildQuantityText(ProductKind.Cylinder, material, qtyWeight, qtyPack);
+        string reportNo = reportNoBox.Text.Trim();
         string userName = Environment.UserName;
 
-        // ─────────────────────────────
-        // (C) 多筆資料欄位
-        // ─────────────────────────────
-        var nos = StringUtil.Split(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
-        var weights = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
-        var vocIn = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
-        var vocOut = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
-        var deltas = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
-        var pressure = StringUtil.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
         var matInfo = MaterialMasterHelper.Get(material);
         string materialNo = matInfo?.MaterialNo ?? "";
-        var countMap = new Dictionary<string, int>
-        {
-            { "原料編號 (nos)", nos.Count },
-            { "重量 (weights)", weights.Count },
-            { "VOC In (vocIn)", vocIn.Count },
-            { "VOC Out (vocOut)", vocOut.Count },
-            { "壓損 (deltas)", deltas.Count }
-        };
 
-        // 取得不重複的 Count
-        var distinctCounts = countMap.Values.Distinct().ToList();
+        // ─────────────────────────────
+        // (B) 多筆資料
+        // ─────────────────────────────
+        var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
+        var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
+        var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
+        var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
+        var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
 
-        if (distinctCounts.Count > 1)
-        {
-            var msg = "資料筆數不一致，請確認以下欄位：\n\n" +
-                      string.Join("\n", countMap.Select(kv => $"{kv.Key}：{kv.Value} 筆"));
-
-            MessageBox.Show(msg, "資料筆數錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return null;
-        }
-
-        // ✔ 全部一致才計算 n
-        int n = distinctCounts[0];
-
+        int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
         if (n <= 0)
         {
             MessageBox.Show("沒有可匯出的測試資料");
             return null;
         }
 
-        if (lotNos.Count == 1 && lotNos[0] == "-")
-        {
-            lotNos = Enumerable.Repeat("-", n).ToList();
-        }
-        else
-        {
-            lotNos = lotNos.Take(n).ToList();
-        }
+        nos = nos.Take(n).ToList();
         weights = weights.Take(n).ToList();
-        vocIn = vocIn.Take(n).ToList();
-        vocOut = vocOut.Take(n).ToList();
-        deltas = deltas.Take(n).ToList();
-        nos=nos.Take(n).ToList();
-        pressure = pressure.Take(n).ToList();
-        // 密度（固定體積 50）
+        vocIns = vocIns.Take(n).ToList();
+        vocOuts = vocOuts.Take(n).ToList();
+        deltaPs = deltaPs.Take(n).ToList();
+
+        // ─────────────────────────────
+        // (C) Lot / 密度 / 數量
+        // ─────────────────────────────
+        var lotFulls = nos.Select(no =>
+        {
+            string clean = no.Trim();
+            return $"B-{arrivePicker.Value:yyyyMMdd}-001#{clean.PadLeft(2, '0')}";
+        }).ToList();
+
+        var lotNos = nos.ToList();
+
         const double VOL = 50.0;
         var densities = weights.Select(w => w / VOL).ToList();
 
-        // 完整批號
-        var lotFulls = nos.Select(no =>
-            $"B-{arrivePicker.Value:yyyyMMdd}-001#{no.PadLeft(2, '0')}"
-        ).ToList();
-        var lot= $"B-{arrivePicker.Value:yyyyMMdd}-001";
-        // Out - In
-        var outStrings = vocOut.Zip(vocIn, (o, i) =>
-        {
-            var d = o - i;
-            return d <= 0 ? "N.D." : d.ToString("F1");
-        }).ToList();
+        string qtyWeight = ControlHelper.GetText(tab, "CylinderRawQtyWeightBox");
+        string qtyPack = ControlHelper.GetText(tab, "CylinderRawQtyPackBox");
+
+        string qtyText = QuantityHelper.BuildQuantityText(
+            ProductKind.Cylinder,
+            material,
+            qtyWeight,
+            qtyPack
+        );
 
         // ─────────────────────────────
-        // (D) 讓使用者選擇壓損索引
+        // (D) 選擇壓損索引
         // ─────────────────────────────
-        int selectedIdx;
-        using (var f = new Form2(deltas, "請選擇本次效率對應的壓損"))
+        int selectedIndex;
+        using (var f = new Form2(deltaPs, "請選擇本次效率對應的壓損"))
         {
-            if (f.ShowDialog() != DialogResult.OK) return null;
-            selectedIdx = f.SelectedIndex0;
+            if (f.ShowDialog() != DialogResult.OK)
+                return null;
+
+            selectedIndex = f.SelectedIndex0;
         }
 
-        if (selectedIdx < 0 || selectedIdx >= n)
+        if (selectedIndex < 0 || selectedIndex >= n)
         {
-            MessageBox.Show("選擇的壓損索引不合法");
+            MessageBox.Show("選擇的壓損索引不正確");
             return null;
         }
 
         // ─────────────────────────────
-        // (E) 粒徑摘要
+        // (E) Outgassing
         // ─────────────────────────────
-        var dgv = ControlHelper.Find<DataGridView>(
-            tab, "CylinderRawMeshBox");
+        var outgassingList = vocOuts.Zip(vocIns, (o, i) =>
+        {
+            double diff = o - i;
+            return diff <= 0 ? "N.D." : diff.ToString("F1");
+        }).ToList();
 
+        // ─────────────────────────────
+        // (F) Mesh（只讀 dgv，不再計算）
+        // ─────────────────────────────
+        var dgv = ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
         if (dgv == null)
         {
             MessageBox.Show("找不到粒徑資料表");
             return null;
         }
 
-        var particleWeights = new Dictionary<string, double>();
+        var particlePercentages = new Dictionary<string, double>();
 
         foreach (DataGridViewRow row in dgv.Rows)
         {
             if (row.IsNewRow) continue;
 
             string key = row.Cells[0].Value?.ToString()?.Trim();
-            string valText = row.Cells.Count > 1
-                ? row.Cells[1].Value?.ToString()?.Trim()
-                : null;
+            string valText = row.Cells[1].Value?.ToString()?.Trim();
 
-            if (string.IsNullOrWhiteSpace(key))
-                continue;
+            if (string.IsNullOrWhiteSpace(key)) continue;
+            if (key.Contains("總重")) continue;
 
-            if (!double.TryParse(valText, out double v))
+            if (!double.TryParse(valText, out double percent))
             {
-                MessageBox.Show($"粒徑 {key} 的重量無法解析");
+                MessageBox.Show($"粒徑 {key} 的百分比無法解析");
                 return null;
             }
 
-            particleWeights[key] = v;
+            // ⚠️ 這裡「假設第二欄已經是 %」
+            particlePercentages[key] = percent;
         }
 
-        double total = particleWeights.Values.Sum();
-        var particlePercentages = particleWeights.ToDictionary(
-            kv => kv.Key,
-            kv => kv.Value / total * 100.0
+        string meshSummary = string.Join(" , ",
+            particlePercentages.Select(kv => $"{kv.Key} {kv.Value:F1}%")
         );
 
-        string meshSummary = string.Join(" , ",
-            particlePercentages.Select(
-                kv => $"{kv.Key} {kv.Value:F1}%"));
         // ─────────────────────────────
-        // (F) 效率（多氣體）
+        // (G) 效率（多氣體 + Panel）
         // ─────────────────────────────
-        var pageType = GasPageType.CylinderRawPage;
         var effGroups = new List<EfficiencyGroup>();
+        var pageType = GasPageType.CylinderRawPage;
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "CylinderRawEffPanel");
-        foreach (var chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
+
+        foreach (var chk in ControlHelper.FindAll<CheckBox>(tab))
         {
-            if (!(chk.Tag is string gasKey))
-                continue;
-
-            Debug.WriteLine($"[Gas] {gasKey}, Checked={chk.Checked}");
-
-            if (!chk.Checked)
-                continue;
+            if (!(chk.Tag is string gasKey)) continue;
+            if (!chk.Checked) continue;
 
             var gasCfg = GasMappingHelper.Get(gasKey);
-            if (gasCfg == null)
-            {
-                Debug.WriteLine($"[Gas] {gasKey} skipped: no GasConfig");
-                continue;
-            }
-
-            if (!gasCfg.UiMap.TryGetValue(pageType, out var ui))
-            {
-                Debug.WriteLine($"[Gas] {gasKey} skipped: no UiMap for page {pageType}");
-                continue;
-            }
+            if (gasCfg == null) continue;
+            if (!gasCfg.UiMap.TryGetValue(pageType, out var ui)) continue;
 
             var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
-            if (!double.TryParse(tbConc?.Text, out double conc))
-            {
-                Debug.WriteLine($"[Gas] {gasKey} skipped: concentration invalid");
-                continue;
-            }
 
+            if (!double.TryParse(tbConc?.Text, out double conc)) continue;
             double.TryParse(tbBg?.Text, out double bg);
 
             var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
+            if (readings.Count < 11) continue;
+
             var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
-            if (eff == null) return null;
+            if (eff == null) continue;
 
             effGroups.Add(new EfficiencyGroup
             {
@@ -229,12 +181,7 @@ public static class Page4DataCollector
                 Readings11 = eff.Readings,
                 Efficiencies11 = eff.Efficiencies
             });
-
-            Debug.WriteLine(
-                $"[Gas] {gasKey} added, EffCount={eff.Efficiencies.Count}"
-            );
         }
-
 
         if (effGroups.Count == 0)
         {
@@ -243,32 +190,32 @@ public static class Page4DataCollector
         }
 
         // ─────────────────────────────
-        // (G) 組 DTO
+        // (H) 回傳 DTO
         // ─────────────────────────────
-
         return new Page4ExportData
         {
             ReportNo = reportNo,
             Material = material,
-            ArrivalDate = arriveDate,
-            TestingDate = testDate,
-            QtyText = qtyText,
-            PressureDrops= pressure,
-            EfficiencyGroups = effGroups,
-            LotFulls = lotFulls,
-            Lot=lot,
             MaterialNo = materialNo,
-            LotNos =lotNos,
+            ArrivalDate = arrivalDate,
+            TestingDate = testingDate,
+
+            LotNos = lotNos,
+            LotFulls = lotFulls,
             Densities = densities,
-            DeltaPs = deltas,
-            VocIns = vocIn,
-            Weights=weights,
-            VocOuts = vocOut,
-            OutgassingList = outStrings,
-            SelectedIndex = selectedIdx,
+            QtyText = qtyText,
+            UserName = userName,
+
+            Weights = weights,
+            VocIns = vocIns,
+            VocOuts = vocOuts,
+            DeltaPs = deltaPs,
+            OutgassingList = outgassingList,
+
+            SelectedIndex = selectedIndex,
             ParticleSizePercentages = particlePercentages,
             MeshSummary = meshSummary,
-            UserName = userName
+            EfficiencyGroups = effGroups
         };
     }
 }

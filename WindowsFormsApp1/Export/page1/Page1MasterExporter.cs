@@ -46,6 +46,7 @@ public static class Page1MasterExporter
                 row++;
             }
             wb.Save();
+            MasterTableHelper.CopyToOneDrive(filePath);
         }
     }
 }

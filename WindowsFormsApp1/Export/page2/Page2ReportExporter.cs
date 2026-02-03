@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -111,7 +112,7 @@ public static class Page2ReportExporter
                 ws.Range["F12"].Value = g.Concentration;
                 ws.Range["F13"].Value = d.Wind;
                 ws.Range["F14"].Value = d.PressureDrops[idx];
-                ws.Range["F16"].Value = g.Efficiencies11[idx];
+                ws.Range["F16"].Value = g.Eff0;
 
                 // ───── 11 點效率 ─────
                 ws.Range["L1"].Value = l1Text;
@@ -178,12 +179,19 @@ public static class Page2ReportExporter
                       .Row + 1;
 
                 int idx = d.SelectedIndex;
-                int n = d.PressureDrops.Count;
-                if (d.TestWeights.Count < n)
-                    n = d.TestWeights.Count;
-
+                int n = new[]
+                    {
+                        d.PressureDrops?.Count ?? 0,
+                        d.TestWeights?.Count ?? 0
+                    }.Min();
+                if (n <= 0)
+                    return;
                 var eff = d.EfficiencyGroups.First();
+                DateTime testDt = DateTime.Parse(d.TestDate);
+                DateTime prodDt = DateTime.Parse(d.ProductionDate);
 
+                double weight = d.TestWeights[idx];
+                double dp = d.PressureDrops[idx];
                 // ───── 逐筆壓損展開成多列 ─────
                 for (int i = 0; i < n; i++)
                 {
@@ -202,19 +210,30 @@ public static class Page2ReportExporter
                     ws.Cells[row, 11].Value = d.TestWeights[i];  // K
                     ws.Cells[row, 12].Value = d.PressureDrops[i];// L
                     ws.Cells[row, 18].Value = d.CarbonInfo;      // R
-
+                    ws.Cells[1, 21].value = $"{testDt:MM.dd} {d.ProductType} {weight}g ({dp}Pa) {prodDt:MMdd}";
                     // ★ 只有「選中的壓損列」才寫的欄位
                     if (i == idx)
                     {
                         ws.Cells[row, 2].Value = d.TestDate;        // B
                         ws.Cells[row, 13].Value = eff.GasName;      // M
-                        ws.Cells[row, 14].value = eff.Concentration;// N
+                        ws.Cells[row, 14].Value = eff.Concentration;// N
                         ws.Cells[row, 15].Value = eff.Eff0;         // O
                         ws.Cells[row, 16].Value = eff.Eff10;        //P
                         
                     }
                 }
 
+                if (eff.Efficiencies11 != null && eff.Efficiencies11.Count > 0)
+                {
+                    int startRowEff = 3;
+                    int colEff = 21; // U
+                    int count = Math.Min(11, eff.Efficiencies11.Count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        ws.Cells[startRowEff + i, colEff].Value = eff.Efficiencies11[i];
+                    }
+                }
                 wb.Save();
             }
             finally

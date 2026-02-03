@@ -68,7 +68,7 @@ namespace WindowsFormsApp1.Helpers
                     [GasPageType.FilterInProcess] = new GasUiConfig
                     {
                         CheckBoxName = "FilterInH2SCheckBox",
-                        ConcBox = "CylinderRawH2SConcertrationBox",
+                        ConcBox = "FilterInH2SConcentrationBox",
                         BgBox = "FilterInBackGroundH2SBox",
                         ValueBox = "FilterInValueH2SBox"
                     },

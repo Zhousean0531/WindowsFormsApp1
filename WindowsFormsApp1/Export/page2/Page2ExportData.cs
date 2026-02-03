@@ -5,6 +5,7 @@ public class Page2ExportData
 {
     public string UserName { get; set; }
     public string ReportNo { get; set; }
+    public List<string> TypeMaterialDisplays { get; set; }
     public string TestDate { get; set; }
     public string OrderDisplay { get; set; }
     public string CarbonOrder { get; set; }

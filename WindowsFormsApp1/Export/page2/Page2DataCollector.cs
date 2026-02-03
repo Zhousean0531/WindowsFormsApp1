@@ -73,10 +73,23 @@ public static class Page2DataCollector
             .Split(new[] { '+', '＋' }, StringSplitOptions.RemoveEmptyEntries)
             .Select(s => s.Trim())
             .ToList();
-        var typeMaterialMap = new Dictionary<string, string>();
-        for (int i = 0; i < types.Count; i++)
+        string typeMaterialDisplay = "";
+
+        int count = Math.Min(types.Count, materialNoRaw.Count);
+
+        if (count == 1)
         {
-            typeMaterialMap[types[i]] = $"{types[i]} {materialNoRaw[i]}";
+            typeMaterialDisplay = $"{types[0]} {materialNoRaw[0]}";
+        }
+        else
+        {
+            var lines = new List<string>();
+
+            for (int i = 0; i < count; i++)
+            {
+                lines.Add($"{types[i]} {materialNoRaw[i]}");
+            }
+            typeMaterialDisplay = string.Join(Environment.NewLine, lines);
         }
 
         int n = Math.Min(weights.Count, deltas.Count);
@@ -90,6 +103,14 @@ public static class Page2DataCollector
             );
             return null;
         }
+
+        var typeMaterialMap = new Dictionary<string, string>();
+        for (int i = 0; i < types.Count; i++)
+        {
+            // 現在安全取用 materialNoRaw[i]
+            typeMaterialMap[types[i]] = $"{types[i]} {materialNoRaw[i]}";
+        }
+
         if (n == 0)
         {
             MessageBox.Show("沒有可用的測試資料");
@@ -113,10 +134,8 @@ public static class Page2DataCollector
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "FilterInProcessEffPanel");
         var pageType = GasPageType.FilterInProcess;
 
-
         foreach (var chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
         {
-
             if (!chk.Checked) continue;
             if (!(chk.Tag is string gasKey)) continue;
 
@@ -157,12 +176,11 @@ public static class Page2DataCollector
                 Readings11 = eff.Readings,
                 Efficiencies11 = eff.Efficiencies,
                 TypeMaterialDisplay = typeMaterialMap.TryGetValue(gasKey, out var v)
-                ? v
-                : gasKey
+                    ? v
+                    : gasKey
             });
         }
-        var allChks = ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab);
-       
+
         if (effGroups.Count == 0)
         {
             MessageBox.Show("請至少勾選一種氣體並填寫完整資料");
@@ -172,28 +190,27 @@ public static class Page2DataCollector
         // ───── 回傳 DTO（多氣體版） ─────
         return new Page2ExportData
         {
-
             ReportNo = reportNo,
             ProductionDate = productionDate,
             TestDate = testDate,
             ProductType = productType,
             Gsm = gsm,
-            Pressure=pressure,
+            Pressure = pressure,
             CarbonOrder = carbonOrder,
-            TestWeights = weights,
-            PressureDrops = deltas,
+            TestWeights = weights ?? new List<double>(),
+            PressureDrops = deltas ?? new List<double>(),
             SelectedIndex = selectedIdx,
             OrderDisplay = orderDisplay,
             FilterSize = filterSize,
-            CarbonInfo= carbonInfo,
+            CarbonInfo = carbonInfo,
             ProductDisplay = productDisplay,
             Wind = wind,
-            Gile =gile,
-            Speed=speed,
-            Upper=upper,
-            Lower=lower,
-            EfficiencyGroups = effGroups,
-            UserName=userName
+            Gile = gile,
+            Speed = speed,
+            Upper = upper,
+            Lower = lower,
+            EfficiencyGroups = effGroups ?? new List<EfficiencyGroup>(),
+            UserName = userName
         };
     }
 }

@@ -58,7 +58,7 @@ public static class Page4HelperExporter
                 d.VocIns.Count,
                 d.VocOuts.Count,
                 d.OutgassingList.Count,
-                d.PressureDrops.Count
+                d.DeltaPs.Count
             }.Min();
 
             for (int i = 0; i < n; i++)
@@ -75,7 +75,7 @@ public static class Page4HelperExporter
                 ws.Cells[row, 11].Value = d.VocIns[i];
                 ws.Cells[row, 12].Value = d.VocOuts[i];
                 ws.Cells[row, 13].Value = d.OutgassingList[i];
-                ws.Cells[row, 14].Value = d.PressureDrops[i];
+                ws.Cells[row, 14].Value = d.DeltaPs[i];
                 System.Threading.Thread.Sleep(90);
                 Application.DoEvents();
             }
@@ -92,7 +92,7 @@ public static class Page4HelperExporter
                 foreach (var kv in d.ParticleSizePercentages)
                 {
                     ws.Cells[meshRow, 1].Value = kv.Key;          // 粒徑
-                    ws.Cells[meshRow, 2].Value = kv.Value / 100; // 百分比
+                    ws.Cells[meshRow, 2].Value = kv.Value/100; // 百分比
                     ws.Cells[meshRow, 2].NumberFormat = "0.0%";
                     meshRow++;
                 }
@@ -139,7 +139,7 @@ public static class Page4HelperExporter
 
                     // ───── 組標題字串（第一列）─────
                     string headerText =
-                        $"{testDateMMDD} " + $"{d.Material}" +$"#{lotShort}" +$"({d.PressureDrops[idx]}Pa)" +$"-{arrivalDateMMDD}_" +$"{g.GasName}";
+                        $"{testDateMMDD} " + $"{d.Material}" +$"#{lotShort}" +$"({d.DeltaPs[idx]}Pa)" +$"-{arrivalDateMMDD}Arrival_" +$"{g.GasName}";
 
                     ws.Cells[startRow-1, col].Value = headerText;
 

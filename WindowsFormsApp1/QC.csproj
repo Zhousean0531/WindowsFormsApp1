@@ -197,6 +197,7 @@
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
     <Compile Include="helper\CalibrationHelper.cs" />
+    <Compile Include="helper\Copymaster.cs" />
     <Compile Include="helper\MeshHelper.cs" />
     <Compile Include="helper\XlsmHelper.cs" />
     <Compile Include="helper\Page5LookupResult.cs" />

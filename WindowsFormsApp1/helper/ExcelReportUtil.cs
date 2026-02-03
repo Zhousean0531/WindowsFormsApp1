@@ -63,7 +63,7 @@ public static class ExcelReportUtil
             ws.Range["C5"].Value = d.ArrivalDate;
             ws.Range["C6"].Value = d.TestingDate;
             ws.Range["E6"].Value = d.QtyText;
-
+            ws.Range["C13:E13"].Value2 = "N/A";
             // ===== 明細 =====
             const int COL_FIRST = 3; // C
             const int ROW_LOTNO = 10;

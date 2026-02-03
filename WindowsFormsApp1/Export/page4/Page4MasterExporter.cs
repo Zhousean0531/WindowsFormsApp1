@@ -12,12 +12,9 @@ public static class Page4MasterExporter
             Application.StartupPath,
             "總表.xlsx"
         );
-
         using (var wb = new XLWorkbook(filePath))
         {
             var ws = wb.Worksheet("濾筒");
-
-
             int row = (ws.Column(2).CellsUsed().LastOrDefault()?.Address.RowNumber ?? 4) + 1;
             MessageBox.Show(
     string.Join(", ", d.EfficiencyGroups.Select(g => g.GasName))
@@ -48,12 +45,11 @@ public static class Page4MasterExporter
                         ws.Cell(row, 17).Value = eff.Eff10;
                         ws.Cell(row, 18).Value = eff.Concentration;
                     }
-
                     row++;
                 }
             }
-
             wb.Save();
+            MasterTableHelper.CopyToOneDrive(filePath);
         }
     }
 

@@ -37,8 +37,8 @@ public static class Page6MasterExporter
                 ws.Cell(row, 9).Value = dgvRow.Cells[10].Value?.ToString();
                 row++;
             }
-
             wb.Save();
+            MasterTableHelper.CopyToOneDrive(filePath);
         }
     }
 }
