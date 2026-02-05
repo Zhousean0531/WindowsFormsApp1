@@ -52,10 +52,6 @@ public static class Page2ReportExporter
         // ───── 匯出 Helper ─────
         Page2HelperExporter.Export(helperSavePath, d);
     }
-
-    // =====================================================
-    // (A) 原本的報告匯出（幾乎不動）
-    // =====================================================
     private static void Export_Report(string savePath, Page2ExportData d)
     {
         string templatePath = Path.Combine(
@@ -210,7 +206,7 @@ public static class Page2ReportExporter
                     ws.Cells[row, 11].Value = d.TestWeights[i];  // K
                     ws.Cells[row, 12].Value = d.PressureDrops[i];// L
                     ws.Cells[row, 18].Value = d.CarbonInfo;      // R
-                    ws.Cells[1, 21].value = $"{testDt:MM.dd} {d.ProductType} {weight}g ({dp}Pa) {prodDt:MMdd}";
+                    ws.Cells[1, 21].value = $"{testDt:MM.dd} {d.ProductType} {weight}gsm ({dp}Pa)-{prodDt:MMdd}生產";
                     // ★ 只有「選中的壓損列」才寫的欄位
                     if (i == idx)
                     {

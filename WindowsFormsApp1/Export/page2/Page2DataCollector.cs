@@ -175,9 +175,7 @@ public static class Page2DataCollector
                 Eff10 = eff.Eff10,
                 Readings11 = eff.Readings,
                 Efficiencies11 = eff.Efficiencies,
-                TypeMaterialDisplay = typeMaterialMap.TryGetValue(gasKey, out var v)
-                    ? v
-                    : gasKey
+                TypeMaterialDisplay = typeMaterialDisplay,
             });
         }
 

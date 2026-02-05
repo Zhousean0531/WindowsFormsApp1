@@ -1,17 +1,44 @@
 ﻿using ClosedXML.Excel;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
 public static class Page5ReportExporter
 {
+    // Master 欄位 index → Report 欄位 index
+    private static readonly Dictionary<int, int> ReportColumnMap =
+        new Dictionary<int, int>
+    {
+    { 38, 20 },  // Particle_In    
+    { 39, 21 },  // Particle_Out   
+    { 40, 22 },  // Particle Diff  
+
+    { 41, 24 },  // IPA_In
+    { 42, 25 },  // IPA_Out
+    { 43, 26 }, // IPA Diff
+
+    { 44, 27 }, // Acetone_In
+    { 45, 28 }, // Acetone_Out
+    { 46, 29 }, // Acetone Diff
+
+    { 47, 30 }, // Nontarget_In
+    { 48, 31 }, // Nontarget_Out
+    { 49, 32 }, // Nontarget Diff
+
+    { 50, 33 }, // TVOC out-in
+    { 54, 38 }  // Pressure_Drop
+    };
+
     public static void Export(
-        Page5ExportData data,
-        Page5LookupResult lookupResult,
-        string efficiencyType   // "MA" / "MB" / "MC"
+        Page5ExportData d,
+        string cylTypeText,
+        string rawEfficiencyText
     )
     {
-        // ===== 1️⃣ 檢查模板是否存在 =====
+        if (d == null || d.Rows == null || d.Rows.Count == 0)
+            return;
+
         string templatePath = Path.Combine(
             Application.StartupPath,
             "CYLReport.xlsx"
@@ -19,42 +46,75 @@ public static class Page5ReportExporter
 
         if (!File.Exists(templatePath))
         {
-            MessageBox.Show(
-                "找不到報告模板 CYLReport.xlsx，請確認檔案是否放在程式目錄。",
-                "錯誤",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Error
-            );
+            MessageBox.Show("找不到 CYLReport.xlsx");
             return;
         }
 
-        // ===== 2️⃣ 組預設檔名 =====
-        string defaultFileName =
-            $"{data.ReportNo}_{data.CylinderNo}-{efficiencyType}.xlsx";
-
-        // ===== 3️⃣ 讓使用者選擇存檔位置 =====
         using (var sfd = new SaveFileDialog())
         {
-            sfd.Filter = "Excel 檔案 (*.xlsx)|*.xlsx";
-            sfd.FileName = defaultFileName;
+            sfd.Filter = "Excel (*.xlsx)|*.xlsx";
+            sfd.FileName = $"{d.ReportNo}_{d.CylinderNo}.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
 
-            try
+            File.Copy(templatePath, sfd.FileName, true);
+
+            using (var wb = new XLWorkbook(sfd.FileName))
             {
-                // ===== 4️⃣ 複製模板成新檔 =====
-                File.Copy(templatePath, sfd.FileName, true);
+                var ws = wb.Worksheet(1);
+
+                int row = 4; // 假設第 1 列是表頭
+
+                // 👉 效率欄位只判斷一次
+                int? effCol = ResolveEfficiencyColumn(cylTypeText);
+
+                foreach (var r in d.Rows)
+                {
+                    ws.Cell(row, "A").Value = d.TestDate;
+                    ws.Cell(row, "B").Value = d.ReportNo;
+                    ws.Cell(row, "C").Value = d.CylinderNo;
+                    ws.Cell(row, "D").Value = d.Customer;
+                    ws.Cell(row, "E").Value = "濾筒";
+                    ws.Cell(row, "G").Value = d.ReCylinderNo;
+                    ws.Cell(row, "H").Value = r.SN;
+                    ws.Cell(row, "I").Value = r.Weight;
+                    if (r.ControlValues != null)
+                    {
+                        foreach (var kv in r.ControlValues)
+                        {
+                            if (ReportColumnMap.TryGetValue(kv.Key, out int reportCol))
+                            {
+                                ws.Cell(row, reportCol).Value = kv.Value;
+                            }
+                        }
+                    }
+                    // ===== 效率 =====
+                    if (effCol.HasValue && !string.IsNullOrWhiteSpace(rawEfficiencyText))
+                    {
+                        ws.Cell(row, effCol.Value).Value = rawEfficiencyText;
+                    }
+
+                    row++;
+                }
+
+                wb.Save();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    "建立報告檔案時發生錯誤：\n" + ex.Message,
-                    "錯誤",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
-            }
+
+            MessageBox.Show("Report 匯出完成！");
         }
+    }
+    private static int? ResolveEfficiencyColumn(string cylType)
+    {
+        if (string.IsNullOrWhiteSpace(cylType))
+            return null;
+
+        cylType = cylType.Trim().ToUpper();
+
+        if (cylType.Contains("MA")) return 14; // N
+        if (cylType.Contains("MB")) return 15; // O
+        if (cylType.Contains("MC")) return 16; // P
+
+        return null;
     }
 }

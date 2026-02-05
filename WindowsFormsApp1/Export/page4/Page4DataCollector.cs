@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Google.Protobuf.WellKnownTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -37,20 +39,19 @@ public static class Page4DataCollector
         // ─────────────────────────────
         // (B) 多筆資料
         // ─────────────────────────────
-        var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
+        var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawLotBox"));
         var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
         var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
         var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
         var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
-
-        int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
+        var number = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
+        int n = new[] {weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
         if (n <= 0)
         {
             MessageBox.Show("沒有可匯出的測試資料");
             return null;
         }
 
-        nos = nos.Take(n).ToList();
         weights = weights.Take(n).ToList();
         vocIns = vocIns.Take(n).ToList();
         vocOuts = vocOuts.Take(n).ToList();
@@ -59,14 +60,28 @@ public static class Page4DataCollector
         // ─────────────────────────────
         // (C) Lot / 密度 / 數量
         // ─────────────────────────────
-        var lotFulls = nos.Select(no =>
+        var nosForCalc = nos
+            .Where(s => !string.IsNullOrWhiteSpace(s) && s != "-")
+            .ToList();
+        var numbers = number
+            .Select(s => int.TryParse(s, out var v) ? v : (int?)null)
+            .Where(v => v.HasValue)
+            .Select(v => v.Value)   // ⭐ 關鍵
+            .ToList();
+        // 依 n 補齊 Lot（沒有就用 "-")
+        var lotNos = Enumerable.Range(0, n)
+            .Select(i =>
+                i < nosForCalc.Count
+                    ? nosForCalc[i]
+                    : "-"
+            )
+            .ToList();
+
+        // 完整 Lot 編號（同樣用補齊後的）
+        var lotFulls = numbers.Select(num =>
         {
-            string clean = no.Trim();
-            return $"B-{arrivePicker.Value:yyyyMMdd}-001#{clean.PadLeft(2, '0')}";
+            return $"B-{arrivePicker.Value:yyyyMMdd}-001#{num.ToString().PadLeft(2, '0')}";
         }).ToList();
-
-        var lotNos = nos.ToList();
-
         const double VOL = 50.0;
         var densities = weights.Select(w => w / VOL).ToList();
 
@@ -79,10 +94,7 @@ public static class Page4DataCollector
             qtyWeight,
             qtyPack
         );
-
-        // ─────────────────────────────
         // (D) 選擇壓損索引
-        // ─────────────────────────────
         int selectedIndex;
         using (var f = new Form2(deltaPs, "請選擇本次效率對應的壓損"))
         {
@@ -97,19 +109,13 @@ public static class Page4DataCollector
             MessageBox.Show("選擇的壓損索引不正確");
             return null;
         }
-
-        // ─────────────────────────────
         // (E) Outgassing
-        // ─────────────────────────────
         var outgassingList = vocOuts.Zip(vocIns, (o, i) =>
         {
             double diff = o - i;
             return diff <= 0 ? "N.D." : diff.ToString("F1");
         }).ToList();
-
-        // ─────────────────────────────
         // (F) Mesh（只讀 dgv，不再計算）
-        // ─────────────────────────────
         var dgv = ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
         if (dgv == null)
         {
@@ -134,8 +140,6 @@ public static class Page4DataCollector
                 MessageBox.Show($"粒徑 {key} 的百分比無法解析");
                 return null;
             }
-
-            // ⚠️ 這裡「假設第二欄已經是 %」
             particlePercentages[key] = percent;
         }
 
@@ -150,7 +154,7 @@ public static class Page4DataCollector
         var pageType = GasPageType.CylinderRawPage;
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "CylinderRawEffPanel");
 
-        foreach (var chk in ControlHelper.FindAll<CheckBox>(tab))
+        foreach (System.Windows.Forms.CheckBox chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
         {
             if (!(chk.Tag is string gasKey)) continue;
             if (!chk.Checked) continue;

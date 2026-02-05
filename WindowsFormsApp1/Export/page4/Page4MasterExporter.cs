@@ -16,10 +16,6 @@ public static class Page4MasterExporter
         {
             var ws = wb.Worksheet("濾筒");
             int row = (ws.Column(2).CellsUsed().LastOrDefault()?.Address.RowNumber ?? 4) + 1;
-            MessageBox.Show(
-    string.Join(", ", d.EfficiencyGroups.Select(g => g.GasName))
-);
-
             foreach (var eff in d.EfficiencyGroups)
             {
                 for (int i = 0; i < d.LotFulls.Count; i++)

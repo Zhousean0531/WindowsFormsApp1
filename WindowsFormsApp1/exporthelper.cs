@@ -169,8 +169,9 @@ public static class ExportHelper_Page5
             // 匯出報表（以 MA 為範例；若需要依 data.CYLType 動態決定可再改）
             Page5ReportExporter.Export(
                 data,
-                lookupResult,
-                "MA");
+                data.FilterType, // CYLTypeBox
+                ControlHelper.GetText(tab, "CYLRawEffTB")
+            );
         }
         catch (Exception ex)
         {
