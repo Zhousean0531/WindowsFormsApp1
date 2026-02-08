@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using System;
 using System.IO;
 using System.Linq;
@@ -102,8 +103,7 @@ public static class Page2ReportExporter
                 ws.Range["F8"].Value = d.FilterSize;
                 ws.Range["F9"].Value = d.OrderDisplay;
                 ws.Range["H6"].Value = d.TestDate;
-                ws.Range["F11"].Value = g.GasName;
-
+                WriteTextWithSubscriptNumbers(ws.Range["F11"], g.GasName);
                 ws.Range["H10"].Value = d.TestWeights[idx];
                 ws.Range["F12"].Value = g.Concentration;
                 ws.Range["F13"].Value = d.Wind;
@@ -242,4 +242,28 @@ public static class Page2ReportExporter
             }
         }
     }
+    private static void WriteTextWithSubscriptNumbers(
+        Excel.Range cell,
+        string text
+    )
+    {
+        if (cell == null)
+            return;
+
+        cell.Value = text;
+
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        // Excel Interop 的 Characters 是 1-based
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (char.IsDigit(text[i]))
+            {
+                Excel.Characters ch = cell.Characters[i + 1, 1];
+                ch.Font.Subscript = true;
+            }
+        }
+    }
 }
+

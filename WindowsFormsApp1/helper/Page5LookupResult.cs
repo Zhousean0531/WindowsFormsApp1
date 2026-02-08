@@ -23,49 +23,38 @@ public static class Page5LookupHelper
     public static Page5LookupResult SearchByCylinderNo(string cylinderNo)
     {
         string summaryPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Application.StartupPath,
             "總表.xlsx"
         );
 
         using (var wb = new XLWorkbook(summaryPath))
         {
             var ws = wb.Worksheet("濾筒");
-
             var matchedRows = ws.RowsUsed()
                 .Where(r => r.Cell("W").GetString().Trim() == cylinderNo)
                 .ToList();
             if (!matchedRows.Any())
                 return new Page5LookupResult();
-            var emptyTimeRows = matchedRows
-                .Where(r => r.Cell("BD").IsEmpty())
+            var rowsWithBatchId = matchedRows
+                .Where(r => !string.IsNullOrWhiteSpace(r.Cell("BD").GetString()))
                 .ToList();
-
-            // ===== 1️⃣ 找出最新的更新時間 =====
             List<IXLRow> latestRows;
-
-            if (emptyTimeRows.Any())
+            if (!rowsWithBatchId.Any())
             {
-                // ★ 規則 1：只要有空時間 → 視為最新
-                latestRows = emptyTimeRows;
+                latestRows = matchedRows;
             }
             else
             {
-                // ★ 規則 2：全部都有時間 → 取時間最大的那一組
-                var latestTime = matchedRows
-                    .Max(r => r.Cell("BD").GetDateTime());
+                var latestBatchId = rowsWithBatchId
+                    .Max(r => r.Cell("BD").GetString().Trim());
 
-                latestRows = matchedRows
-                    .Where(r => r.Cell("BD").GetDateTime() == latestTime)
+                latestRows = rowsWithBatchId
+                    .Where(r => r.Cell("BD").GetString().Trim() == latestBatchId)
                     .ToList();
             }
             var result = new Page5LookupResult();
-
-            // ===== 3️⃣ HeaderValues（用最新那一筆）=====
             var headerRow = latestRows.First();
-
             string Get(string col) => headerRow.Cell(col).GetString().Trim();
-
-
             result.HeaderValues["U"] = Get("U");   // TestDate
             result.HeaderValues["V"] = Get("V");   // ReportNo
             result.HeaderValues["X"] = Get("X");
@@ -105,5 +94,22 @@ public static class Page5LookupHelper
             return result;
         }
     }
+    private static bool TryGetCellDateTime(IXLCell cell, out DateTime dt)
+    {
+        dt = default;
+
+        if (cell == null || cell.IsEmpty())
+            return false;
+
+        if (cell.DataType == XLDataType.DateTime)
+        {
+            dt = cell.GetDateTime();
+            return true;
+        }
+
+        // 嘗試從文字解析
+        return DateTime.TryParse(cell.GetString(), out dt);
+    }
+
 }
 

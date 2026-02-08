@@ -10,7 +10,6 @@ public static class Page1MasterExporter
 {
     public static void Export(Page1ExportData d)
     {
-        // ===== 來源：桌面總表 =====
         string filePath = Path.Combine(
             Application.StartupPath,
             "總表.xlsx"

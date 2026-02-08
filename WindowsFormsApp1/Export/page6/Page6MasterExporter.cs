@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
+using System.Windows.Forms;
+
 
 public static class Page6MasterExporter
 {
@@ -11,7 +13,7 @@ public static class Page6MasterExporter
             return;
 
         string filePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+            Application.StartupPath,
             "總表.xlsx"
         );
 

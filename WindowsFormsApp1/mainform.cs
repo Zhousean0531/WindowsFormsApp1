@@ -1,22 +1,10 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Office.Core;
-using Microsoft.Office.Interop.PowerPoint;
-using MySqlX.XDevAPI.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsFormsApp1.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace WindowsFormsApp1
@@ -267,7 +255,7 @@ namespace WindowsFormsApp1
                     ExportHelper_Page4.Handle(currentTab);
                     break;
                 case "CylinderPage":
-                    ExportHelper_Page5.Handle(currentTab);
+                    ExportHelper_Page5.Handle(currentTab, columnsToCheck);
                     break;
                 case "RawMaterialPage":
                     ExportHelper_Page6.Handle(currentTab);
@@ -530,7 +518,10 @@ namespace WindowsFormsApp1
 
             var targetTypes = new List<string> { type };
 
-            string totalPath = @"C:\Users\User\Desktop\總表.xlsx";
+            string totalPath = Path.Combine(
+            Application.StartupPath,
+            "總表.xlsx");
+            
 
             try
             {
@@ -555,13 +546,11 @@ namespace WindowsFormsApp1
                         );
                         return;
                     }
-
-                    // ---------- 取出第一個有效效率 ----------
                     string effValueRaw = eff.Values.FirstOrDefault(v =>
-                !string.IsNullOrWhiteSpace(v) &&
-                v != "-" &&
-                !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
-            );
+                        !string.IsNullOrWhiteSpace(v) &&
+                        v != "-" &&
+                        !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
+                    );
 
                     // ---------- 狀況 2：有批號，但效率無效 ----------
                     if (string.IsNullOrWhiteSpace(effValueRaw))
@@ -580,16 +569,10 @@ namespace WindowsFormsApp1
                     {
                         CYLRawEffTB.Text = effValue.ToString("0.0");
                     }
-                    else
-                    {
-                        // 理論上不該發生，保險處理
-                        CYLRawEffTB.Text = effValue.ToString("0.0"); ;
-                    }
                 }
             }
             catch
             {
-                // 依你目前的設計哲學：錯誤時不干擾使用者
                 return;
             }
         }

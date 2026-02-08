@@ -26,8 +26,6 @@ public static class MasterTableHelper
         }
 
         string targetPath = Path.Combine(targetDir, "總表.xlsx");
-
-        // 覆蓋複製（因為你是「發佈最新版」）
         File.Copy(sourcePath, targetPath, true);
     }
 }

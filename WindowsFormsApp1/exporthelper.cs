@@ -1,25 +1,6 @@
-﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.Office.Core;
-using Microsoft.Office.Interop.PowerPoint;
-using Org.BouncyCastle.Pqc.Crypto.Lms;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using WindowsFormsApp1;
-using YourNamespace;
-using Excel = Microsoft.Office.Interop.Excel;
-using OfficeCore = Microsoft.Office.Core;
-using PowerPoint = Microsoft.Office.Interop.PowerPoint;
 
 
 public static class DiffUtil
@@ -137,17 +118,15 @@ public static class ExportHelper_Page4
 }
 public static class ExportHelper_Page5
 {
-    public static void Handle(TabPage tab)
+    public static void Handle(TabPage tab, List<int> columnsToCheck)
     {
         try
         {
             var data = Page5DataCollector.Collect(tab);
             if (data == null) return;
-
+            string rawEfficiencyText =ControlHelper.GetText(tab, "CYLRawEffTB");
             // 匯入主表
-            Page5MasterExporter.Export(data);
-
-            // 以收集到的單號查總表（取 lookup 結果）
+            Page5MasterExporter.Export(data, rawEfficiencyText);
             Page5LookupResult lookupResult = null;
             if (!string.IsNullOrWhiteSpace(data.CylinderNo))
             {
@@ -157,7 +136,6 @@ public static class ExportHelper_Page5
                 }
                 catch (Exception)
                 {
-                    // 若查詢總表失敗，仍然保證有一個空的結果傳給報表匯出
                     lookupResult = new Page5LookupResult();
                 }
             }
@@ -166,11 +144,11 @@ public static class ExportHelper_Page5
                 lookupResult = new Page5LookupResult();
             }
 
-            // 匯出報表（以 MA 為範例；若需要依 data.CYLType 動態決定可再改）
             Page5ReportExporter.Export(
                 data,
                 data.FilterType, // CYLTypeBox
-                ControlHelper.GetText(tab, "CYLRawEffTB")
+                ControlHelper.GetText(tab, "CYLRawEffTB"),
+                columnsToCheck
             );
         }
         catch (Exception ex)
