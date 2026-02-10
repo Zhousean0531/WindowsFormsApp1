@@ -112,10 +112,14 @@ public static class Page4ReportExporter
 
                     ws.Cells[ROW_LOT, col].Value = d.LotFulls[i];
                     ws.Cells[ROW_DEN, col].Value = d.Densities[i];
+                    ws.Cells[ROW_DEN, col].NumberFormat = "0.00";
                     ws.Cells[ROW_DP, col].Value = d.DeltaPs[i];
                     ws.Cells[ROW_VIN, col].Value = d.VocIns[i];
+                    ws.Cells[ROW_VIN, col].NumberFormat = "0.00";
                     ws.Cells[ROW_VOUT, col].Value = d.VocOuts[i];
+                    ws.Cells[ROW_VOUT, col].NumberFormat = "0.00";
                     ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
+                    ws.Cells[ROW_OUTG, col].NumberFormat = "0.00";
 
                     ws.Cells[ROW_EFF, col].Value =
                         (i == idx) ? g.Eff0 : "N.D.";

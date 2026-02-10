@@ -13,14 +13,16 @@ namespace WindowsFormsApp1
     public partial class Form1 : Form
     {
         private const int MAX_ROWS = 13;
+
         public Form1()
         {
             InitializeComponent();
+            QCPathHelper.Ensure();
+            DbBootstrap.Init();
             this.FilterRawTypeBox.SelectedIndexChanged += new System.EventHandler(this.FilterRawTypeBox_SelectedIndexChanged);
             string today = DateTime.Now.ToString("yyyy.MM.dd");
             CylinderRawMoistureTB.Click += TxtMoisture_Click;
             CylinderRawAshTB.Click += TxtAsh_Click;
-            // 勾勾變化時，切換 TextBox 可輸入狀態
             chkMoisture.CheckedChanged += (s, e) => ToggleMoistureUI();
             chkAsh.CheckedChanged += (s, e) => ToggleAshUI();
             ToggleMoistureUI();
