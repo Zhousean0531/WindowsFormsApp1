@@ -10,6 +10,8 @@ namespace WindowsFormsApp1
        {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            QCPathHelper.Ensure();
+            DbBootstrap.Init();
             Application.Run(new Form1());
         }
     }

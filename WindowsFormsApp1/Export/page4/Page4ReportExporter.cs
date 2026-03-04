@@ -122,7 +122,7 @@ public static class Page4ReportExporter
                     ws.Cells[ROW_OUTG, col].NumberFormat = "0.00";
 
                     ws.Cells[ROW_EFF, col].Value =
-                        (i == idx) ? g.Eff0 : "N.D.";
+                        (i == idx) ? (g.Eff0?.ToString("F1") ?? "N.D.") : "N.D.";
                     System.Threading.Thread.Sleep(90);
                     Application.DoEvents();
                 }

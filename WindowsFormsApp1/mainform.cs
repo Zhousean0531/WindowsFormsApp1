@@ -13,12 +13,9 @@ namespace WindowsFormsApp1
     public partial class Form1 : Form
     {
         private const int MAX_ROWS = 13;
-
         public Form1()
         {
             InitializeComponent();
-            QCPathHelper.Ensure();
-            DbBootstrap.Init();
             this.FilterRawTypeBox.SelectedIndexChanged += new System.EventHandler(this.FilterRawTypeBox_SelectedIndexChanged);
             string today = DateTime.Now.ToString("yyyy.MM.dd");
             CylinderRawMoistureTB.Click += TxtMoisture_Click;
@@ -131,29 +128,24 @@ namespace WindowsFormsApp1
         }
         private void CylinderBox_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
-            // 計算行號（1-based）
             string rowNumber = (e.RowIndex + 1).ToString();
-
             // 定位行號繪製位置
             var centerFormat = new StringFormat
             {
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center
             };
-
             Rectangle headerBounds = new Rectangle(
                 e.RowBounds.Left,
                 e.RowBounds.Top,
                 FilterBox.RowHeadersWidth,
                 e.RowBounds.Height);
-
             // 寫上數字到左邊 row header
             e.Graphics.DrawString(rowNumber, this.Font, SystemBrushes.ControlText, headerBounds, centerFormat);
         }
         private void CylinderRawTypeBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string a = (CylinderRawTypeBox.Text ?? "").Trim().ToUpperInvariant();
-
             CylinderRawMeshBox.Rows.Clear();
             CylinderRawMeshBox.AllowUserToAddRows = false;
 
@@ -209,13 +201,11 @@ namespace WindowsFormsApp1
             var currentTab = tabControl1.SelectedTab;
             // --- 校正檢查區 ---
             List<int> columnsToCheck = null;
-
             switch (currentTab.Name)
             {
                 case "FilterPage":   // 濾網成品
                     columnsToCheck = new List<int> { 1, 2, 3, 4, 5, 6 }; // A~F
                     break;
-
                 case "CylinderPage": // 濾筒成品
                     columnsToCheck = new List<int> { 1, 2, 3, 6, 7, 8 }; // A~C, F, G, H
                     break;

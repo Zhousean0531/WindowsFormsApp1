@@ -24,8 +24,8 @@ namespace WindowsFormsApp1.Export.Page1
         public List<string> OutgassingList { get; set; }
         public string MeshSummary { get; set; }
         public int SelectedIndex { get; set; }
-        public string Eff0 { get; set; }
-        public string Eff10 { get; set; }
+        public double? Eff0 { get; set; }
+        public double? Eff10 { get; set; }
         public List<double> Efficiencies11 { get; set; }
         public Dictionary<string, double> ParticleSizePercentages { get; set; }
     }

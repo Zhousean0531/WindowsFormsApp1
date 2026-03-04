@@ -1,30 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
-
+using WindowsFormsApp1.Data_Access.Page2;
 public static class DiffUtil
 {
-    public static string GetSumDiff(string out1, string out2, string out3, string in1, string in2, string in3)
+    public static string GetSumDiff(string out1, string out2, string out3,string in1, string in2, string in3)
     {
-        double o1, o2, o3, i1, i2, i3;
-        bool p1 = double.TryParse(out1, out o1);
-        bool p2 = double.TryParse(out2, out o2);
-        bool p3 = double.TryParse(out3, out o3);
-        bool p4 = double.TryParse(in1, out i1);
-        bool p5 = double.TryParse(in2, out i2);
-        bool p6 = double.TryParse(in3, out i3);
-
-        if (!(p1 && p2 && p3 && p4 && p5 && p6))
-            return "N.D.";
-
-        double diff = (o1 + o2 + o3) - (i1 + i2 + i3);
-        return diff <= 0 ? "N.D." : diff.ToString("0.###");
+        if (double.TryParse(out1, out double o1) &&
+            double.TryParse(out2, out double o2) &&
+            double.TryParse(out3, out double o3) &&
+            double.TryParse(in1, out double i1) &&
+            double.TryParse(in2, out double i2) &&
+            double.TryParse(in3, out double i3))
+        {
+            double diff = (o1 + o2 + o3) - (i1 + i2 + i3);
+            return diff <= 0 ? "N.D." : diff.ToString("0.###");
+        }
+        return "N.D.";
     }
     public static string GetDiff(string outVal, string inVal)
     {
-        double o, i;
-        if (double.TryParse(outVal, out o) && double.TryParse(inVal, out i))
+        if (double.TryParse(outVal, out double o) && double.TryParse(inVal, out double i))
         {
             double diff = o - i;
             return diff <= 0 ? "N.D." : diff.ToString("0.###");
@@ -65,15 +61,20 @@ public static class ExportHelper_Page2
     {
         try
         {
-            var data = Page2DataCollector.Collect(tab);
+            var batch = Page2DataCollector.Collect(tab);
+            if (batch == null) return;
 
-            Page2MasterExporter.Export(data);
-            Page2ReportExporter.Export(data);
-            MessageBox.Show("匯出完成");
+            // 1️⃣ 寫入 DB
+            P2Repository.Insert(batch);
+
+            // 2️⃣ 直接用 batch 匯出報表
+            Page2ReportExporter.Export(batch);
+
+            MessageBox.Show("完成");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("匯出錯誤：" + ex.Message);
+            MessageBox.Show("錯誤：" + ex.Message);
         }
     }
 }
@@ -176,4 +177,3 @@ public static class ExportHelper_Page6
         }
     }
 }
-

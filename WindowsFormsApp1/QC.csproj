@@ -158,6 +158,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business Logic\EfficiencyFinder.cs" />
+    <Compile Include="Business Logic\EfficiencyGroup.cs" />
+    <Compile Include="Business Logic\EfficiencyHelper.cs" />
+    <Compile Include="Business Logic\EfficiencyResult.cs" />
+    <Compile Include="Business Logic\Page5LookupResult.cs" />
+    <Compile Include="Data Access\Page1\P1Models.cs" />
+    <Compile Include="Data Access\Page1\P1Repository.cs" />
+    <Compile Include="Data Access\Page1\P1Service.cs" />
+    <Compile Include="Data Access\Page2\P2Models.cs" />
+    <Compile Include="Data Access\Page2\P2Repository.cs" />
+    <Compile Include="Data Access\Page3\P3Repository.cs" />
+    <Compile Include="Data Access\Page3\P3Models.cs" />
+    <Compile Include="Data Access\Page3\P3Service.cs" />
+    <Compile Include="Data Access\Page4\P4Models.cs" />
+    <Compile Include="Data Access\Page4\P4Repository.cs" />
+    <Compile Include="Data Access\Page4\P4Service.cs" />
+    <Compile Include="Data Access\Page5\P5Models.cs" />
+    <Compile Include="Data Access\Page5\P5Repository.cs" />
+    <Compile Include="Data Access\Page5\P5Service.cs" />
+    <Compile Include="Data Access\Page6\P6Models.cs" />
+    <Compile Include="Data Access\Page6\P6Repository.cs" />
+    <Compile Include="Data Access\Page6\P6Service.cs" />
     <Compile Include="Export\page1\Page1ExportData.cs" />
     <Compile Include="Export\page1\Page1ReportExporter.cs" />
     <Compile Include="Export\page1\Page1MasterExporter.cs" />
@@ -171,8 +193,6 @@
     <Compile Include="Export\page4\Page4ExportData.cs" />
     <Compile Include="Export\page4\Page4MasterExporter.cs" />
     <Compile Include="Export\page4\Page4ReportExporter.cs" />
-    <Compile Include="Export\page2\Page2ExportData.cs" />
-    <Compile Include="Export\page2\Page2MasterExporter.cs" />
     <Compile Include="Export\page2\Page2ReportExporter.cs" />
     <Compile Include="Export\page2\Page2DataCollector.cs" />
     <Compile Include="Export\page5\Page5ReportExporter.cs" />
@@ -199,26 +219,21 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="helper\CalibrationHelper.cs" />
-    <Compile Include="helper\DbBootstrap.cs" />
-    <Compile Include="helper\QCPathHelper.cs" />
-    <Compile Include="helper\Copymaster.cs" />
-    <Compile Include="helper\MeshHelper.cs" />
-    <Compile Include="helper\XlsmHelper.cs" />
-    <Compile Include="helper\Page5LookupResult.cs" />
-    <Compile Include="helper\EfficiencyFinder.cs" />
-    <Compile Include="helper\SignatureHelper.cs" />
-    <Compile Include="helper\MaterialMasterHelper.cs" />
-    <Compile Include="helper\MaterialInfo.cs" />
-    <Compile Include="helper\QuantityHelper.cs" />
-    <Compile Include="helper\GasMappingHelper.cs" />
-    <Compile Include="helper\EfficiencyGroup.cs" />
-    <Compile Include="helper\EfficiencyResult.cs" />
-    <Compile Include="helper\EfficiencyHelper.cs" />
-    <Compile Include="helper\ExcelReportUtil.cs" />
-    <Compile Include="helper\StringUtil.cs" />
-    <Compile Include="helper\controlhelper.cs" />
-    <Compile Include="helper\stringhelper.cs" />
+    <Compile Include="Utility\CalibrationHelper.cs" />
+    <Compile Include="Data Access\DbBootstrap.cs" />
+    <Compile Include="Utility\QCPathHelper.cs" />
+    <Compile Include="Utility\Copymaster.cs" />
+    <Compile Include="Business Logic\MeshHelper.cs" />
+    <Compile Include="Utility\XlsmHelper.cs" />
+    <Compile Include="Utility\SignatureHelper.cs" />
+    <Compile Include="Utility\MaterialMasterHelper.cs" />
+    <Compile Include="Model\MaterialInfo.cs" />
+    <Compile Include="Business Logic\QuantityHelper.cs" />
+    <Compile Include="Utility\GasMappingHelper.cs" />
+    <Compile Include="Utility\ExcelReportUtil.cs" />
+    <Compile Include="Utility\StringUtil.cs" />
+    <Compile Include="Utility\controlhelper.cs" />
+    <Compile Include="Utility\stringhelper.cs" />
     <Compile Include="MaterialSelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -311,6 +326,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.8.2\build\Fody.targets" Condition="Exists('..\packages\Fody.6.8.2\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
