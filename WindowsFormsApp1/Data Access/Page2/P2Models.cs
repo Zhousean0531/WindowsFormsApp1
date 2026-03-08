@@ -26,7 +26,6 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
         public List<P2GasTest> GasTests { get; set; } = new List<P2GasTest>();
     }
-
     public class P2GasTest
     {
         public string GasName { get; set; }
@@ -35,7 +34,6 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
         public List<P2Sample> Samples { get; set; } = new List<P2Sample>();
     }
-
     public class P2Sample
     {
         public double? Weight { get; set; }

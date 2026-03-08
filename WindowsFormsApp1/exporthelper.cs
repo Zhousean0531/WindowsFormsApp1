@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using WindowsFormsApp1.Data_Access.Page1;
 using WindowsFormsApp1.Data_Access.Page2;
+using WindowsFormsApp1.Data_Access.Page4;
 public static class DiffUtil
 {
     public static string GetSumDiff(string out1, string out2, string out3,string in1, string in2, string in3)
@@ -41,17 +43,15 @@ public static class ExportHelper_Page1
     {
         try
         {
-            var data = Page1DataCollector.Collect(tab);
-            if (data == null) return;
-
-            Page1MasterExporter.Export(data);
-            Page1ReportExporter.Export(data);
-
-            MessageBox.Show("匯出完成");
+            var batch = Page1DataCollector.Collect(tab);
+            if (batch == null) return;
+            P1Repository.Insert(batch);
+            Page1ReportExporter.Export(batch);
+            MessageBox.Show("完成");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("匯出錯誤：" + ex.Message);
+            MessageBox.Show("錯誤：" + ex.Message);
         }
     }
 }
@@ -63,13 +63,8 @@ public static class ExportHelper_Page2
         {
             var batch = Page2DataCollector.Collect(tab);
             if (batch == null) return;
-
-            // 1️⃣ 寫入 DB
             P2Repository.Insert(batch);
-
-            // 2️⃣ 直接用 batch 匯出報表
             Page2ReportExporter.Export(batch);
-
             MessageBox.Show("完成");
         }
         catch (Exception ex)
@@ -103,17 +98,15 @@ public static class ExportHelper_Page4
     {
         try
         {
-            var data = Page4DataCollector.Collect(tab);
-            if (data == null) return;
-
-            Page4MasterExporter.Export(data);
-            Page4ReportExporter.Export(data);
-            Page4ReportExporterForNanJing.Export(data);
-            MessageBox.Show("匯出完成");
+            var batch = Page4DataCollector.Collect(tab);
+            if (batch == null) return;
+            P4Repository.Insert(batch);
+            Page4ReportExporter.Export(batch);
+            MessageBox.Show("完成");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("匯出錯誤：" + ex.Message);
+            MessageBox.Show("錯誤：" + ex.Message);
         }
     }
 }

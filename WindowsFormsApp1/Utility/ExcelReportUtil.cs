@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using WindowsFormsApp1.Export.Page1;
+using WindowsFormsApp1.Data_Access.Page1;
 using static SignatureHelper;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -14,12 +14,12 @@ public static class ExcelReportUtil
     public static void ExportPage1(
         string reportSavePath,
         string helperSavePath,
-        Page1ExportData d)
+        P1Batch batch)
     {
-        if (d == null) return;
+        if (batch == null) return;
 
-        Export_QC_RawMaterial_Report(reportSavePath, d);
-        Export_Helper(helperSavePath, d);
+        Export_QC_RawMaterial_Report(reportSavePath, batch);
+        Export_Helper(helperSavePath, batch);
     }
 
     // =====================================================
@@ -27,7 +27,7 @@ public static class ExcelReportUtil
     // =====================================================
     private static void Export_QC_RawMaterial_Report(
         string savePath,
-        Page1ExportData d)
+        P1Batch batch)
     {
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -57,13 +57,14 @@ public static class ExcelReportUtil
             ws = (Excel.Worksheet)wb.Sheets[1];
 
             // ===== 表頭 =====
-            ws.Range["C4"].Value = d.ReportNo;
-            ws.Range["E4"].Value = d.MaterialNo;
-            ws.Range["E5"].Value = d.Material;
-            ws.Range["C5"].Value = d.ArrivalDate;
-            ws.Range["C6"].Value = d.TestingDate;
-            ws.Range["E6"].Value = d.QtyText;
+            ws.Range["C4"].Value = batch.ReportNo;
+            ws.Range["E4"].Value = batch.MaterialNo;
+            ws.Range["E5"].Value = batch.Material;
+            ws.Range["C5"].Value = batch.ArrivalDate;
+            ws.Range["C6"].Value = batch.TestingDate;
+            ws.Range["E6"].Value = batch.QtyText;
             ws.Range["C13:E13"].Value2 = "N/A";
+
             // ===== 明細 =====
             const int COL_FIRST = 3; // C
             const int ROW_LOTNO = 10;
@@ -74,29 +75,25 @@ public static class ExcelReportUtil
             const int ROW_OUTG = 17;
             const int ROW_EFF = 18;
 
-            int max = new[]
-            {
-                d.LotFulls.Count,
-                d.Densities.Count,
-                d.DeltaPs.Count,
-                d.VocIns.Count,
-                d.VocOuts.Count,
-                d.OutgassingList.Count
-            }.Min();
+            int max = batch.Samples.Count;
 
             for (int i = 0; i < max; i++)
             {
                 int col = COL_FIRST + i;
-
-                ws.Cells[ROW_LOTNO, col].Value = d.LotFulls[i];
-                ws.Cells[ROW_DENS, col].Value = d.Densities[i];
-                ws.Cells[ROW_DP, col].Value = d.DeltaPs[i];
-                ws.Cells[ROW_VIN, col].Value = d.VocIns[i];
-                ws.Cells[ROW_VOUT, col].Value = d.VocOuts[i];
-                ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
+                var sample = batch.Samples[i];
+                var selectedSample = batch.Samples.FirstOrDefault(s => s.IsSelected);
+                double? eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
+                ws.Cells[ROW_LOTNO, col].Value = sample.LotFull;
+                ws.Cells[ROW_DENS, col].Value = sample.Density;
+                ws.Cells[ROW_DP, col].Value = sample.DeltaP;
+                ws.Cells[ROW_VIN, col].Value = sample.VocIn;
+                ws.Cells[ROW_VOUT, col].Value = sample.VocOut;
+                ws.Cells[ROW_OUTG, col].Value = sample.Outgassing;
 
                 ws.Cells[ROW_EFF, col].Value =
-                    (i == d.SelectedIndex) ? (object)d.Eff0 : "N.D.";
+                    sample.IsSelected
+                    ? (eff0.HasValue ? (object)eff0.Value : "N.D.")
+                    : "N.D.";
 
                 System.Threading.Thread.Sleep(20);
                 Application.DoEvents();
@@ -123,7 +120,7 @@ public static class ExcelReportUtil
     // =====================================================
     private static void Export_Helper(
         string helperSavePath,
-        Page1ExportData d)
+        P1Batch batch)
     {
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -134,36 +131,38 @@ public static class ExcelReportUtil
             MessageBox.Show("找不到 Helper_Template.xlsm");
             return;
         }
-
-        // 永遠重新複製 template
+        var selectedSample = batch.Samples.FirstOrDefault(s => s.IsSelected);
+        var eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
+        var eff10 = selectedSample?.Efficiencies?.ElementAtOrDefault(10);
         File.Copy(templatePath, helperSavePath, true);
-
+        
         HelperWorkbookInterop.Append(
             helperSavePath,
             "濾網工作表",
             (wshelper, startRow) =>
             {
-                int n = d.LotFulls.Count;
+                int n = batch.Samples.Count;
 
-                // ===== 每一筆資料 → 一列（關鍵）=====
+                // ===== 每一筆資料 → 一列 =====
                 for (int i = 0; i < n; i++)
                 {
                     int row = startRow + i;
-
-                    wshelper.Cells[row, 1].Value = d.TestingDate;
-                    wshelper.Cells[row, 2].Value = d.Material;
+                    var sample = batch.Samples[i];
+                    wshelper.Cells[row, 1].Value = batch.TestingDate;
+                    wshelper.Cells[row, 2].Value = batch.Material;
                     wshelper.Cells[row, 3].Value = "";
-                    wshelper.Cells[row, 4].Value = d.LotFulls[i];
-                    wshelper.Cells[row, 5].Value = d.VocIns[i];
-                    wshelper.Cells[row, 6].Value = d.VocOuts[i];
-                    wshelper.Cells[row, 7].Value = d.OutgassingList[i];
-                    wshelper.Cells[row, 8].Value = d.DeltaPs[i];
+                    wshelper.Cells[row, 4].Value = sample.LotFull;
+                    wshelper.Cells[row, 5].Value = sample.VocIn;
+                    wshelper.Cells[row, 6].Value = sample.VocOut;
+                    wshelper.Cells[row, 7].Value = sample.Outgassing;
+                    wshelper.Cells[row, 8].Value = sample.DeltaP;
 
-                    // ★ 只有 SelectedIndex 那一列才有效率
-                    if (i == d.SelectedIndex)
+                    if (sample.IsSelected)
                     {
-                        wshelper.Cells[row, 9].Value = d.Eff0;
-                        wshelper.Cells[row, 10].Value = d.Eff10;
+                        wshelper.Cells[row, 9].Value =
+                            eff0.HasValue ? (object)eff0.Value : "N.D.";
+                        wshelper.Cells[row, 10].Value =
+                            eff10.HasValue ? (object)eff10.Value : "N.D.";
                     }
                     else
                     {
@@ -172,34 +171,34 @@ public static class ExcelReportUtil
                     }
                 }
 
-                // ===== Mesh（結構化百分比，固定區塊）=====
-                if (d.ParticleSizePercentages != null)
+                // ===== Mesh（粒徑）=====
+                if (batch.ParticleSizePercentages != null)
                 {
                     int r = 7;
-                    foreach (var kv in d.ParticleSizePercentages)
+                    foreach (var kv in batch.ParticleSizePercentages)
                     {
                         if (kv.Key.Contains("總重"))
                             continue;
 
                         wshelper.Cells[r, 1].Value = kv.Key;
-                        wshelper.Cells[r, 2].Value = kv.Value/100;
+                        wshelper.Cells[r, 2].Value = kv.Value / 100;
                         wshelper.Cells[r, 2].NumberFormat = "0.0%";
                         r++;
                     }
                 }
-
-                // ===== 效率 11 點（S3 起，固定區塊）=====
-                if (d.Efficiencies11 != null)
-                {
+                // ===== 效率 11 點 =====
                     int startEffRow = 3;
-                    int col = 19; // S
+                    int col = 19;
 
-                    for (int i = 0; i < d.Efficiencies11.Count && i < 11; i++)
+                    var effList = selectedSample?.Efficiencies;
+
+                    if (effList != null)
                     {
-                        wshelper.Cells[startEffRow + i, col].Value =
-                            d.Efficiencies11[i];
+                        for (int i = 0; i < effList.Count && i < 11; i++)
+                        {
+                            wshelper.Cells[startEffRow + i, col].Value = effList[i];
+                        }
                     }
-                }
             }
         );
     }

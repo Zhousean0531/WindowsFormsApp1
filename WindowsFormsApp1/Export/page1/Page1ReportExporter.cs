@@ -1,20 +1,21 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using WindowsFormsApp1.Export.Page1;
-
+using WindowsFormsApp1.Data_Access.Page1;
 
 public static class Page1ReportExporter
 {
-    public static void Export(Page1ExportData d)
+    public static void Export(P1Batch batch)
     {
-        DateTime arrivalDt = d.ArrivalDate;
+        DateTime arrivalDt = batch.ArrivalDate;
 
-        // ───── 選擇「報告檔」存檔路徑 ─────
+        // ───── 選擇報告存檔路徑 ─────
         string reportSavePath;
         using (var sfd = new SaveFileDialog())
         {
             sfd.Filter = "Excel (*.xlsx)|*.xlsx";
-            sfd.FileName = $"{d.ReportNo}_{d.Material}({arrivalDt:MMdd}到廠).xlsx";
+            sfd.FileName = $"{batch.ReportNo}_{batch.Material}({arrivalDt:MMdd}到廠).xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
@@ -22,7 +23,7 @@ public static class Page1ReportExporter
             reportSavePath = sfd.FileName;
         }
 
-        // ───── 選擇「Helper 檔」存檔路徑（跟報告一樣）─────
+        // ───── 選擇 Helper 存檔路徑 ─────
         string helperSavePath;
         using (var sfd = new SaveFileDialog())
         {
@@ -36,11 +37,11 @@ public static class Page1ReportExporter
             helperSavePath = sfd.FileName;
         }
 
-        // ───── 交給匯出工具處理 ─────
+        // ───── 呼叫原本的 Excel 工具 ─────
         ExcelReportUtil.ExportPage1(
             reportSavePath,
             helperSavePath,
-            d
+            batch
         );
     }
 }

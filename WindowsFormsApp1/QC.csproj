@@ -165,7 +165,6 @@
     <Compile Include="Business Logic\Page5LookupResult.cs" />
     <Compile Include="Data Access\Page1\P1Models.cs" />
     <Compile Include="Data Access\Page1\P1Repository.cs" />
-    <Compile Include="Data Access\Page1\P1Service.cs" />
     <Compile Include="Data Access\Page2\P2Models.cs" />
     <Compile Include="Data Access\Page2\P2Repository.cs" />
     <Compile Include="Data Access\Page3\P3Repository.cs" />
@@ -173,16 +172,13 @@
     <Compile Include="Data Access\Page3\P3Service.cs" />
     <Compile Include="Data Access\Page4\P4Models.cs" />
     <Compile Include="Data Access\Page4\P4Repository.cs" />
-    <Compile Include="Data Access\Page4\P4Service.cs" />
     <Compile Include="Data Access\Page5\P5Models.cs" />
     <Compile Include="Data Access\Page5\P5Repository.cs" />
     <Compile Include="Data Access\Page5\P5Service.cs" />
     <Compile Include="Data Access\Page6\P6Models.cs" />
     <Compile Include="Data Access\Page6\P6Repository.cs" />
     <Compile Include="Data Access\Page6\P6Service.cs" />
-    <Compile Include="Export\page1\Page1ExportData.cs" />
     <Compile Include="Export\page1\Page1ReportExporter.cs" />
-    <Compile Include="Export\page1\Page1MasterExporter.cs" />
     <Compile Include="Export\page1\Page1DataCollector.cs" />
     <Compile Include="Export\page3\Page3MasterExporter.cs" />
     <Compile Include="Export\page3\Page3ExportData.cs" />
@@ -190,8 +186,6 @@
     <Compile Include="Export\page4\Page4HelperExporter.cs" />
     <Compile Include="Export\page4\Page4ReportExporterForNanJing.cs" />
     <Compile Include="Export\page4\Page4DataCollector.cs" />
-    <Compile Include="Export\page4\Page4ExportData.cs" />
-    <Compile Include="Export\page4\Page4MasterExporter.cs" />
     <Compile Include="Export\page4\Page4ReportExporter.cs" />
     <Compile Include="Export\page2\Page2ReportExporter.cs" />
     <Compile Include="Export\page2\Page2DataCollector.cs" />

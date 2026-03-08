@@ -1,9 +1,8 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Google.Protobuf.WellKnownTypes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using WindowsFormsApp1.Data_Access.Page4;
 using WindowsFormsApp1.Helpers;
 using YourNamespace;
 using static QuantityHelper;
@@ -11,19 +10,16 @@ using static WindowsFormsApp1.Helpers.GasMappingHelper;
 
 public static class Page4DataCollector
 {
-    public static Page4ExportData Collect(TabPage tab)
+    public static P4Batch Collect(TabPage tab)
     {
-        // ─────────────────────────────
-        // (A) 基本欄位
-        // ─────────────────────────────
         var testPicker = ControlHelper.Find<DateTimePicker>(tab, "CylinderRawTestDateBox");
         var arrivePicker = ControlHelper.Find<DateTimePicker>(tab, "CylinderRawArriveDateBox");
         var materialBox = ControlHelper.Find<ComboBox>(tab, "CylinderRawTypeBox");
         var reportNoBox = ControlHelper.Find<TextBox>(tab, "CylinderRawReportNoTB");
 
-        if (testPicker == null || arrivePicker == null || materialBox == null || reportNoBox == null)
+        if (testPicker == null || arrivePicker == null || materialBox == null)
         {
-            MessageBox.Show("缺少必要欄位（日期 / 原料種類 / 報告編號）");
+            MessageBox.Show("缺少必要欄位");
             return null;
         }
 
@@ -32,59 +28,6 @@ public static class Page4DataCollector
         string material = materialBox.Text.Trim();
         string reportNo = reportNoBox.Text.Trim();
         string userName = Environment.UserName;
-
-        var matInfo = MaterialMasterHelper.Get(material);
-        string materialNo = matInfo?.MaterialNo ?? "";
-
-        // ─────────────────────────────
-        // (B) 多筆資料
-        // ─────────────────────────────
-        var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawLotBox"));
-        var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
-        var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
-        var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
-        var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
-        var number = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
-        int n = new[] {weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
-        if (n <= 0)
-        {
-            MessageBox.Show("沒有可匯出的測試資料");
-            return null;
-        }
-
-        weights = weights.Take(n).ToList();
-        vocIns = vocIns.Take(n).ToList();
-        vocOuts = vocOuts.Take(n).ToList();
-        deltaPs = deltaPs.Take(n).ToList();
-
-        // ─────────────────────────────
-        // (C) Lot / 密度 / 數量
-        // ─────────────────────────────
-        var nosForCalc = nos
-            .Where(s => !string.IsNullOrWhiteSpace(s) && s != "-")
-            .ToList();
-        var numbers = number
-            .Select(s => int.TryParse(s, out var v) ? v : (int?)null)
-            .Where(v => v.HasValue)
-            .Select(v => v.Value)   // ⭐ 關鍵
-            .ToList();
-        // 依 n 補齊 Lot（沒有就用 "-")
-        var lotNos = Enumerable.Range(0, n)
-            .Select(i =>
-                i < nosForCalc.Count
-                    ? nosForCalc[i]
-                    : "-"
-            )
-            .ToList();
-
-        // 完整 Lot 編號（同樣用補齊後的）
-        var lotFulls = numbers.Select(num =>
-        {
-            return $"B-{arrivePicker.Value:yyyyMMdd}-001#{num.ToString().PadLeft(2, '0')}";
-        }).ToList();
-        const double VOL = 50.0;
-        var densities = weights.Select(w => w / VOL).ToList();
-
         string qtyWeight = ControlHelper.GetText(tab, "CylinderRawQtyWeightBox");
         string qtyPack = ControlHelper.GetText(tab, "CylinderRawQtyPackBox");
 
@@ -94,9 +37,49 @@ public static class Page4DataCollector
             qtyWeight,
             qtyPack
         );
-        // (D) 選擇壓損索引
+        var matInfo = MaterialMasterHelper.Get(material);
+        string materialNo = matInfo?.MaterialNo ?? "";
+
+        var lotNos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawLotBox"));
+        var numbers = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
+
+        var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
+        var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
+        var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
+        var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
+
+        int n = new[] { weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
+
+        if (n == 0)
+        {
+            MessageBox.Show("沒有可用資料");
+            return null;
+        }
+
+        weights = weights.Take(n).ToList();
+        vocIns = vocIns.Take(n).ToList();
+        vocOuts = vocOuts.Take(n).ToList();
+        deltaPs = deltaPs.Take(n).ToList();
+
+        var lotFulls = new List<string>();
+
+        for (int i = 0; i < n; i++)
+        {
+            string num = i < numbers.Count ? numbers[i] : "";
+            lotFulls.Add($"{numbers}#{num}");
+        }
+
+        const double VOL = 50.0;
+        var densities = weights.Select(w => w / VOL).ToList();
+
+        var outgassingList = vocOuts.Zip(vocIns, (o, i) =>
+        {
+            double diff = o - i;
+            return diff <= 0 ? "N.D." : diff.ToString("F1");
+        }).ToList();
+
         int selectedIndex;
-        using (var f = new Form2(deltaPs, "請選擇本次效率對應的壓損"))
+        using (var f = new Form2(deltaPs, "請選擇壓損"))
         {
             if (f.ShowDialog() != DialogResult.OK)
                 return null;
@@ -104,24 +87,7 @@ public static class Page4DataCollector
             selectedIndex = f.SelectedIndex0;
         }
 
-        if (selectedIndex < 0 || selectedIndex >= n)
-        {
-            MessageBox.Show("選擇的壓損索引不正確");
-            return null;
-        }
-        // (E) Outgassing
-        var outgassingList = vocOuts.Zip(vocIns, (o, i) =>
-        {
-            double diff = o - i;
-            return diff <= 0 ? "N.D." : diff.ToString("F1");
-        }).ToList();
-        // (F) Mesh（只讀 dgv，不再計算）
         var dgv = ControlHelper.Find<DataGridView>(tab, "CylinderRawMeshBox");
-        if (dgv == null)
-        {
-            MessageBox.Show("找不到粒徑資料表");
-            return null;
-        }
 
         var particlePercentages = new Dictionary<string, double>();
 
@@ -129,52 +95,37 @@ public static class Page4DataCollector
         {
             if (row.IsNewRow) continue;
 
-            string key = row.Cells[0].Value?.ToString()?.Trim();
-            string valText = row.Cells[1].Value?.ToString()?.Trim();
+            string key = row.Cells[0].Value?.ToString();
+            string val = row.Cells[1].Value?.ToString();
 
-            if (string.IsNullOrWhiteSpace(key)) continue;
-            if (key.Contains("總重")) continue;
-
-            if (!double.TryParse(valText, out double percent))
-            {
-                MessageBox.Show($"粒徑 {key} 的百分比無法解析");
-                return null;
-            }
-            particlePercentages[key] = percent;
+            if (double.TryParse(val, out double percent))
+                particlePercentages[key] = percent;
         }
 
-        string meshSummary = string.Join(" , ",
-            particlePercentages.Select(kv => $"{kv.Key} {kv.Value:F1}%")
-        );
-
-        // ─────────────────────────────
-        // (G) 效率（多氣體 + Panel）
-        // ─────────────────────────────
         var effGroups = new List<EfficiencyGroup>();
-        var pageType = GasPageType.CylinderRawPage;
-        var panel = ControlHelper.Find<TableLayoutPanel>(tab, "CylinderRawEffPanel");
 
-        foreach (System.Windows.Forms.CheckBox chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
+        var panel = ControlHelper.Find<TableLayoutPanel>(tab, "CylinderRawEffPanel");
+        var pageType = GasPageType.CylinderRawPage;
+
+        foreach (CheckBox chk in ControlHelper.FindAll<CheckBox>(tab))
         {
-            if (!(chk.Tag is string gasKey)) continue;
             if (!chk.Checked) continue;
+            if (!(chk.Tag is string gasKey)) continue;
 
             var gasCfg = GasMappingHelper.Get(gasKey);
-            if (gasCfg == null) continue;
             if (!gasCfg.UiMap.TryGetValue(pageType, out var ui)) continue;
 
             var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
 
-            if (!double.TryParse(tbConc?.Text, out double conc)) continue;
-            double.TryParse(tbBg?.Text, out double bg);
+            if (!double.TryParse(tbConc.Text, out double conc)) continue;
+            double.TryParse(tbBg.Text, out double bg);
 
             var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
             if (readings.Count < 11) continue;
 
             var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
-            if (eff == null) continue;
 
             effGroups.Add(new EfficiencyGroup
             {
@@ -182,43 +133,33 @@ public static class Page4DataCollector
                 Concentration = conc,
                 Eff0 = eff.Eff0,
                 Eff10 = eff.Eff10,
-                Readings11 = eff.Readings,
                 Efficiencies11 = eff.Efficiencies
             });
         }
 
-        if (effGroups.Count == 0)
-        {
-            MessageBox.Show("沒有任何有效的效率資料");
-            return null;
-        }
-
-        // ─────────────────────────────
-        // (H) 回傳 DTO
-        // ─────────────────────────────
-        return new Page4ExportData
+        return new P4Batch
         {
             ReportNo = reportNo,
             Material = material,
             MaterialNo = materialNo,
             ArrivalDate = arrivalDate,
             TestingDate = testingDate,
-
+            UserName = userName,
+            QtyText= qtyText,
             LotNos = lotNos,
             LotFulls = lotFulls,
-            Densities = densities,
-            QtyText = qtyText,
-            UserName = userName,
 
             Weights = weights,
+            Densities = densities,
+
             VocIns = vocIns,
             VocOuts = vocOuts,
             DeltaPs = deltaPs,
-            OutgassingList = outgassingList,
 
+            OutgassingList = outgassingList,
             SelectedIndex = selectedIndex,
+
             ParticleSizePercentages = particlePercentages,
-            MeshSummary = meshSummary,
             EfficiencyGroups = effGroups
         };
     }

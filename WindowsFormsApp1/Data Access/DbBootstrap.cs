@@ -11,7 +11,6 @@ public static class DbBootstrap
                    Path.Combine(QCPathHelper.Data, "qc_data.db");
         }
     }
-
     public static void Init()
     {
         using (var conn = new SQLiteConnection(ConnStr))
@@ -26,10 +25,7 @@ public static class DbBootstrap
             CreatePage6Tables(conn);
         }
     }
-
-    // ===============================
     // PAGE 1 濾網原料
-    // ===============================
     private static void CreatePage1Tables(SQLiteConnection conn)
     {
         string sql = @"
@@ -83,14 +79,10 @@ public static class DbBootstrap
             cmd.ExecuteNonQuery();
         }
     }
-
-    // ===============================
     // PAGE 2 濾網半成品
-    // ===============================
     private static void CreatePage2Tables(SQLiteConnection conn)
     {
         string sql = @"
-
         CREATE TABLE IF NOT EXISTS P2_Batch (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             ProductionDate TEXT,
@@ -143,14 +135,10 @@ public static class DbBootstrap
             cmd.ExecuteNonQuery();
         }
     }
-
-    // ===============================
     // PAGE 3 濾網成品
-    // ===============================
     private static void CreatePage3Tables(SQLiteConnection conn)
     {
         string sql = @"
-
         CREATE TABLE IF NOT EXISTS P3_Batch (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             ProductionDate TEXT,
@@ -196,74 +184,66 @@ public static class DbBootstrap
             cmd.ExecuteNonQuery();
         }
     }
-
-    // ===============================
     // PAGE 4 濾筒原料
-    // ===============================
     private static void CreatePage4Tables(SQLiteConnection conn)
     {
         string sql = @"
 
-        CREATE TABLE IF NOT EXISTS P4_Batch (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ArrivalDate TEXT,
-            TestDate TEXT,
-            MaterialType TEXT,
-            Quantity REAL,
-            ParticleAnalysis TEXT,
-            Moisture REAL,
-            NButane REAL,
-            IodineValue REAL,
-            Ash REAL,
-            CreatedAt TEXT,
-            Username TEXT
-        );
+    CREATE TABLE IF NOT EXISTS P4_Batch (
+        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ReportNo TEXT,
+        Material TEXT,
+        MaterialNo TEXT,
+        ArrivalDate TEXT,
+        TestingDate TEXT,
+        QtyText TEXT,
+        Username TEXT,
+        CreatedAt TEXT
+    );
 
-        CREATE TABLE IF NOT EXISTS P4_GasTest (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            BatchId INTEGER,
-            GasName TEXT,
-            Concentration REAL,
-            Background REAL,
-            FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
-        );
+    CREATE TABLE IF NOT EXISTS P4_Lot (
+        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+        BatchId INTEGER,
+        LotNo TEXT,
+        LotFull TEXT,
+        Weight REAL,
+        Density REAL,
+        VocIn REAL,
+        VocOut REAL,
+        DeltaP REAL,
+        Outgassing TEXT,
+        IsSelected INTEGER,
+        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
+    );
 
-        CREATE TABLE IF NOT EXISTS P4_Sample (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            GasTestId INTEGER,
-            InBatchNo TEXT,
-            InternalBatchNo TEXT,
-            Weight REAL,
-            Density REAL,
-            PressureDrop REAL,
-            VOCIn REAL,
-            VOCOut REAL,
-            VOCOutgassing REAL,
-            FOREIGN KEY (GasTestId) REFERENCES P4_GasTest(Id)
-        );
+    CREATE TABLE IF NOT EXISTS P4_Particle (
+        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+        BatchId INTEGER,
+        SizeName TEXT,
+        Percentage REAL,
+        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
+    );
 
-        CREATE TABLE IF NOT EXISTS P4_Efficiency (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            SampleId INTEGER,
-            SequenceIndex INTEGER,
-            EfficiencyValue REAL,
-            FOREIGN KEY (SampleId) REFERENCES P4_Sample(Id)
-        );
-        ";
+    CREATE TABLE IF NOT EXISTS P4_Efficiency (
+        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+        BatchId INTEGER,
+        GasName TEXT,
+        Concentration REAL,
+        SequenceIndex INTEGER,
+        EfficiencyValue REAL,
+        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
+    );
+    ";
 
         using (var cmd = new SQLiteCommand(sql, conn))
         {
             cmd.ExecuteNonQuery();
         }
     }
-
-    // ===============================
     // PAGE 5 濾筒成品
-    // ===============================
     private static void CreatePage5Tables(SQLiteConnection conn)
     {
         string sql = @"
-
         CREATE TABLE IF NOT EXISTS P5_Batch (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             TestDate TEXT,
@@ -278,7 +258,6 @@ public static class DbBootstrap
             CreatedAt TEXT,
             Username TEXT
         );
-
         CREATE TABLE IF NOT EXISTS P5_Sample (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             BatchId INTEGER,
@@ -298,20 +277,15 @@ public static class DbBootstrap
             FOREIGN KEY (BatchId) REFERENCES P5_Batch(Id)
         );
         ";
-
         using (var cmd = new SQLiteCommand(sql, conn))
         {
             cmd.ExecuteNonQuery();
         }
     }
-
-    // ===============================
     // PAGE 6 物料
-    // ===============================
     private static void CreatePage6Tables(SQLiteConnection conn)
     {
         string sql = @"
-
         CREATE TABLE IF NOT EXISTS P6_Record (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             ReportNo TEXT,
@@ -328,7 +302,6 @@ public static class DbBootstrap
             Username TEXT
         );
         ";
-
         using (var cmd = new SQLiteCommand(sql, conn))
         {
             cmd.ExecuteNonQuery();

@@ -304,6 +304,8 @@
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
+            this.CylinderRawLotFull = new System.Windows.Forms.Label();
+            this.CylinderRawLotFullTB = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -623,6 +625,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawQtyPackBox);
             this.CylinderRawPage.Controls.Add(this.CylinderRawQtyWeightBox);
             this.CylinderRawPage.Controls.Add(this.CylinderRawReportNoTB);
+            this.CylinderRawPage.Controls.Add(this.CylinderRawLotFullTB);
             this.CylinderRawPage.Controls.Add(this.CylinderRawLotBox);
             this.CylinderRawPage.Controls.Add(this.label6);
             this.CylinderRawPage.Controls.Add(this.label7);
@@ -633,6 +636,7 @@
             this.CylinderRawPage.Controls.Add(this.label13);
             this.CylinderRawPage.Controls.Add(this.label14);
             this.CylinderRawPage.Controls.Add(this.CylinderRawReportNo);
+            this.CylinderRawPage.Controls.Add(this.CylinderRawLotFull);
             this.CylinderRawPage.Controls.Add(this.label15);
             this.CylinderRawPage.Controls.Add(this.label16);
             this.CylinderRawPage.Controls.Add(this.label17);
@@ -651,7 +655,7 @@
             // chkAsh
             // 
             this.chkAsh.AutoSize = true;
-            this.chkAsh.Location = new System.Drawing.Point(17, 555);
+            this.chkAsh.Location = new System.Drawing.Point(294, 313);
             this.chkAsh.Name = "chkAsh";
             this.chkAsh.Size = new System.Drawing.Size(15, 14);
             this.chkAsh.TabIndex = 53;
@@ -660,7 +664,7 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(18, 512);
+            this.checkBox4.Location = new System.Drawing.Point(295, 270);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(15, 14);
             this.checkBox4.TabIndex = 53;
@@ -669,7 +673,7 @@
             // chkMoisture
             // 
             this.chkMoisture.AutoSize = true;
-            this.chkMoisture.Location = new System.Drawing.Point(18, 469);
+            this.chkMoisture.Location = new System.Drawing.Point(295, 227);
             this.chkMoisture.Name = "chkMoisture";
             this.chkMoisture.Size = new System.Drawing.Size(15, 14);
             this.chkMoisture.TabIndex = 53;
@@ -677,7 +681,7 @@
             // 
             // CylinderRawPressureBox
             // 
-            this.CylinderRawPressureBox.Location = new System.Drawing.Point(174, 427);
+            this.CylinderRawPressureBox.Location = new System.Drawing.Point(174, 467);
             this.CylinderRawPressureBox.Name = "CylinderRawPressureBox";
             this.CylinderRawPressureBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawPressureBox.TabIndex = 47;
@@ -685,7 +689,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(39, 430);
+            this.label20.Location = new System.Drawing.Point(39, 470);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(41, 20);
             this.label20.TabIndex = 51;
@@ -700,6 +704,7 @@
             this.CylinderRawArriveDateBox.Name = "CylinderRawArriveDateBox";
             this.CylinderRawArriveDateBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawArriveDateBox.TabIndex = 38;
+            this.CylinderRawArriveDateBox.ValueChanged += new System.EventHandler(this.CylinderRawArriveDateBox_ValueChanged);
             // 
             // CylinderRawTestDateBox
             // 
@@ -734,63 +739,63 @@
             // 
             // CylinderRawVOCsOutletBox
             // 
-            this.CylinderRawVOCsOutletBox.Location = new System.Drawing.Point(174, 381);
+            this.CylinderRawVOCsOutletBox.Location = new System.Drawing.Point(174, 421);
             this.CylinderRawVOCsOutletBox.Name = "CylinderRawVOCsOutletBox";
             this.CylinderRawVOCsOutletBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawVOCsOutletBox.TabIndex = 46;
             // 
             // CylinderRawVOCsInletBox
             // 
-            this.CylinderRawVOCsInletBox.Location = new System.Drawing.Point(174, 341);
+            this.CylinderRawVOCsInletBox.Location = new System.Drawing.Point(174, 381);
             this.CylinderRawVOCsInletBox.Name = "CylinderRawVOCsInletBox";
             this.CylinderRawVOCsInletBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawVOCsInletBox.TabIndex = 45;
             // 
             // CylinderRawMoistureTB
             // 
-            this.CylinderRawMoistureTB.Location = new System.Drawing.Point(174, 462);
+            this.CylinderRawMoistureTB.Location = new System.Drawing.Point(451, 220);
             this.CylinderRawMoistureTB.Name = "CylinderRawMoistureTB";
             this.CylinderRawMoistureTB.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawMoistureTB.TabIndex = 48;
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(174, 505);
+            this.textBox5.Location = new System.Drawing.Point(451, 263);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(100, 29);
             this.textBox5.TabIndex = 49;
             // 
             // CylinderRawAshTB
             // 
-            this.CylinderRawAshTB.Location = new System.Drawing.Point(174, 548);
+            this.CylinderRawAshTB.Location = new System.Drawing.Point(451, 306);
             this.CylinderRawAshTB.Name = "CylinderRawAshTB";
             this.CylinderRawAshTB.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawAshTB.TabIndex = 50;
             // 
             // CylinderRawWeightBox
             // 
-            this.CylinderRawWeightBox.Location = new System.Drawing.Point(174, 297);
+            this.CylinderRawWeightBox.Location = new System.Drawing.Point(174, 337);
             this.CylinderRawWeightBox.Name = "CylinderRawWeightBox";
             this.CylinderRawWeightBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawWeightBox.TabIndex = 44;
             // 
             // CylinderRawNumberBox
             // 
-            this.CylinderRawNumberBox.Location = new System.Drawing.Point(174, 255);
+            this.CylinderRawNumberBox.Location = new System.Drawing.Point(174, 295);
             this.CylinderRawNumberBox.Name = "CylinderRawNumberBox";
             this.CylinderRawNumberBox.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawNumberBox.TabIndex = 43;
             // 
             // CylinderRawQtyPackBox
             // 
-            this.CylinderRawQtyPackBox.Location = new System.Drawing.Point(224, 215);
+            this.CylinderRawQtyPackBox.Location = new System.Drawing.Point(224, 255);
             this.CylinderRawQtyPackBox.Name = "CylinderRawQtyPackBox";
             this.CylinderRawQtyPackBox.Size = new System.Drawing.Size(50, 29);
             this.CylinderRawQtyPackBox.TabIndex = 42;
             // 
             // CylinderRawQtyWeightBox
             // 
-            this.CylinderRawQtyWeightBox.Location = new System.Drawing.Point(174, 215);
+            this.CylinderRawQtyWeightBox.Location = new System.Drawing.Point(174, 255);
             this.CylinderRawQtyWeightBox.Name = "CylinderRawQtyWeightBox";
             this.CylinderRawQtyWeightBox.Size = new System.Drawing.Size(50, 29);
             this.CylinderRawQtyWeightBox.TabIndex = 41;
@@ -812,7 +817,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(99, 384);
+            this.label6.Location = new System.Drawing.Point(99, 424);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(57, 20);
             this.label6.TabIndex = 36;
@@ -821,7 +826,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(99, 344);
+            this.label7.Location = new System.Drawing.Point(99, 384);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(43, 20);
             this.label7.TabIndex = 34;
@@ -830,7 +835,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(39, 366);
+            this.label8.Location = new System.Drawing.Point(39, 406);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(51, 20);
             this.label8.TabIndex = 33;
@@ -839,7 +844,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(39, 465);
+            this.label9.Location = new System.Drawing.Point(316, 223);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(57, 20);
             this.label9.TabIndex = 32;
@@ -848,7 +853,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(39, 508);
+            this.label10.Location = new System.Drawing.Point(316, 266);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(57, 20);
             this.label10.TabIndex = 31;
@@ -857,7 +862,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(39, 551);
+            this.label11.Location = new System.Drawing.Point(316, 309);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(41, 20);
             this.label11.TabIndex = 30;
@@ -866,7 +871,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(39, 300);
+            this.label13.Location = new System.Drawing.Point(39, 340);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(89, 20);
             this.label13.TabIndex = 28;
@@ -875,7 +880,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(39, 250);
+            this.label14.Location = new System.Drawing.Point(39, 290);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(109, 40);
             this.label14.TabIndex = 27;
@@ -893,7 +898,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(39, 220);
+            this.label15.Location = new System.Drawing.Point(39, 260);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(73, 20);
             this.label15.TabIndex = 26;
@@ -3156,6 +3161,22 @@
             this.label21.TabIndex = 23;
             this.label21.Text = "測試日期";
             // 
+            // CylinderRawLotFull
+            // 
+            this.CylinderRawLotFull.AutoSize = true;
+            this.CylinderRawLotFull.Location = new System.Drawing.Point(39, 219);
+            this.CylinderRawLotFull.Name = "CylinderRawLotFull";
+            this.CylinderRawLotFull.Size = new System.Drawing.Size(73, 20);
+            this.CylinderRawLotFull.TabIndex = 25;
+            this.CylinderRawLotFull.Text = "廠內批號";
+            // 
+            // CylinderRawLotFullTB
+            // 
+            this.CylinderRawLotFullTB.Location = new System.Drawing.Point(174, 214);
+            this.CylinderRawLotFullTB.Name = "CylinderRawLotFullTB";
+            this.CylinderRawLotFullTB.Size = new System.Drawing.Size(100, 29);
+            this.CylinderRawLotFullTB.TabIndex = 40;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -3475,6 +3496,8 @@
         private System.Windows.Forms.Label CylinderMaterialSN;
         private System.Windows.Forms.TextBox CYLRawEffTB;
         private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox CylinderRawLotFullTB;
+        private System.Windows.Forms.Label CylinderRawLotFull;
     }
 }
 

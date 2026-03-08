@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using WindowsFormsApp1.Export.Page1;
-using WindowsFormsApp1.Helpers;
+using WindowsFormsApp1.Data_Access.Page1;
 using YourNamespace;
 using static QuantityHelper;
 
 public static class Page1DataCollector
 {
-    public static Page1ExportData Collect(TabPage tab)
+    public static P1Batch Collect(TabPage tab)
     {
         // ───── 基本欄位 ─────
         var arrivePicker = ControlHelper.Find<DateTimePicker>(tab, "FilterRawArriveDateBox");
         var testPicker = ControlHelper.Find<DateTimePicker>(tab, "FilterRawTestDateBox");
         var materialBox = ControlHelper.Find<ComboBox>(tab, "FilterRawTypeBox");
         var reportNoBox = ControlHelper.Find<TextBox>(tab, "FilterRawReportNoTB");
-
         var tbConc = ControlHelper.Find<TextBox>(tab, "FilterRawConcertrationBox");
         var tbBg = ControlHelper.Find<TextBox>(tab, "FilterRawBackGroundBox");
         var tbVal = ControlHelper.Find<TextBox>(tab, "FilterRawEffvalueBox");
@@ -32,9 +30,7 @@ public static class Page1DataCollector
 
         // ───── 粒徑（唯一來源：DGV 百分比）─────
         var dgv = ControlHelper.Find<DataGridView>(tab, "FilterRawParticleSizeBox");
-
         var particlePercentages = new Dictionary<string, double>();
-
         foreach (DataGridViewRow row in dgv.Rows)
         {
             if (row.IsNewRow) continue;
@@ -68,7 +64,11 @@ public static class Page1DataCollector
         var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsInletBox"));
         var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsOutletBox"));
         var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawPressureBox"));
-
+        string qtyText = QuantityHelper.BuildQuantityText(
+                ProductKind.Filter,
+                materialBox.Text,
+                ControlHelper.GetText(tab, "FilterRawQtyWeight"),
+                ControlHelper.GetText(tab, "FilterRawQuantityBox"));
         int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
         if (n <= 0) return null;
 
@@ -93,32 +93,37 @@ public static class Page1DataCollector
             double d = o - i;
             return d <= 0 ? "N.D." : d.ToString("F1");
         }).ToList();
-        return new Page1ExportData
+        var batch = new P1Batch
         {
             ReportNo = reportNoBox.Text.Trim(),
             Material = materialBox.Text.Trim(),
             MaterialNo = MaterialMasterHelper.Get(materialBox.Text)?.MaterialNo ?? "",
             ArrivalDate = arrivePicker.Value,
             TestingDate = testPicker.Value,
-            QtyText = QuantityHelper.BuildQuantityText(
-                ProductKind.Filter,
-                materialBox.Text,
-                ControlHelper.GetText(tab, "FilterRawQtyWeight"),
-                ControlHelper.GetText(tab, "FilterRawQuantityBox")),
-            Weight=weights,
-            LotFulls = lotFulls,
-            Densities = densities,
-            DeltaPs = deltaPs.Take(n).ToList(),
-            VocIns = vocIns.Take(n).ToList(),
-            VocOuts = vocOuts.Take(n).ToList(),
-            OutgassingList = outgassing,
-            SelectedIndex = selectedIndex,
-            ParticleSizePercentages = particlePercentages,
-            MeshSummary = meshSummary,
-            Eff0 = eff.Eff0,
-            Eff10 = eff.Eff10,
-            Efficiencies11 = eff.Efficiencies,
-            UserName = Environment.UserName
+            QtyText = qtyText,
+            Username = Environment.UserName,
+            ParticleSizePercentages = particlePercentages
         };
+
+        for (int i = 0; i < n; i++)
+        {
+            var sample = new P1Sample
+            {
+                LotFull = lotFulls[i],
+                Weight = weights[i],
+                Density = densities[i],
+                DeltaP = deltaPs[i],
+                VocIn = vocIns[i],
+                VocOut = vocOuts[i],
+                Outgassing = outgassing[i],
+                IsSelected = (i == selectedIndex)
+            };
+
+            if (i == selectedIndex)
+                sample.Efficiencies = eff.Efficiencies;
+
+            batch.Samples.Add(sample);
+        }
+        return batch;
     }
 }

@@ -97,7 +97,12 @@ namespace WindowsFormsApp1
         private void FilterRawArriveDateBox_ValueChanged(object sender, EventArgs e)
         {
             var dt = FilterRawArriveDateBox.Value.ToString("yyyyMMdd");
-            FilterRawBatchNOBox.Text = $"B-{dt}-001";
+            FilterRawBatchNOBox.Text = $"B-{dt}-";
+        }
+        private void CylinderRawArriveDateBox_ValueChanged(object sender, EventArgs e)
+        {
+            var dt = CylinderRawArriveDateBox.Value.ToString("yyyyMMdd");
+            CylinderRawLotFullTB.Text = $"B-{dt}-";
         }
         private void FilterProductTestDateBox_ValueChanged(object sender, EventArgs e)
         {
