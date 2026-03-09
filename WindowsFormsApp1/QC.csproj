@@ -215,6 +215,7 @@
     </Compile>
     <Compile Include="Utility\CalibrationHelper.cs" />
     <Compile Include="Data Access\DbBootstrap.cs" />
+    <Compile Include="Utility\configHelper.cs" />
     <Compile Include="Utility\QCPathHelper.cs" />
     <Compile Include="Utility\Copymaster.cs" />
     <Compile Include="Business Logic\MeshHelper.cs" />

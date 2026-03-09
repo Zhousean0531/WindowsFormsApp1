@@ -1,22 +1,60 @@
-﻿using System.IO;
+﻿using System;
 using System.Data.SQLite;
-
+using System.IO;
+using System.Windows.Forms;
+using System.Configuration;
 public static class DbBootstrap
 {
     public static string ConnStr
     {
         get
         {
-            return "Data Source=" +
-                   Path.Combine(QCPathHelper.Data, "qc_data.db");
+            string dbPath = ConfigurationManager.AppSettings["DBPath"];
+
+            if (string.IsNullOrWhiteSpace(dbPath))
+                throw new Exception("資料庫路徑未設定");
+
+            string dir = Path.GetDirectoryName(dbPath);
+
+            if (!Directory.Exists(dir))
+                throw new Exception("DB資料夾不存在");
+
+            return $"Data Source={dbPath};Version=3;Busy Timeout=5000;";
+        }
+    }
+    public static bool TestConnection()
+    {
+        try
+        {
+            using (var conn = new SQLiteConnection(ConnStr))
+            {
+                conn.Open();
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("資料庫連線失敗\n" + ex.Message);
+            return false;
         }
     }
     public static void Init()
     {
+        string dbPath = ConfigurationManager.AppSettings["DBPath"];
+
+        if (!File.Exists(dbPath))
+        {
+            SQLiteConnection.CreateFile(dbPath);
+        }
         using (var conn = new SQLiteConnection(ConnStr))
         {
             conn.Open();
+            using (var cmd = new SQLiteCommand("PRAGMA journal_mode=DELETE;", conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
 
+            // 建立所有表
             CreatePage1Tables(conn);
             CreatePage2Tables(conn);
             CreatePage3Tables(conn);
@@ -24,8 +62,7 @@ public static class DbBootstrap
             CreatePage5Tables(conn);
             CreatePage6Tables(conn);
         }
-    }
-    // PAGE 1 濾網原料
+    }    // PAGE 1 濾網原料
     private static void CreatePage1Tables(SQLiteConnection conn)
     {
         string sql = @"

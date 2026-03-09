@@ -15,7 +15,6 @@ namespace WindowsFormsApp1.Data_Access.Page1
         public DateTime ArrivalDate { get; set; }
         public DateTime TestingDate { get; set; }
         public string Username { get; set; }
-
         public Dictionary<string, double> ParticleSizePercentages { get; set; }
             = new Dictionary<string, double>();
 

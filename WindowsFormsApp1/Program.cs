@@ -12,6 +12,10 @@ namespace WindowsFormsApp1
             Application.SetCompatibleTextRenderingDefault(false);
             QCPathHelper.Ensure();
             DbBootstrap.Init();
+            if (!DbBootstrap.TestConnection())
+            {
+                Application.Exit();
+            }
             Application.Run(new Form1());
         }
     }
