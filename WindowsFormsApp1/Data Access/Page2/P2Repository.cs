@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.SQLite;
+using System.Data.SqlClient;
 
 namespace WindowsFormsApp1.Data_Access.Page2
 {
@@ -7,23 +7,22 @@ namespace WindowsFormsApp1.Data_Access.Page2
     {
         public static void Insert(P2Batch batch)
         {
-            using (var conn = new SQLiteConnection(DbBootstrap.ConnStr))
+            using (var conn = DbBootstrap.GetConnection())
             {
                 conn.Open();
 
                 using (var tran = conn.BeginTransaction())
                 {
-                    long batchId = InsertBatch(conn, batch);
+                    long batchId = InsertBatch(conn, tran, batch);
 
                     foreach (var gas in batch.GasTests)
                     {
-                        long gasId = InsertGasTest(conn, batchId, gas);
+                        long gasId = InsertGasTest(conn, tran, batchId, gas);
 
                         foreach (var sample in gas.Samples)
                         {
-                            long sampleId = InsertSample(conn, gasId, sample);
-
-                            InsertEfficiencies(conn, sampleId, sample);
+                            long sampleId = InsertSample(conn, tran, gasId, sample);
+                            InsertEfficiencies(conn, tran, sampleId, sample);
                         }
                     }
 
@@ -31,20 +30,22 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 }
             }
         }
-        private static long InsertBatch(SQLiteConnection conn, P2Batch batch)
+
+        private static long InsertBatch(SqlConnection conn, SqlTransaction tran, P2Batch batch)
         {
             string sql = @"
                 INSERT INTO P2_Batch
-                (ProductionDate, TestDate, WorkOrder, Material, MaterialBatchNo,MaterialNo,
+                (ProductionDate, TestDate, WorkOrder, Material, MaterialBatchNo, MaterialNo,
                  TargetGsm, Glue, Speed, UpperTemp, LowerTemp,
                  Pressure, WindSpeed, CarbonLine, CreatedAt, Username)
                 VALUES
-                (@ProductionDate, @TestDate, @WorkOrder, @Material, @MaterialBatchNo,@MaterialNo,
+                (@ProductionDate, @TestDate, @WorkOrder, @Material, @MaterialBatchNo, @MaterialNo,
                  @TargetGsm, @Glue, @Speed, @UpperTemp, @LowerTemp,
                  @Pressure, @WindSpeed, @CarbonLine, @CreatedAt, @Username);
-                SELECT last_insert_rowid();
+                SELECT SCOPE_IDENTITY();
             ";
-            using (var cmd = new SQLiteCommand(sql, conn))
+
+            using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@ProductionDate", batch.ProductionDate);
                 cmd.Parameters.AddWithValue("@TestDate", batch.TestDate);
@@ -60,55 +61,56 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 cmd.Parameters.AddWithValue("@Pressure", batch.Pressure);
                 cmd.Parameters.AddWithValue("@WindSpeed", batch.WindSpeed);
                 cmd.Parameters.AddWithValue("@CarbonLine", batch.CarbonLine);
-                cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
                 cmd.Parameters.AddWithValue("@Username", batch.Username);
-                return (long)cmd.ExecuteScalar();
+
+                return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
 
-        private static long InsertGasTest(SQLiteConnection conn, long batchId, P2GasTest gas)
+        private static long InsertGasTest(SqlConnection conn, SqlTransaction tran, long batchId, P2GasTest gas)
         {
             string sql = @"
                 INSERT INTO P2_GasTest
                 (BatchId, GasName, Concentration, Background)
                 VALUES
                 (@BatchId, @GasName, @Concentration, @Background);
-                SELECT last_insert_rowid();
+                SELECT SCOPE_IDENTITY();
             ";
 
-            using (var cmd = new SQLiteCommand(sql, conn))
+            using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@BatchId", batchId);
                 cmd.Parameters.AddWithValue("@GasName", gas.GasName);
                 cmd.Parameters.AddWithValue("@Concentration", gas.Concentration);
                 cmd.Parameters.AddWithValue("@Background", gas.Background);
 
-                return (long)cmd.ExecuteScalar();
+                return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
 
-        private static long InsertSample(SQLiteConnection conn, long gasId, P2Sample sample)
+        private static long InsertSample(SqlConnection conn, SqlTransaction tran, long gasId, P2Sample sample)
         {
             string sql = @"
                 INSERT INTO P2_Sample
                 (GasTestId, Weight, PressureDrop, IsSelected)
                 VALUES
                 (@GasTestId, @Weight, @PressureDrop, @IsSelected);
-                SELECT last_insert_rowid();
+                SELECT SCOPE_IDENTITY();
             ";
 
-            using (var cmd = new SQLiteCommand(sql, conn))
+            using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@GasTestId", gasId);
                 cmd.Parameters.AddWithValue("@Weight", sample.Weight);
                 cmd.Parameters.AddWithValue("@PressureDrop", sample.PressureDrop);
-                cmd.Parameters.AddWithValue("@IsSelected", sample.IsSelected ? 1 : 0);
+                cmd.Parameters.AddWithValue("@IsSelected", sample.IsSelected);
 
-                return (long)cmd.ExecuteScalar();
+                return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
 
-        private static void InsertEfficiencies(SQLiteConnection conn, long sampleId, P2Sample sample)
+        private static void InsertEfficiencies(SqlConnection conn, SqlTransaction tran, long sampleId, P2Sample sample)
         {
             if (sample.Efficiencies == null || sample.Efficiencies.Count == 0)
                 return;
@@ -122,7 +124,7 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
             for (int i = 0; i < sample.Efficiencies.Count; i++)
             {
-                using (var cmd = new SQLiteCommand(sql, conn))
+                using (var cmd = new SqlCommand(sql, conn, tran))
                 {
                     cmd.Parameters.AddWithValue("@SampleId", sampleId);
                     cmd.Parameters.AddWithValue("@SequenceIndex", i);

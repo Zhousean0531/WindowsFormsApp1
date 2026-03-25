@@ -1,36 +1,58 @@
 ﻿using System;
-using System.Data.SQLite;
-using System.IO;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Configuration;
+
 public static class DbBootstrap
 {
-    public static string ConnStr
+    private static string _connStr;
+
+    public static void Init()
     {
-        get
+        var builder = new SqlConnectionStringBuilder
         {
-            string dbPath = ConfigurationManager.AppSettings["DBPath"];
-
-            if (string.IsNullOrWhiteSpace(dbPath))
-                throw new Exception("資料庫路徑未設定");
-
-            string dir = Path.GetDirectoryName(dbPath);
-
-            if (!Directory.Exists(dir))
-                throw new Exception("DB資料夾不存在");
-
-            return $"Data Source={dbPath};Version=3;Busy Timeout=5000;";
+            DataSource = ".\\SQLEXPRESS",
+            InitialCatalog = "QC_DB",
+            IntegratedSecurity = true,
+            TrustServerCertificate = true,
+            Encrypt = false
+        };
+        
+        _connStr = builder.ConnectionString;
+        try
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                CreatePage1Tables(conn);
+                CreatePage2Tables(conn);
+                CreatePage3Tables(conn);
+                CreatePage4Tables(conn);
+                CreatePage5Tables(conn);
+                CreatePage6Tables(conn);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.ToString());
         }
     }
+
+    public static SqlConnection GetConnection()
+    {
+        return new SqlConnection(_connStr);
+    }
+
     public static bool TestConnection()
     {
         try
         {
-            using (var conn = new SQLiteConnection(ConnStr))
+            using (var conn = GetConnection())
             {
                 conn.Open();
                 return true;
             }
+
         }
         catch (Exception ex)
         {
@@ -38,310 +60,241 @@ public static class DbBootstrap
             return false;
         }
     }
-    public static void Init()
-    {
-        string dbPath = ConfigurationManager.AppSettings["DBPath"];
 
-        if (!File.Exists(dbPath))
-        {
-            SQLiteConnection.CreateFile(dbPath);
-        }
-        using (var conn = new SQLiteConnection(ConnStr))
-        {
-            conn.Open();
-            using (var cmd = new SQLiteCommand("PRAGMA journal_mode=DELETE;", conn))
-            {
-                cmd.ExecuteNonQuery();
-            }
-
-            // 建立所有表
-            CreatePage1Tables(conn);
-            CreatePage2Tables(conn);
-            CreatePage3Tables(conn);
-            CreatePage4Tables(conn);
-            CreatePage5Tables(conn);
-            CreatePage6Tables(conn);
-        }
-    }    // PAGE 1 濾網原料
-    private static void CreatePage1Tables(SQLiteConnection conn)
+    // ===== PAGE 1 =====
+    private static void CreatePage1Tables(SqlConnection conn)
     {
         string sql = @"
 
-        CREATE TABLE IF NOT EXISTS P1_Batch (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ArrivalDate TEXT,
-            TestDate TEXT,
-            ReportNo TEXT,
-            MaterialType TEXT,
-            Quantity REAL,
-            ParticleAnalysis TEXT,
-            CreatedAt TEXT,
-            Username TEXT
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P1_Batch' AND xtype='U')
+        CREATE TABLE P1_Batch (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            ArrivalDate DATE,
+            TestingDate DATE,
+            ReportNo NVARCHAR(50),
+            Material NVARCHAR(50),
+            Concentration DECIMAL(10,2),
+            Background DECIMAL(10,2),
+            QtyText NVARCHAR(100),
+            ParticleAnalysis NVARCHAR(300),
+            CreatedAt DATETIME,
+            Username NVARCHAR(50)
         );
-
-        CREATE TABLE IF NOT EXISTS P1_GasTest (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            BatchId INTEGER,
-            GasName TEXT,
-            Concentration REAL,
-            Background REAL,
-            FOREIGN KEY (BatchId) REFERENCES P1_Batch(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P1_Sample' AND xtype='U')
+        CREATE TABLE P1_Sample (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            InBatchNo NVARCHAR(50),
+            InternalBatchNo NVARCHAR(50),
+            Weight DECIMAL(10,4),
+            Density DECIMAL(10,4),
+            PressureDrop INT,
+            VOCIn DECIMAL(10,2),
+            VOCOut DECIMAL(10,2),
+            VOCOutgassing DECIMAL(10,2)
         );
-
-        CREATE TABLE IF NOT EXISTS P1_Sample (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            GasTestId INTEGER,
-            InBatchNo TEXT,
-            InternalBatchNo TEXT,
-            Weight REAL,
-            Density REAL,
-            PressureDrop REAL,
-            VOCIn REAL,
-            VOCOut REAL,
-            VOCOutgassing REAL,
-            FOREIGN KEY (GasTestId) REFERENCES P1_GasTest(Id)
-        );
-
-        CREATE TABLE IF NOT EXISTS P1_Efficiency (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            SampleId INTEGER,
-            SequenceIndex INTEGER,
-            EfficiencyValue REAL,
-            FOREIGN KEY (SampleId) REFERENCES P1_Sample(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P1_Efficiency' AND xtype='U')
+        CREATE TABLE P1_Efficiency (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            SampleId INT,
+            SequenceIndex INT,
+            EfficiencyValue DECIMAL(5,1)
         );
         ";
 
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
+        new SqlCommand(sql, conn).ExecuteNonQuery();
     }
-    // PAGE 2 濾網半成品
-    private static void CreatePage2Tables(SQLiteConnection conn)
+
+    // ===== PAGE 2 =====
+    private static void CreatePage2Tables(SqlConnection conn)
     {
         string sql = @"
-        CREATE TABLE IF NOT EXISTS P2_Batch (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ProductionDate TEXT,
-            TestDate TEXT,
-            WorkOrder TEXT,
-            Material TEXT,
-            MaterialBatchNo TEXT,
-            TargetGsm REAL,
-            Glue REAL,
-            MaterialNo TEXT,
-            Speed REAL,
-            UpperTemp REAL,
-            LowerTemp REAL,
-            Pressure REAL,
-            WindSpeed REAL,
-            CarbonLine TEXT,
-            CreatedAt TEXT,
-            Username TEXT
+
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Batch' AND xtype='U')
+        CREATE TABLE P2_Batch (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            ProductionDate DATETIME,
+            TestDate DATETIME,
+            WorkOrder NVARCHAR(50),
+            Material NVARCHAR(50),
+            MaterialBatchNo NVARCHAR(50),
+            TargetGsm FLOAT,
+            Glue FLOAT,
+            MaterialNo NVARCHAR(50),
+            Speed FLOAT,
+            UpperTemp FLOAT,
+            LowerTemp FLOAT,
+            Pressure FLOAT,
+            WindSpeed FLOAT,
+            CarbonLine NVARCHAR(50),
+            CreatedAt DATETIME,
+            Username NVARCHAR(50)
         );
 
-        CREATE TABLE IF NOT EXISTS P2_GasTest (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            BatchId INTEGER,
-            GasName TEXT,
-            Concentration REAL,
-            Background REAL,
-            FOREIGN KEY (BatchId) REFERENCES P2_Batch(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_GasTest' AND xtype='U')
+        CREATE TABLE P2_GasTest (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            GasName NVARCHAR(50),
+            Concentration FLOAT,
+            Background FLOAT
         );
 
-        CREATE TABLE IF NOT EXISTS P2_Sample (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            GasTestId INTEGER,
-            Weight REAL,
-            PressureDrop REAL,
-            IsSelected INTEGER,
-            FOREIGN KEY (GasTestId) REFERENCES P2_GasTest(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Sample' AND xtype='U')
+        CREATE TABLE P2_Sample (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            GasTestId INT,
+            Weight FLOAT,
+            PressureDrop FLOAT,
+            IsSelected BIT
         );
 
-        CREATE TABLE IF NOT EXISTS P2_Efficiency (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            SampleId INTEGER,
-            SequenceIndex INTEGER,
-            EfficiencyValue REAL,
-            FOREIGN KEY (SampleId) REFERENCES P2_Sample(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Efficiency' AND xtype='U')
+        CREATE TABLE P2_Efficiency (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            SampleId INT,
+            SequenceIndex INT,
+            EfficiencyValue FLOAT
         );
         ";
 
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
+        new SqlCommand(sql, conn).ExecuteNonQuery();
     }
-    // PAGE 3 濾網成品
-    private static void CreatePage3Tables(SQLiteConnection conn)
+
+    // ===== PAGE 3 =====
+    private static void CreatePage3Tables(SqlConnection conn)
     {
         string sql = @"
-        CREATE TABLE IF NOT EXISTS P3_Batch (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ProductionDate TEXT,
-            TestDate TEXT,
-            ReportNo TEXT,
-            CarbonOrder TEXT,
-            PackageOrder TEXT,
-            Customer TEXT,
-            PartNo TEXT,
-            Model TEXT,
-            Type TEXT,
-            RegenerationCount INTEGER,
-            InitialEfficiency REAL,
-            CreatedAt TEXT
+
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P3_Batch' AND xtype='U')
+        CREATE TABLE P3_Batch (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            ProductionDate DATETIME,
+            TestDate DATETIME,
+            ReportNo NVARCHAR(50),
+            CarbonOrder NVARCHAR(50),
+            PackageOrder NVARCHAR(50),
+            Customer NVARCHAR(50),
+            PartNo NVARCHAR(50),
+            Model NVARCHAR(50),
+            Type NVARCHAR(50),
+            RegenerationCount INT,
+            InitialEfficiency FLOAT,
+            CreatedAt DATETIME
         );
 
-        CREATE TABLE IF NOT EXISTS P3_Sample (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            BatchId INTEGER,
-            SerialNo TEXT,
-            Weight REAL,
-            Length REAL,
-            Width REAL,
-            Height REAL,
-            Diagonal REAL,
-            ParticleIn REAL,
-            ParticleOut REAL,
-            IPAIn REAL,
-            IPAOut REAL,
-            AcetoneIn REAL,
-            AcetoneOut REAL,
-            NontargetIn REAL,
-            NontargetOut REAL,
-            TVOC REAL,
-            PressureSpec REAL,
-            PressureDrop REAL,
-            FOREIGN KEY (BatchId) REFERENCES P3_Batch(Id)
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P3_Sample' AND xtype='U')
+        CREATE TABLE P3_Sample (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            SerialNo NVARCHAR(50),
+            Weight FLOAT,
+            Length FLOAT,
+            Width FLOAT,
+            Height FLOAT,
+            Diagonal FLOAT,
+            ParticleIn FLOAT,
+            ParticleOut FLOAT,
+            IPAIn FLOAT,
+            IPAOut FLOAT,
+            AcetoneIn FLOAT,
+            AcetoneOut FLOAT,
+            NontargetIn FLOAT,
+            NontargetOut FLOAT,
+            TVOC FLOAT,
+            PressureSpec FLOAT,
+            PressureDrop FLOAT
         );
         ";
 
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
+        new SqlCommand(sql, conn).ExecuteNonQuery();
     }
-    // PAGE 4 濾筒原料
-    private static void CreatePage4Tables(SQLiteConnection conn)
+
+    // ===== PAGE 4 =====
+    private static void CreatePage4Tables(SqlConnection conn)
     {
         string sql = @"
 
-    CREATE TABLE IF NOT EXISTS P4_Batch (
-        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ReportNo TEXT,
-        Material TEXT,
-        MaterialNo TEXT,
-        ArrivalDate TEXT,
-        TestingDate TEXT,
-        QtyText TEXT,
-        Username TEXT,
-        CreatedAt TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS P4_Lot (
-        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-        BatchId INTEGER,
-        LotNo TEXT,
-        LotFull TEXT,
-        Weight REAL,
-        Density REAL,
-        VocIn REAL,
-        VocOut REAL,
-        DeltaP REAL,
-        Outgassing TEXT,
-        IsSelected INTEGER,
-        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
-    );
-
-    CREATE TABLE IF NOT EXISTS P4_Particle (
-        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-        BatchId INTEGER,
-        SizeName TEXT,
-        Percentage REAL,
-        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
-    );
-
-    CREATE TABLE IF NOT EXISTS P4_Efficiency (
-        Id INTEGER PRIMARY KEY AUTOINCREMENT,
-        BatchId INTEGER,
-        GasName TEXT,
-        Concentration REAL,
-        SequenceIndex INTEGER,
-        EfficiencyValue REAL,
-        FOREIGN KEY (BatchId) REFERENCES P4_Batch(Id)
-    );
-    ";
-
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
-    }
-    // PAGE 5 濾筒成品
-    private static void CreatePage5Tables(SQLiteConnection conn)
-    {
-        string sql = @"
-        CREATE TABLE IF NOT EXISTS P5_Batch (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            TestDate TEXT,
-            ReportNo TEXT,
-            PackageOrder TEXT,
-            MaterialBatchNo TEXT,
-            Customer TEXT,
-            Model TEXT,
-            Type TEXT,
-            RegenerationCount INTEGER,
-            InitialEfficiency REAL,
-            CreatedAt TEXT,
-            Username TEXT
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Batch' AND xtype='U')
+        CREATE TABLE P4_Batch (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            ReportNo NVARCHAR(50),
+            Material NVARCHAR(50),
+            MaterialNo NVARCHAR(50),
+            ArrivalDate DATETIME,
+            TestingDate DATETIME,
+            QtyText NVARCHAR(50),
+            Username NVARCHAR(50),
+            CreatedAt DATETIME
         );
-        CREATE TABLE IF NOT EXISTS P5_Sample (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            BatchId INTEGER,
-            SerialNo TEXT,
-            Weight REAL,
-            ParticleIn REAL,
-            ParticleOut REAL,
-            IPAIn REAL,
-            IPAOut REAL,
-            AcetoneIn REAL,
-            AcetoneOut REAL,
-            NontargetIn REAL,
-            NontargetOut REAL,
-            TVOC REAL,
-            PressureSpec REAL,
-            PressureDrop REAL,
-            FOREIGN KEY (BatchId) REFERENCES P5_Batch(Id)
+
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Lot' AND xtype='U')
+        CREATE TABLE P4_Lot (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            LotNo NVARCHAR(50),
+            LotFull NVARCHAR(50),
+            Weight FLOAT,
+            Density FLOAT,
+            VocIn FLOAT,
+            VocOut FLOAT,
+            DeltaP FLOAT,
+            Outgassing NVARCHAR(50),
+            IsSelected BIT
         );
         ";
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
+
+        new SqlCommand(sql, conn).ExecuteNonQuery();
     }
-    // PAGE 6 物料
-    private static void CreatePage6Tables(SQLiteConnection conn)
+
+    // ===== PAGE 5 =====
+    private static void CreatePage5Tables(SqlConnection conn)
     {
         string sql = @"
-        CREATE TABLE IF NOT EXISTS P6_Record (
-            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ReportNo TEXT,
-            ArrivalDate TEXT,
-            SampleDate TEXT,
-            MaterialName TEXT,
-            PartNo TEXT,
-            Quantity REAL,
-            SampleQuantity REAL,
-            SpecValue REAL,
-            MeasuredValue REAL,
-            Remark TEXT,
-            CreatedAt TEXT,
-            Username TEXT
+
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P5_Batch' AND xtype='U')
+        CREATE TABLE P5_Batch (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            TestDate DATETIME,
+            ReportNo NVARCHAR(50),
+            PackageOrder NVARCHAR(50),
+            MaterialBatchNo NVARCHAR(50),
+            Customer NVARCHAR(50),
+            Model NVARCHAR(50),
+            Type NVARCHAR(50),
+            RegenerationCount INT,
+            InitialEfficiency FLOAT,
+            CreatedAt DATETIME,
+            Username NVARCHAR(50)
         );
         ";
-        using (var cmd = new SQLiteCommand(sql, conn))
-        {
-            cmd.ExecuteNonQuery();
-        }
+
+        new SqlCommand(sql, conn).ExecuteNonQuery();
+    }
+
+    // ===== PAGE 6 =====
+    private static void CreatePage6Tables(SqlConnection conn)
+    {
+        string sql = @"
+
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P6_Record' AND xtype='U')
+        CREATE TABLE P6_Record (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            ReportNo NVARCHAR(50),
+            ArrivalDate DATETIME,
+            SampleDate DATETIME,
+            MaterialName NVARCHAR(50),
+            PartNo NVARCHAR(50),
+            Quantity FLOAT,
+            SampleQuantity FLOAT,
+            SpecValue FLOAT,
+            MeasuredValue FLOAT,
+            Remark NVARCHAR(100),
+            CreatedAt DATETIME,
+            Username NVARCHAR(50)
+        );
+        ";
+
+        new SqlCommand(sql, conn).ExecuteNonQuery();
     }
 }

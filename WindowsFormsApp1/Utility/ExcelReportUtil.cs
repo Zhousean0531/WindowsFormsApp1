@@ -82,14 +82,16 @@ public static class ExcelReportUtil
                 int col = COL_FIRST + i;
                 var sample = batch.Samples[i];
                 var selectedSample = batch.Samples.FirstOrDefault(s => s.IsSelected);
-                double? eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
+                decimal? eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
                 ws.Cells[ROW_LOTNO, col].Value = sample.LotFull;
                 ws.Cells[ROW_DENS, col].Value = sample.Density;
                 ws.Cells[ROW_DP, col].Value = sample.DeltaP;
                 ws.Cells[ROW_VIN, col].Value = sample.VocIn;
                 ws.Cells[ROW_VOUT, col].Value = sample.VocOut;
-                ws.Cells[ROW_OUTG, col].Value = sample.Outgassing;
-
+                ws.Cells[ROW_OUTG, col].Value =
+                    sample.Outgassing.HasValue
+                    ? (sample.Outgassing.Value < 0 ? "N.D." : (object)sample.Outgassing.Value)
+                    : "N.D.";
                 ws.Cells[ROW_EFF, col].Value =
                     sample.IsSelected
                     ? (eff0.HasValue ? (object)eff0.Value : "N.D.")
@@ -154,7 +156,10 @@ public static class ExcelReportUtil
                     wshelper.Cells[row, 4].Value = sample.LotFull;
                     wshelper.Cells[row, 5].Value = sample.VocIn;
                     wshelper.Cells[row, 6].Value = sample.VocOut;
-                    wshelper.Cells[row, 7].Value = sample.Outgassing;
+                    wshelper.Cells[row, 7].Value =
+                        sample.Outgassing.HasValue && sample.Outgassing.Value < 0
+                        ? "N.D."
+                        : (object)sample.Outgassing;
                     wshelper.Cells[row, 8].Value = sample.DeltaP;
 
                     if (sample.IsSelected)
@@ -181,24 +186,23 @@ public static class ExcelReportUtil
                             continue;
 
                         wshelper.Cells[r, 1].Value = kv.Key;
-                        wshelper.Cells[r, 2].Value = kv.Value / 100;
+                        wshelper.Cells[r, 2].Value = (double)kv.Value / 100;
                         wshelper.Cells[r, 2].NumberFormat = "0.0%";
                         r++;
                     }
                 }
-                // ===== 效率 11 點 =====
-                    int startEffRow = 3;
-                    int col = 19;
+                int startEffRow = 3;
+                int col = 19;
 
-                    var effList = selectedSample?.Efficiencies;
+                var effList = selectedSample?.Efficiencies;
 
-                    if (effList != null)
+                if (effList != null)
+                {
+                    for (int i = 0; i < effList.Count && i < 11; i++)
                     {
-                        for (int i = 0; i < effList.Count && i < 11; i++)
-                        {
-                            wshelper.Cells[startEffRow + i, col].Value = effList[i];
-                        }
+                    wshelper.Cells[startEffRow + i, col].Value = effList[i].HasValue ? (object)effList[i].Value : "N.D.";
                     }
+                }
             }
         );
     }

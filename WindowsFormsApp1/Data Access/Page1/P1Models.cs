@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WindowsFormsApp1.Data_Access.Page1
 {
@@ -10,6 +7,8 @@ namespace WindowsFormsApp1.Data_Access.Page1
     {
         public string ReportNo { get; set; }
         public string Material { get; set; }
+        public decimal? Concentration { get; set; }
+        public decimal? Background { get; set; }
         public string MaterialNo { get; set; }
         public string QtyText { get; set; }
         public DateTime ArrivalDate { get; set; }
@@ -25,16 +24,16 @@ namespace WindowsFormsApp1.Data_Access.Page1
     public class P1Sample
     {
         public string LotFull { get; set; }
-        public double? Weight { get; set; }
-        public double? Density { get; set; }
-        public double? DeltaP { get; set; }
-        public double? VocIn { get; set; }
-        public double? VocOut { get; set; }
-        public string Outgassing { get; set; }
+        public decimal? Weight { get; set; }
+        public decimal? Density { get; set; }
+        public decimal? DeltaP { get; set; }
+        public decimal? VocIn { get; set; }
+        public decimal? VocOut { get; set; }
+        public decimal? Outgassing { get; set; }
+
+        public List<decimal?> Efficiencies { get; set; }
 
         public bool IsSelected { get; set; }
 
-        public List<double> Efficiencies { get; set; }
-            = new List<double>();
     }
 }
