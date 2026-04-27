@@ -61,7 +61,7 @@
             this.execute = new System.Windows.Forms.Button();
             this.CylinderRawPage = new System.Windows.Forms.TabPage();
             this.chkAsh = new System.Windows.Forms.CheckBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.chkButane = new System.Windows.Forms.CheckBox();
             this.chkMoisture = new System.Windows.Forms.CheckBox();
             this.CylinderRawPressureBox = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -71,13 +71,14 @@
             this.CylinderRawVOCsOutletBox = new System.Windows.Forms.TextBox();
             this.CylinderRawVOCsInletBox = new System.Windows.Forms.TextBox();
             this.CylinderRawMoistureTB = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.CylinderRawButaneTB = new System.Windows.Forms.TextBox();
             this.CylinderRawAshTB = new System.Windows.Forms.TextBox();
             this.CylinderRawWeightBox = new System.Windows.Forms.TextBox();
             this.CylinderRawNumberBox = new System.Windows.Forms.TextBox();
             this.CylinderRawQtyPackBox = new System.Windows.Forms.TextBox();
             this.CylinderRawQtyWeightBox = new System.Windows.Forms.TextBox();
             this.CylinderRawReportNoTB = new System.Windows.Forms.TextBox();
+            this.CylinderRawLotFullTB = new System.Windows.Forms.TextBox();
             this.CylinderRawLotBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -88,6 +89,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.CylinderRawReportNo = new System.Windows.Forms.Label();
+            this.CylinderRawLotFull = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
@@ -304,8 +306,6 @@
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.CylinderRawLotFull = new System.Windows.Forms.Label();
-            this.CylinderRawLotFullTB = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -608,7 +608,7 @@
             // 
             this.CylinderRawPage.BackColor = System.Drawing.Color.White;
             this.CylinderRawPage.Controls.Add(this.chkAsh);
-            this.CylinderRawPage.Controls.Add(this.checkBox4);
+            this.CylinderRawPage.Controls.Add(this.chkButane);
             this.CylinderRawPage.Controls.Add(this.chkMoisture);
             this.CylinderRawPage.Controls.Add(this.CylinderRawPressureBox);
             this.CylinderRawPage.Controls.Add(this.label20);
@@ -618,7 +618,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawVOCsOutletBox);
             this.CylinderRawPage.Controls.Add(this.CylinderRawVOCsInletBox);
             this.CylinderRawPage.Controls.Add(this.CylinderRawMoistureTB);
-            this.CylinderRawPage.Controls.Add(this.textBox5);
+            this.CylinderRawPage.Controls.Add(this.CylinderRawButaneTB);
             this.CylinderRawPage.Controls.Add(this.CylinderRawAshTB);
             this.CylinderRawPage.Controls.Add(this.CylinderRawWeightBox);
             this.CylinderRawPage.Controls.Add(this.CylinderRawNumberBox);
@@ -661,14 +661,14 @@
             this.chkAsh.TabIndex = 53;
             this.chkAsh.UseVisualStyleBackColor = true;
             // 
-            // checkBox4
+            // chkButane
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(295, 270);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(15, 14);
-            this.checkBox4.TabIndex = 53;
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.chkButane.AutoSize = true;
+            this.chkButane.Location = new System.Drawing.Point(295, 270);
+            this.chkButane.Name = "chkButane";
+            this.chkButane.Size = new System.Drawing.Size(15, 14);
+            this.chkButane.TabIndex = 53;
+            this.chkButane.UseVisualStyleBackColor = true;
             // 
             // chkMoisture
             // 
@@ -758,12 +758,12 @@
             this.CylinderRawMoistureTB.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawMoistureTB.TabIndex = 48;
             // 
-            // textBox5
+            // CylinderRawButaneTB
             // 
-            this.textBox5.Location = new System.Drawing.Point(451, 263);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 29);
-            this.textBox5.TabIndex = 49;
+            this.CylinderRawButaneTB.Location = new System.Drawing.Point(451, 263);
+            this.CylinderRawButaneTB.Name = "CylinderRawButaneTB";
+            this.CylinderRawButaneTB.Size = new System.Drawing.Size(100, 29);
+            this.CylinderRawButaneTB.TabIndex = 49;
             // 
             // CylinderRawAshTB
             // 
@@ -806,6 +806,13 @@
             this.CylinderRawReportNoTB.Name = "CylinderRawReportNoTB";
             this.CylinderRawReportNoTB.Size = new System.Drawing.Size(100, 29);
             this.CylinderRawReportNoTB.TabIndex = 40;
+            // 
+            // CylinderRawLotFullTB
+            // 
+            this.CylinderRawLotFullTB.Location = new System.Drawing.Point(174, 214);
+            this.CylinderRawLotFullTB.Name = "CylinderRawLotFullTB";
+            this.CylinderRawLotFullTB.Size = new System.Drawing.Size(100, 29);
+            this.CylinderRawLotFullTB.TabIndex = 40;
             // 
             // CylinderRawLotBox
             // 
@@ -894,6 +901,15 @@
             this.CylinderRawReportNo.Size = new System.Drawing.Size(73, 20);
             this.CylinderRawReportNo.TabIndex = 25;
             this.CylinderRawReportNo.Text = "報告編號";
+            // 
+            // CylinderRawLotFull
+            // 
+            this.CylinderRawLotFull.AutoSize = true;
+            this.CylinderRawLotFull.Location = new System.Drawing.Point(39, 219);
+            this.CylinderRawLotFull.Name = "CylinderRawLotFull";
+            this.CylinderRawLotFull.Size = new System.Drawing.Size(73, 20);
+            this.CylinderRawLotFull.TabIndex = 25;
+            this.CylinderRawLotFull.Text = "廠內批號";
             // 
             // label15
             // 
@@ -3161,22 +3177,6 @@
             this.label21.TabIndex = 23;
             this.label21.Text = "測試日期";
             // 
-            // CylinderRawLotFull
-            // 
-            this.CylinderRawLotFull.AutoSize = true;
-            this.CylinderRawLotFull.Location = new System.Drawing.Point(39, 219);
-            this.CylinderRawLotFull.Name = "CylinderRawLotFull";
-            this.CylinderRawLotFull.Size = new System.Drawing.Size(73, 20);
-            this.CylinderRawLotFull.TabIndex = 25;
-            this.CylinderRawLotFull.Text = "廠內批號";
-            // 
-            // CylinderRawLotFullTB
-            // 
-            this.CylinderRawLotFullTB.Location = new System.Drawing.Point(174, 214);
-            this.CylinderRawLotFullTB.Name = "CylinderRawLotFullTB";
-            this.CylinderRawLotFullTB.Size = new System.Drawing.Size(100, 29);
-            this.CylinderRawLotFullTB.TabIndex = 40;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -3440,7 +3440,7 @@
         private System.Windows.Forms.TextBox CylinderRawVOCsOutletBox;
         private System.Windows.Forms.TextBox CylinderRawVOCsInletBox;
         private System.Windows.Forms.TextBox CylinderRawMoistureTB;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox CylinderRawButaneTB;
         private System.Windows.Forms.TextBox CylinderRawAshTB;
         private System.Windows.Forms.TextBox CylinderRawWeightBox;
         private System.Windows.Forms.TextBox CylinderRawNumberBox;
@@ -3461,7 +3461,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.CheckBox chkAsh;
-        private System.Windows.Forms.CheckBox checkBox4;
+        private System.Windows.Forms.CheckBox chkButane;
         private System.Windows.Forms.CheckBox chkMoisture;
         private System.Windows.Forms.Label FilterRawReportNo;
         private System.Windows.Forms.TextBox FilterRawReportNoTB;

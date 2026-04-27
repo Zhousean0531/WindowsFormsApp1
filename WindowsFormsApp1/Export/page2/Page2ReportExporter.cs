@@ -22,7 +22,7 @@ public static class Page2ReportExporter
             var firstGas = batch.GasTests.First();
 
             sfd.FileName =
-                $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}({DateTime.Parse(batch.TestDate):MMdd}生產)_{firstGas.GasName} .xlsx";
+                $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產)_{firstGas.GasName} .xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
@@ -68,7 +68,7 @@ public static class Page2ReportExporter
         }
 
         string fileName =
-            $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}_{gas.GasName} ({DateTime.Parse(batch.TestDate):MMdd}生產).xlsx";
+            $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}_{gas.GasName} ({batch.TestDate?.ToString("MMdd生產")}.xlsx";
 
         string savePath = Path.Combine(folder, fileName);
 
@@ -91,14 +91,14 @@ public static class Page2ReportExporter
             var weights = gas.Samples.Select(s => s.Weight ?? 0).ToList();
             var drops = gas.Samples.Select(s => s.PressureDrop ?? 0).ToList();
 
-            DateTime prodDt = DateTime.Parse(batch.ProductionDate);
+            DateTime prodDt = batch.ProductionDate ?? DateTime.Now; ;
 
             string l1Text =
-                $"{DateTime.Parse(batch.TestDate):MM.dd} {batch.Material} {weights[idx]}gsm ({drops[idx]}Pa) -{prodDt:MMdd}生產";
+                $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} {weights[idx]}gsm ({drops[idx]}Pa) -{prodDt:MMdd}生產";
 
             ws.Range["C6"].Value = batch.ReportNo;
             ws.Range["F7"].Value = batch.Material;
-            ws.Range["F8"].Value = batch.FilterSize;
+            ws.Range["F8"].Value = batch.FilterSize;    
             ws.Range["F9"].Value = batch.WorkOrder;
             ws.Range["H6"].Value = batch.TestDate;
 
@@ -167,7 +167,12 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 2].Value = batch.TestDate;
                 ws.Cells[currentRow, 3].Value = batch.WorkOrder;
                 ws.Cells[currentRow, 4].Value = batch.Material;
-
+                ws.Cells[currentRow, 5].Value = batch.MaterialNo;
+                ws.Cells[currentRow, 6].Value = batch.TargetGsm;
+                ws.Cells[currentRow, 7].Value = batch.Glue;
+                ws.Cells[currentRow, 8].Value = batch.Speed;
+                ws.Cells[currentRow, 9].Value = batch.WindSpeed;
+                ws.Cells[currentRow, 8].Value = batch.Username;
                 ws.Cells[currentRow, 11].Value = sample.Weight;
                 ws.Cells[currentRow, 12].Value = sample.PressureDrop;
 

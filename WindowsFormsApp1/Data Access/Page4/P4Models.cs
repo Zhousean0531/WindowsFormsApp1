@@ -10,53 +10,50 @@ namespace WindowsFormsApp1.Data_Access.Page4
 
         public string ArrivalDate { get; set; }
         public string TestingDate { get; set; }
-
+        public double Density { get; set; }
         public string QtyText { get; set; }
         public string UserName { get; set; }
 
-        public List<string> LotNos { get; set; } = new List<string>();
-        public List<string> LotFulls { get; set; } = new List<string>();
+        // ⭐ 核心
+        public string SupplierLot { get; set; }
+        public string FactoryLot { get; set; }
 
-        public List<double> Weights { get; set; } = new List<double>();
-        public List<double> Densities { get; set; } = new List<double>();
+        public List<P4Row> Rows { get; set; } = new List<P4Row>();
 
-        public List<double> VocIns { get; set; } = new List<double>();
-        public List<double> VocOuts { get; set; } = new List<double>();
-
-        public List<double> DeltaPs { get; set; } = new List<double>();
-        public List<string> OutgassingList { get; set; } = new List<string>();
-
-        public int SelectedIndex { get; set; }
+        public decimal? Moisture { get; set; }
+        public decimal? Butane { get; set; }
+        public decimal? Ash { get; set; }
 
         public Dictionary<string, double> ParticleSizePercentages
             = new Dictionary<string, double>();
 
-        public List<EfficiencyGroup> EfficiencyGroups
-            = new List<EfficiencyGroup>();
+        public List<P4EfficiencyGroup> EfficiencyGroups
+            = new List<P4EfficiencyGroup>();
     }
-    public class P4Lot
+
+    public class P4Row
     {
         public string LotNo { get; set; }
         public string LotFull { get; set; }
+
         public double Weight { get; set; }
         public double Density { get; set; }
         public double VocIn { get; set; }
         public double VocOut { get; set; }
         public double DeltaP { get; set; }
+
         public string Outgassing { get; set; }
         public bool IsSelected { get; set; }
     }
-    public class P4Particle
-    {
-        public string SizeName { get; set; }
-        public double Percentage { get; set; }
-    }
+
     public class P4EfficiencyGroup
     {
         public string GasName { get; set; }
         public double? Concentration { get; set; }
-        public double? Eff0 { get; set; }
-        public double? Eff10 { get; set; }
-        public List<double> Efficiencies { get; set; } = new List<double>();
+
+        public double? Eff0 { get; set; }   // 初始
+        public double? Eff10 { get; set; }  // 40分鐘
+
+        public List<double> Efficiencies11 { get; set; } = new List<double>();
     }
 }

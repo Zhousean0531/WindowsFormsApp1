@@ -37,13 +37,17 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 INSERT INTO P2_Batch
                 (ProductionDate, TestDate, WorkOrder, Material, MaterialBatchNo, MaterialNo,
                  TargetGsm, Glue, Speed, UpperTemp, LowerTemp,
-                 Pressure, WindSpeed, CarbonLine, CreatedAt, Username)
+                 Pressure, WindSpeed, CarbonLine,
+                 ReportNo,  FilterSize,
+                 CreatedAt, Username)
                 VALUES
                 (@ProductionDate, @TestDate, @WorkOrder, @Material, @MaterialBatchNo, @MaterialNo,
                  @TargetGsm, @Glue, @Speed, @UpperTemp, @LowerTemp,
-                 @Pressure, @WindSpeed, @CarbonLine, @CreatedAt, @Username);
+                 @Pressure, @WindSpeed, @CarbonLine,
+                 @ReportNo, @FilterSize,
+                 @CreatedAt, @Username);
                 SELECT SCOPE_IDENTITY();
-            ";
+                ";
 
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
@@ -63,7 +67,8 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 cmd.Parameters.AddWithValue("@CarbonLine", batch.CarbonLine);
                 cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
                 cmd.Parameters.AddWithValue("@Username", batch.Username);
-
+                cmd.Parameters.AddWithValue("@ReportNo", (object)batch.ReportNo ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@FilterSize", (object)batch.FilterSize ?? DBNull.Value);
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }

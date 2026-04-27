@@ -25,14 +25,10 @@ public static class Page4ReportExporterForNanJing
             return;
         }
 
-        DateTime arrivalDt = DateTime.Parse(d.ArrivalDate);
-
         using (var sfd = new SaveFileDialog())
         {
             sfd.Filter = "Excel (*.xlsx)|*.xlsx";
-
-            sfd.FileName =
-                $"{d.ReportNo}_{d.Material}({arrivalDt:MMdd}到廠)_加測.xlsx";
+            sfd.FileName = d.ReportNo + "_" + d.Material + "_加測.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
@@ -43,42 +39,55 @@ public static class Page4ReportExporterForNanJing
 
             try
             {
-                app = new Excel.Application
-                {
-                    Visible = false,
-                    DisplayAlerts = false
-                };
+                app = new Excel.Application();
+                app.Visible = false;
+                app.DisplayAlerts = false;
 
                 wb = app.Workbooks.Open(templatePath);
                 ws = (Excel.Worksheet)wb.Worksheets[1];
 
-                var ipa = d.EfficiencyGroups.FirstOrDefault(x => x.GasName == "IPA");
-                var acetone = d.EfficiencyGroups.FirstOrDefault(x => x.GasName == "Acetone");
+                // ⭐ 統一抓一次（重點修正）
+                P4EfficiencyGroup ipa = null;
+                P4EfficiencyGroup acetone = null;
 
-                if (ipa?.Efficiencies11 != null)
+                foreach (var g in d.EfficiencyGroups)
                 {
-                    for (int i = 0; i < ipa?.Efficiencies11.Count && i < 41; i++)
-                    {
-                        ws.Cells[2 + i, 11].Value = ipa.Efficiencies11[i];
-                    }
+                    if (g.GasName == "IPA")
+                        ipa = g;
+                    else if (g.GasName == "Acetone")
+                        acetone = g;
                 }
 
-                if (acetone?.Efficiencies11 != null)
+                // ===== 曲線（完全照你原本）=====
+                if (ipa != null)
+                {
+                    for (int i = 0; i < ipa.Efficiencies11.Count && i < 41; i++)
+                        ws.Cells[2 + i, 11].Value = ipa.Efficiencies11[i];
+                }
+
+                if (acetone != null)
                 {
                     for (int i = 0; i < acetone.Efficiencies11.Count && i < 41; i++)
-                    {
                         ws.Cells[2 + i, 12].Value = acetone.Efficiencies11[i];
-                    }
                 }
 
-                ws.Range["B6"].Value =
-                    $"檢測日期：{d.TestingDate}\nTesting Date";
+                // ===== 日期 =====
+                ws.Range["B6"].Value = "檢測日期：" + d.TestingDate;
 
-                ws.Range["B6"].WrapText = true;
+                // ===== 批號 =====
+                var selected = d.Rows.FirstOrDefault(x => x.IsSelected);
 
-                int idx = d.SelectedIndex;
+                if (selected != null)
+                {
+                    ws.Range["F8"].Value = selected.LotFull;
+                }
 
-                ws.Range["F8"].Value = d.LotFulls[idx];
+                // ===== F14~G15（摘要）=====
+                ws.Range["F14"].Value = ipa?.Efficiencies11.FirstOrDefault().ToString("F1") ?? "N.D.";
+                ws.Range["F15"].Value = ipa?.Efficiencies11.LastOrDefault().ToString("F1") ?? "N.D.";
+
+                ws.Range["G14"].Value = acetone?.Efficiencies11.FirstOrDefault().ToString("F1") ?? "N.D.";
+                ws.Range["G15"].Value = acetone?.Efficiencies11.LastOrDefault().ToString("F1") ?? "N.D.";
 
                 ExcelSignatureHelper.TryAddSignature(ws, "G26");
 
@@ -86,8 +95,8 @@ public static class Page4ReportExporterForNanJing
             }
             finally
             {
-                wb?.Close(false);
-                app?.Quit();
+                if (wb != null) wb.Close(false);
+                if (app != null) app.Quit();
 
                 if (ws != null) Marshal.ReleaseComObject(ws);
                 if (wb != null) Marshal.ReleaseComObject(wb);

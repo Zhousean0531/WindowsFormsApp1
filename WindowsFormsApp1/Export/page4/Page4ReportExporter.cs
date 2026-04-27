@@ -76,7 +76,6 @@ public static class Page4ReportExporter
                 wb = app.Workbooks.Open(savePath);
                 ws = (Excel.Worksheet)wb.Worksheets["濾網原料報告"];
 
-                int idx = d.SelectedIndex;
 
                 ws.Range["C4"].Value = d.ReportNo;
                 ws.Range["C5"].Value = d.ArrivalDate;
@@ -94,19 +93,21 @@ public static class Page4ReportExporter
                 const int ROW_OUTG = 17;
                 const int ROW_EFF = 18;
 
-                for (int i = 0; i < d.LotFulls.Count; i++)
+                for (int i = 0; i < d.Rows.Count; i++)
                 {
                     int col = COL_FIRST + i;
 
-                    ws.Cells[ROW_LOT, col].Value = d.LotFulls[i];
-                    ws.Cells[ROW_DEN, col].Value = d.Densities[i];
-                    ws.Cells[ROW_DP, col].Value = d.DeltaPs[i];
-                    ws.Cells[ROW_VIN, col].Value = d.VocIns[i];
-                    ws.Cells[ROW_VOUT, col].Value = d.VocOuts[i];
-                    ws.Cells[ROW_OUTG, col].Value = d.OutgassingList[i];
+                    var r = d.Rows[i];   // ⭐ 核心改這裡
+
+                    ws.Cells[ROW_LOT, col].Value = r.LotFull;
+                    ws.Cells[ROW_DEN, col].Value = r.Density;
+                    ws.Cells[ROW_DP, col].Value = r.DeltaP;
+                    ws.Cells[ROW_VIN, col].Value = r.VocIn;
+                    ws.Cells[ROW_VOUT, col].Value = r.VocOut;
+                    ws.Cells[ROW_OUTG, col].Value = r.Outgassing;
 
                     ws.Cells[ROW_EFF, col].Value =
-                        i == d.SelectedIndex
+                        r.IsSelected
                         ? (g.Eff0?.ToString("F1") ?? "N.D.")
                         : "N.D.";
                 }

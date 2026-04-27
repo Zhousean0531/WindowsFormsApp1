@@ -28,11 +28,14 @@ public static class Page2DataCollector
         string carbonInfo = ControlHelper.GetText(tab, "FilterInProcessCarbonInfoBox");
         string wind = ControlHelper.GetText(tab, "FilterInProcessWindBox");
         string userName = Environment.UserName;
+        string filtersize = ControlHelper.GetText(tab, "FilterSizeTB");
         var weights = StringUtil.SplitDouble(
             ControlHelper.GetText(tab, "FilterInProcessTestGsmBox"));
         var deltas = StringUtil.SplitDouble(
             ControlHelper.GetText(tab, "FilterInProcessPressureDropBox"));
         int n = Math.Min(weights.Count, deltas.Count);
+        DateTime.TryParse(productionDate, out DateTime prodDt);
+        DateTime.TryParse(testDate, out DateTime testDt);
         if (n == 0)
         {
             MessageBox.Show("沒有可用的測試資料");
@@ -49,8 +52,8 @@ public static class Page2DataCollector
         var batch = new P2Batch
         {
             ReportNo = reportNo,
-            ProductionDate = productionDate,
-            TestDate = testDate,
+            ProductionDate = prodDt,
+            TestDate = testDt,
             WorkOrder = carbonOrder,
             Material = productType,
             MaterialBatchNo = materialBatchNo,
@@ -65,7 +68,8 @@ public static class Page2DataCollector
             Pressure = TryParse(pressure),
             WindSpeed = TryParse(wind),
             CarbonLine = carbonInfo,
-            Username = userName
+            Username = userName,
+            FilterSize=filtersize
         };
         var panel = ControlHelper.Find<TableLayoutPanel>(tab, "FilterInProcessEffPanel");
         var pageType = GasPageType.FilterInProcess;
@@ -79,19 +83,19 @@ public static class Page2DataCollector
             var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
-            if (!double.TryParse(tbConc.Text, out double conc) || conc <= 0)
+            if (!decimal.TryParse(tbConc.Text, out decimal conc) || conc <= 0)
             {
                 MessageBox.Show($"{gasKey} 濃度需>0");
                 return null;
             }
-            double.TryParse(tbBg.Text, out double bg);
+            decimal.TryParse(tbBg.Text, out decimal bg);
             var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
             if (readings.Count < 11)
             {
                 MessageBox.Show($"{gasKey} 需輸入至少 11 筆讀值");
                 return null;
             }
-            var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
+            var eff = EfficiencyHelper.Compute11Points((double)conc, (double)bg, readings);
             var gasTest = new P2GasTest
             {
                 GasName = gasKey,
@@ -102,13 +106,13 @@ public static class Page2DataCollector
             {
                 var sample = new P2Sample
                 {
-                    Weight = weights[i],
-                    PressureDrop = deltas[i],
+                    Weight = (decimal)weights[i],
+                    PressureDrop = (decimal)deltas[i],
                     IsSelected = (i == selectedIdx)
                 };
                 if (i == selectedIdx)
                 {
-                    sample.Efficiencies = eff.Efficiencies.ToList();
+                    sample.Efficiencies = eff.Efficiencies.Select(x => (decimal)Math.Round(x, 1)).ToList();
                 }
                 gasTest.Samples.Add(sample);
             }
@@ -121,9 +125,9 @@ public static class Page2DataCollector
         }
         return batch;
     }
-    private static double? TryParse(string value)
+    private static decimal? TryParse(string value)
     {
-        if (double.TryParse(value, out double result))
+        if (decimal.TryParse(value, out decimal result))
             return result;
         return null;
     }

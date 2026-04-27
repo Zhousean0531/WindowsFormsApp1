@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -9,7 +10,8 @@ public static class Page4HelperExporter
 {
     public static void Export(string helperSavePath, P4Batch d)
     {
-        if (d == null) return;
+        if (d == null || d.Rows == null || d.Rows.Count == 0)
+            return;
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -33,11 +35,9 @@ public static class Page4HelperExporter
 
         try
         {
-            app = new Excel.Application
-            {
-                Visible = false,
-                DisplayAlerts = false
-            };
+            app = new Excel.Application();
+            app.Visible = false;
+            app.DisplayAlerts = false;
 
             wb = app.Workbooks.Open(helperSavePath);
             ws = (Excel.Worksheet)wb.Worksheets["濾筒工作表"];
@@ -45,35 +45,29 @@ public static class Page4HelperExporter
             int startRow = 2;
             int row = startRow;
 
-            int n = d.LotFulls.Count;
-
-            // ────────────────
-            // Lot / 測試資料
-            // ────────────────
-            for (int i = 0; i < n; i++)
+            // ===== Lot / 測試資料（改成 Rows）=====
+            foreach (var r in d.Rows)
             {
                 ws.Cells[row, 1].Value = d.TestingDate;
                 ws.Cells[row, 2].Value = d.ArrivalDate;
                 ws.Cells[row, 3].Value = d.Material;
 
-                ws.Cells[row, 4].Value = d.LotNos[i];
-                ws.Cells[row, 5].Value = d.LotFulls[i];
+                ws.Cells[row, 4].Value = r.LotNo;
+                ws.Cells[row, 5].Value = r.LotFull;
 
-                ws.Cells[row, 8].Value = d.Weights[i];
-                ws.Cells[row, 9].Value = d.Densities[i];
+                ws.Cells[row, 8].Value = r.Weight;
+                ws.Cells[row, 9].Value = r.Density;
 
-                ws.Cells[row, 11].Value = d.VocIns[i];
-                ws.Cells[row, 12].Value = d.VocOuts[i];
+                ws.Cells[row, 11].Value = r.VocIn;
+                ws.Cells[row, 12].Value = r.VocOut;
 
-                ws.Cells[row, 13].Value = d.OutgassingList[i];
-                ws.Cells[row, 14].Value = d.DeltaPs[i];
+                ws.Cells[row, 13].Value = r.Outgassing;
+                ws.Cells[row, 14].Value = r.DeltaP;
 
                 row++;
             }
 
-            // ────────────────
-            // Particle Size
-            // ────────────────
+            //Particle Size
             if (d.ParticleSizePercentages != null &&
                 d.ParticleSizePercentages.Count > 0)
             {
@@ -81,7 +75,7 @@ public static class Page4HelperExporter
 
                 foreach (var p in d.ParticleSizePercentages)
                 {
-                    ws.Cells[meshRow, 1].Value = p.Key;
+                    ws.Cells[meshRow-1, 1].Value = p.Key;
                     ws.Cells[meshRow, 2].Value = p.Value / 100;
                     ws.Cells[meshRow, 2].NumberFormat = "0.0%";
 
@@ -89,18 +83,17 @@ public static class Page4HelperExporter
                 }
             }
 
-            // ────────────────
-            // Efficiency
-            // ────────────────
+            // ===== Efficiency
             if (d.EfficiencyGroups != null && d.EfficiencyGroups.Count > 0)
             {
-                int defaultCol = 21; // U
-                int idx = d.SelectedIndex;
+                int defaultCol = 21;
 
-                for (int gIdx = 0; gIdx < d.EfficiencyGroups.Count; gIdx++)
+                //找選中的 row
+                var selected = d.Rows.FirstOrDefault(x => x.IsSelected);
+                if (selected == null) return;
+
+                foreach (var g in d.EfficiencyGroups)
                 {
-                    var g = d.EfficiencyGroups[gIdx];
-
                     if (g.Efficiencies11 == null ||
                         g.Efficiencies11.Count == 0)
                         continue;
@@ -119,10 +112,17 @@ public static class Page4HelperExporter
                     string arrivalDate =
                         DateTime.Parse(d.ArrivalDate).ToString("MM.dd");
 
-                    string lotFull = d.LotFulls[idx];
+                    //用 selected
+                    string materialLot = selected.LotFull;
+
+                    if (!string.IsNullOrEmpty(materialLot))
+                    {
+                        var parts = materialLot.Split('#');
+                        materialLot = parts.Length > 1 ? parts[parts.Length - 1] : materialLot;
+                    }
 
                     string header =
-                        $"{testDate} {d.Material}#{lotFull}({d.DeltaPs[idx]}Pa)-{arrivalDate}Arrival_{g.GasName}";
+                        $"{testDate} {d.Material}#{materialLot}({selected.DeltaP}Pa)-{arrivalDate}Arrival_{g.GasName}";
 
                     ws.Cells[startRow - 1, col].Value = header;
 
@@ -138,8 +138,8 @@ public static class Page4HelperExporter
         }
         finally
         {
-            wb?.Close(false);
-            app?.Quit();
+            if (wb != null) wb.Close(false);
+            if (app != null) app.Quit();
 
             if (ws != null) Marshal.ReleaseComObject(ws);
             if (wb != null) Marshal.ReleaseComObject(wb);

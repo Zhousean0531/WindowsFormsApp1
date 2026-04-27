@@ -9,15 +9,19 @@ public static class DbBootstrap
 
     public static void Init()
     {
+        var ip = ConfigurationManager.AppSettings["IP"];
+
         var builder = new SqlConnectionStringBuilder
         {
-            DataSource = ".\\SQLEXPRESS",
+            DataSource = $"tcp:{ip},1433",   // ⭐ 明確 TCP
             InitialCatalog = "QC_DB",
-            IntegratedSecurity = true,
-            TrustServerCertificate = true,
-            Encrypt = false
+            UserID = "sa",
+            Password = "1234",
+            IntegratedSecurity = false,
+            Encrypt = false,
+            TrustServerCertificate = true
         };
-        
+
         _connStr = builder.ConnectionString;
         try
         {
@@ -118,14 +122,14 @@ public static class DbBootstrap
             WorkOrder NVARCHAR(50),
             Material NVARCHAR(50),
             MaterialBatchNo NVARCHAR(50),
-            TargetGsm FLOAT,
-            Glue FLOAT,
+            TargetGsm DECIMAL(10,2),
+            Glue DECIMAL(10,2),
             MaterialNo NVARCHAR(50),
-            Speed FLOAT,
-            UpperTemp FLOAT,
-            LowerTemp FLOAT,
-            Pressure FLOAT,
-            WindSpeed FLOAT,
+            Speed DECIMAL(10,2),
+            UpperTemp DECIMAL(10,2),
+            LowerTemp DECIMAL(10,2),
+            Pressure DECIMAL(10,2),
+            WindSpeed DECIMAL(10,2),
             CarbonLine NVARCHAR(50),
             CreatedAt DATETIME,
             Username NVARCHAR(50)
@@ -136,16 +140,16 @@ public static class DbBootstrap
             Id INT IDENTITY(1,1) PRIMARY KEY,
             BatchId INT,
             GasName NVARCHAR(50),
-            Concentration FLOAT,
-            Background FLOAT
+            Concentration DECIMAL(10,2),
+            Background DECIMAL(10,2)
         );
 
         IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Sample' AND xtype='U')
         CREATE TABLE P2_Sample (
             Id INT IDENTITY(1,1) PRIMARY KEY,
             GasTestId INT,
-            Weight FLOAT,
-            PressureDrop FLOAT,
+            Weight DECIMAL(10,2),
+            PressureDrop DECIMAL(10,2),
             IsSelected BIT
         );
 
@@ -227,7 +231,22 @@ public static class DbBootstrap
             Username NVARCHAR(50),
             CreatedAt DATETIME
         );
-
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Particle' AND xtype='U')
+        CREATE TABLE P4_Particle (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            SizeName NVARCHAR(50),
+            Percentage FLOAT
+        );
+        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Efficiency' AND xtype='U')
+        CREATE TABLE P4_Efficiency (
+            Id INT IDENTITY(1,1) PRIMARY KEY,
+            BatchId INT,
+            GasName NVARCHAR(50),
+            Concentration FLOAT,
+            SequenceIndex INT,
+            EfficiencyValue FLOAT
+        );
         IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Lot' AND xtype='U')
         CREATE TABLE P4_Lot (
             Id INT IDENTITY(1,1) PRIMARY KEY,
