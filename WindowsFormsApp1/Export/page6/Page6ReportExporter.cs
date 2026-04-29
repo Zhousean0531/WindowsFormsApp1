@@ -55,7 +55,7 @@ public static class Page6ReportExporter
             ws.Range["C3"].Value =
                 $"抽檢日期 Testing Date: {d.TestDate:yyyy.MM.dd}";
 
-            ws.Range["I3"].Value =
+            ws.Range["G3"].Value =
                 $"報告編號 Report No: {d.ReportNo}";
 
             // ===== DGV 資料（B6 起）=====
@@ -70,38 +70,39 @@ public static class Page6ReportExporter
                 var row = d.DataGrid.Rows[r];
                 int excelRow = startRow + r;
 
-                // B 欄 ← DGV[0]
-                ws.Cells[excelRow, 2].Value =
-                    row.Cells[0].Value?.ToString();
+                // B ← 日期
+                ws.Cells[excelRow, 2].Value = row.Cells[0].Value?.ToString();
 
-                // C 欄 ← DGV[1]
-                ws.Cells[excelRow, 3].Value =
-                    row.Cells[1].Value?.ToString();
+                // C ← 品名
+                ws.Cells[excelRow, 3].Value = row.Cells[1].Value?.ToString();
 
-                // D 欄 ← DGV[2] + DGV[3]
+                // D ← 進貨量 + 單位
                 ws.Cells[excelRow, 4].Value =
                     $"{row.Cells[2].Value} {row.Cells[3].Value}".Trim();
 
-                // E 欄 ← DGV[4] + DGV[5]
+                // E ← 抽樣數 + 單位
                 ws.Cells[excelRow, 5].Value =
                     $"{row.Cells[4].Value} {row.Cells[5].Value}".Trim();
 
-                // F 欄 ← DGV[6]
+                // F ← 外觀
                 ws.Cells[excelRow, 6].Value =
                     row.Cells[6].Value?.ToString();
 
-                // G 欄 ← DGV[7]
+                // G ← 規格
                 ws.Cells[excelRow, 7].Value =
                     row.Cells[7].Value?.ToString();
 
-                // 如果後面還有欄位（8 之後）
-                int excelCol = 8; // H
-                for (int c = 8; c < row.Cells.Count; c++)
-                {
-                    ws.Cells[excelRow, excelCol].Value =
-                        row.Cells[c].Value?.ToString();
-                    excelCol++;
-                }
+                // H ← ⭐測量值
+                ws.Cells[excelRow, 9].Value =
+                    row.Cells[8].Value?.ToString();
+
+                // I ← 判定
+                ws.Cells[excelRow, 10].Value =
+                    row.Cells[9].Value?.ToString();
+
+                // J ← 備註
+                ws.Cells[excelRow, 11].Value =
+                    row.Cells[10].Value?.ToString();
 
                 System.Threading.Thread.Sleep(90);
                 Application.DoEvents();

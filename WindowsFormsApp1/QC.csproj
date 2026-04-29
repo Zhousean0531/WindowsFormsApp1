@@ -175,9 +175,10 @@
     <Compile Include="Data Access\Page5\P5Models.cs" />
     <Compile Include="Data Access\Page5\P5Repository.cs" />
     <Compile Include="Data Access\Page5\P5Service.cs" />
+    <Compile Include="Data Access\Page6\P6Item.cs" />
+    <Compile Include="Data Access\Page6\Page6Mapper.cs" />
     <Compile Include="Data Access\Page6\P6Models.cs" />
     <Compile Include="Data Access\Page6\P6Repository.cs" />
-    <Compile Include="Data Access\Page6\P6Service.cs" />
     <Compile Include="Export\page1\Page1ReportExporter.cs" />
     <Compile Include="Export\page1\Page1DataCollector.cs" />
     <Compile Include="Export\page3\Page3MasterExporter.cs" />
@@ -199,7 +200,6 @@
     <Compile Include="AddMaterial.Designer.cs">
       <DependentUpon>AddMaterial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Export\page6\Page6MasterExporter.cs" />
     <Compile Include="Export\page6\Page6DataCollector.cs" />
     <Compile Include="Export\page6\Page6ExportData.cs" />
     <Compile Include="Export\page6\Page6ReportExporter.cs" />

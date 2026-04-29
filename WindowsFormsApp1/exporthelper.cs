@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using WindowsFormsApp1.Data_Access.Page1;
 using WindowsFormsApp1.Data_Access.Page2;
 using WindowsFormsApp1.Data_Access.Page4;
+using WindowsFormsApp1.Data_Access.Page6;
 public static class DiffUtil
 {
     public static string GetSumDiff(string out1, string out2, string out3,string in1, string in2, string in3)
@@ -159,9 +160,9 @@ public static class ExportHelper_Page6
         {
             var data = Page6DataCollector.Collect(tab);
             if (data == null) return;
-            Page6MasterExporter.Export(data);
             Page6ReportExporter.Export(data);
-
+            var batch = Page6DataCollector.CollectForDb(tab, Environment.UserName);
+            P6Repository.Insert(batch);
             MessageBox.Show("匯出完成");
         }
         catch (Exception ex)
