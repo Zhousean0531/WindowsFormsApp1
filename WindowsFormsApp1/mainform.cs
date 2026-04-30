@@ -204,23 +204,7 @@ namespace WindowsFormsApp1
         private void Execute_Click(object sender, EventArgs e)
         {
             var currentTab = tabControl1.SelectedTab;
-            // --- 校正檢查區 ---
-            List<int> columnsToCheck = null;
-            switch (currentTab.Name)
-            {
-                case "FilterPage":   // 濾網成品
-                    columnsToCheck = new List<int> { 1, 2, 3, 4, 5, 6 }; // A~F
-                    break;
-                case "CylinderPage": // 濾筒成品
-                    columnsToCheck = new List<int> { 1, 2, 3, 6, 7, 8 }; // A~C, F, G, H
-                    break;
-            }
-            // 如果需要校正檢查 → 執行檢查
-            if (columnsToCheck != null)
-            {
-                if (!CalibrationHelper.CheckCalibrationByColumns(columnsToCheck))
-                    return; // 校正不合格 → 停止匯出
-            }
+            
             var tab = tabControl1.SelectedTab;
 
             // 只有 Page1 / Page4 才需要 mesh
@@ -252,7 +236,7 @@ namespace WindowsFormsApp1
                     ExportHelper_Page4.Handle(currentTab);
                     break;
                 case "CylinderPage":
-                    ExportHelper_Page5.Handle(currentTab, columnsToCheck);
+                    ExportHelper_Page5.Handle(currentTab);
                     break;
                 case "RawMaterialPage":
                     ExportHelper_Page6.Handle(currentTab);

@@ -163,6 +163,8 @@
     <Compile Include="Business Logic\EfficiencyHelper.cs" />
     <Compile Include="Business Logic\EfficiencyResult.cs" />
     <Compile Include="Business Logic\Page5LookupResult.cs" />
+    <Compile Include="Data Access\CalibrationInfo.cs" />
+    <Compile Include="Data Access\InstrumentRepository.cs" />
     <Compile Include="Data Access\Page1\P1Models.cs" />
     <Compile Include="Data Access\Page1\P1Repository.cs" />
     <Compile Include="Data Access\Page2\P2Models.cs" />
@@ -174,7 +176,6 @@
     <Compile Include="Data Access\Page4\P4Repository.cs" />
     <Compile Include="Data Access\Page5\P5Models.cs" />
     <Compile Include="Data Access\Page5\P5Repository.cs" />
-    <Compile Include="Data Access\Page5\P5Service.cs" />
     <Compile Include="Data Access\Page6\P6Item.cs" />
     <Compile Include="Data Access\Page6\Page6Mapper.cs" />
     <Compile Include="Data Access\Page6\P6Models.cs" />
@@ -192,7 +193,6 @@
     <Compile Include="Export\page2\Page2DataCollector.cs" />
     <Compile Include="Export\page5\Page5ReportExporter.cs" />
     <Compile Include="Export\page5\Page5DataCollector.cs" />
-    <Compile Include="Export\page5\Page5MasterExporter.cs" />
     <Compile Include="Export\page5\Page5ExportData.cs" />
     <Compile Include="AddMaterial.cs">
       <SubType>Form</SubType>

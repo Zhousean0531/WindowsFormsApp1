@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using WindowsFormsApp1.Data_Access;
 
 public static class Page5ReportExporter
 {
@@ -10,7 +11,7 @@ public static class Page5ReportExporter
         Page5ExportData d,
         string cylTypeText,          // MA / MB / MC
         string rawEfficiencyText,    // CYLRawEffTB
-        List<int> columnsToCheck
+        List<int> instrumentIds
     )
     {
         if (d == null || d.Rows == null || d.Rows.Count == 0)
@@ -45,7 +46,7 @@ public static class Page5ReportExporter
 
                 // ===== 1️⃣ 儀器校正 =====
                 var calibInfos =
-                    CalibrationHelper.GetCalibrationInfosByColumns(columnsToCheck);
+                    InstrumentRepository.GetByIds(instrumentIds);
 
                 WriteCalibrationInfo(ws, calibInfos, d.FilterType);
 
@@ -142,9 +143,9 @@ public static class Page5ReportExporter
         { "SO2 Analyzer/43i",  Tuple.Create("Q4", "Q5", "Q6") },
         { "NH3 Analyzer/T201", Tuple.Create("R4", "R5", "R6") },
         { "Portable Handheld  VOC Monitor/ ppbRAE 3000",Tuple.Create("S4", "S5", "S6") },
-        { "Handheld Particle Counter/GT-521S", Tuple.Create("W4", "W5", "W6") },
-        { "MiTAP/FT3+", Tuple.Create("AH4", "AH5", "AH6") },
-        { "Universal IAQ instrument/testo 400", Tuple.Create("AM4", "AM5", "AM6") },
+        { "Handheld Particle Counter/GT-324", Tuple.Create("W4", "W5", "W6") },
+        { "MiTAP/SFT3", Tuple.Create("AH4", "AH5", "AH6") },
+        { "Universal IAQ instrument/testo 440dp", Tuple.Create("AM4", "AM5", "AM6") },
     };
 
     // ===== MA / MB / MC → 儀器 =====
@@ -162,9 +163,9 @@ public static class Page5ReportExporter
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Handheld Particle Counter/GT-521S",
-            "MiTAP/FT3+",
-            "Universal IAQ instrument/testo 400"
+            "Handheld Particle Counter/GT-324",
+            "MiTAP/SFT3",
+            "Universal IAQ instrument/testo 440dp"
         };
 
         if (!string.IsNullOrWhiteSpace(filterType) &&
