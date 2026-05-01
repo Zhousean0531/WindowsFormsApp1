@@ -1,66 +1,45 @@
-﻿using ClosedXML.Excel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Data.SqlClient;
 
 public static class EfficiencyFinder
 {
-    public static Dictionary<string, string> FindMinEfficiencyByCarbonLot(
-        IXLWorksheet ws,
+    public static string FindMinEfficiencyByCarbonLot(
         string carbonLot,
-        List<string> targetTypes)
+        string filterType)
     {
-        var result = new Dictionary<string, string>
+        if (string.IsNullOrWhiteSpace(carbonLot) || string.IsNullOrWhiteSpace(filterType))
+            return null;
+
+        using (var conn = DbBootstrap.GetConnection())
         {
-            { "MA", "N/A" },
-            { "MB", "N/A" },
-            { "MC", "N/A" }
-        };
+            conn.Open();
 
-        if (string.IsNullOrWhiteSpace(carbonLot))
-            return result;
+            string sql = @"
+                SELECT MIN(TRY_CONVERT(float, e.EfficiencyValue)) AS MinEfficiency
+                FROM P4_Batch b
+                INNER JOIN P4_Lot l ON l.BatchId = b.Id
+                INNER JOIN P4_Efficiency e ON e.BatchId = b.Id
+                WHERE l.LotFull LIKE @CarbonLot + '#%'
+                  AND (
+                        (@FilterType = 'MA' AND e.GasName IN ('SO2', 'H2S'))
+                     OR (@FilterType = 'MB' AND e.GasName = 'NH3')
+                     OR (@FilterType = 'MC' AND e.GasName IN ('Toluene', 'Acetone', 'IPA'))
+                  )
+                  AND e.EfficiencyValue IS NOT NULL";
 
-        string lotKey = carbonLot.Trim();
-
-        foreach (var r in ws.RowsUsed())
-        {
-
-            string excelLot = r.Cell("E").GetString().Trim();
-            string testItem = r.Cell("K").GetString().Trim();
-            string efficiencyStr = r.Cell("P").GetString().Trim();
-
-            // 用 Contains 比對原料批號
-            if (!excelLot.ToUpper().Contains(lotKey.ToUpper()))
-                continue;
-
-            if (!double.TryParse(efficiencyStr, out double efficiency))
-                continue;
-
-            string type = null;
-
-            // ===== 效率分類規則 =====
-            if ((testItem == "SO2" || testItem == "H2S") && targetTypes.Contains("MA"))
-                type = "MA";
-            else if (testItem == "NH3" && targetTypes.Contains("MB"))
-                type = "MB";
-            else if ((testItem == "Toluene" || testItem == "Acetone" || testItem == "IPA") && targetTypes.Contains("MC"))
-                type = "MC";
-
-            if (type == null)
-                continue;
-
-            // ===== 取最小效率 =====
-            if (result[type] == "N/A")
+            using (var cmd = new SqlCommand(sql, conn))
             {
-                result[type] = efficiency.ToString("0.###");
-            }
-            else if (double.TryParse(result[type], out double existVal) && efficiency < existVal)
-            {
-                result[type] = efficiency.ToString("0.###");
+                cmd.Parameters.AddWithValue("@CarbonLot", carbonLot.Trim());
+                cmd.Parameters.AddWithValue("@FilterType", filterType.Trim());
+
+                object value = cmd.ExecuteScalar();
+
+                if (value == null || value == DBNull.Value)
+                    return null;
+
+                double eff = Convert.ToDouble(value);
+                return eff.ToString("0.###");
             }
         }
-
-        return result;
     }
-
 }

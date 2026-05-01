@@ -408,7 +408,7 @@ namespace WindowsFormsApp1
             if (!result.Found || result.Rows.Count == 0)
             {
                 MessageBox.Show(
-                    "總表中查無此單號資料。",
+                    "資料庫中查無此單號資料。",
                     "查詢結果",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
@@ -428,31 +428,28 @@ namespace WindowsFormsApp1
         }
         private void FillHeaderFromLookup(Page5LookupResult result)
         {
-            CylinderTestDateBox.Text = result.HeaderValues.GetValueOrDefault("U");
-            CylinderReportNOBox.Text = result.HeaderValues.GetValueOrDefault("V");
-            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("Y");
-            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("AA");
-            ReCylinderBox.Text =
-                result.HeaderValues.ContainsKey("AB")
-                    ? result.HeaderValues["AB"]
-                    : "";
-            CYLRawMaterialBox.Text = result.HeaderValues.GetValueOrDefault("X");
-            string ai = result.HeaderValues.GetValueOrDefault("AI");
-            string aj = result.HeaderValues.GetValueOrDefault("AJ");
-            string ak = result.HeaderValues.GetValueOrDefault("AK");
+            // ===== 基本欄位 =====
+            CylinderTestDateBox.Text = result.HeaderValues.GetValueOrDefault("TestDate");
+            CylinderReportNOBox.Text = result.HeaderValues.GetValueOrDefault("ReportNo");
+            CylinderNoBox.Text = result.HeaderValues.GetValueOrDefault("CylinderNo");
+            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("Customer");
 
-            string materialLot = new[] { ai, aj, ak }
-                .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v) && v != "N/A");
+            // 型式 (MA / MB / MC)
+            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("FilterType");
 
-            if (!string.IsNullOrWhiteSpace(materialLot))
+            // 再生筒號
+            ReCylinderBox.Text = result.HeaderValues.GetValueOrDefault("ReCylinderNo");
+
+            // ===== 原料批號 =====
+            string carbonLot = result.HeaderValues.GetValueOrDefault("CarbonLot");
+
+            if (!string.IsNullOrWhiteSpace(carbonLot))
             {
-                // 有原料批號 → 直接帶入
-                CYLRawEffTB.Text = materialLot;
+                CYLRawMaterialBox.Text = carbonLot;
             }
             else
             {
-                // 沒有原料批號 → 清空並提醒
-                CYLRawEffTB.Text = "";
+                CYLRawMaterialBox.Text = "";
 
                 MessageBox.Show(
                     "此單號尚未填入原料批號。",
@@ -462,6 +459,24 @@ namespace WindowsFormsApp1
                 );
             }
 
+            // ===== 原料效率 =====
+            string efficiency = result.HeaderValues.GetValueOrDefault("Efficiency");
+
+            if (!string.IsNullOrWhiteSpace(efficiency))
+            {
+                CYLRawEffTB.Text = efficiency;
+            }
+            else
+            {
+                CYLRawEffTB.Text = "";
+
+                MessageBox.Show(
+                    "此單號尚未填入原料效率。",
+                    "效率提醒",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
         }
         private void CYLRawMaterialBox_KeyDown(object sender, KeyEventArgs e)
         {
@@ -493,68 +508,76 @@ namespace WindowsFormsApp1
                     MessageBoxIcon.Warning
                 );
 
-                CYLTypeBox.Focus(); // 導引使用者
+                CYLTypeBox.Focus();
                 return;
             }
 
-            var targetTypes = new List<string> { type };
+            if (string.IsNullOrWhiteSpace(materialLot))
+            {
+                MessageBox.Show(
+                    "請先輸入原料批號。",
+                    "必要欄位未填",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
 
-            string totalPath = Path.Combine(
-            Application.StartupPath,
-            "總表.xlsx");
+                CYLRawMaterialBox.Focus();
+                return;
+            }
             
-
             try
             {
-                using (var wb = new ClosedXML.Excel.XLWorkbook(totalPath))
+
+                string effValueRaw = EfficiencyFinder.FindMinEfficiencyByCarbonLot(
+                     materialLot,
+                     type
+                 );
+
+                if (string.IsNullOrWhiteSpace(effValueRaw))
                 {
-                    var ws = wb.Worksheet("濾筒");
-
-                    var eff = EfficiencyFinder.FindMinEfficiencyByCarbonLot(
-                        ws,
-                        materialLot,
-                        targetTypes
+                    MessageBox.Show(
+                        "查無此原料批號的歷史效率資料，請確認批號是否正確。",
+                        "查詢結果",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
                     );
+                    return;
+                }
 
-                    // ---------- 狀況 1：查無此批號 ----------
-                    if (eff == null || eff.Count == 0)
-                    {
-                        MessageBox.Show(
-                            "查無此原料批號的歷史效率資料，請確認批號是否正確。",
-                            "查詢結果",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information
-                        );
-                        return;
-                    }
-                    string effValueRaw = eff.Values.FirstOrDefault(v =>
-                        !string.IsNullOrWhiteSpace(v) &&
-                        v != "-" &&
-                        !v.Equals("N/A", StringComparison.OrdinalIgnoreCase)
+                if (effValueRaw == "-" ||
+                    effValueRaw.Equals("N/A", StringComparison.OrdinalIgnoreCase))
+                {
+                    MessageBox.Show(
+                        "此原料批號有歷史資料，但效率資料無效。",
+                        "效率資料提醒",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
                     );
+                    return;
+                }
 
-                    // ---------- 狀況 2：有批號，但效率無效 ----------
-                    if (string.IsNullOrWhiteSpace(effValueRaw))
-                    {
-                        MessageBox.Show(
-                            "查無此批號",
-                            "效率資料提醒",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information
-                        );
-                        return;
-                    }
-
-                    // ---------- 狀況 3：成功 ----------
-                    if (double.TryParse(effValueRaw, out double effValue))
-                    {
-                        CYLRawEffTB.Text = effValue.ToString("0.0");
-                    }
+                if (double.TryParse(effValueRaw, out double effValue))
+                {
+                    CYLRawEffTB.Text = effValue.ToString("0.0");
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "效率資料格式異常，無法轉換為數字。",
+                        "效率資料錯誤",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return;
+                MessageBox.Show(
+                    "查詢原料效率時發生錯誤：" + ex.Message,
+                    "查詢錯誤",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
         }
     }

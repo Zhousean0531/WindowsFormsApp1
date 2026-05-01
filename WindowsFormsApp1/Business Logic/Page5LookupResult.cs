@@ -1,115 +1,131 @@
-﻿using ClosedXML.Excel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Windows.Forms;
 
 public class Page5LookupResult
 {
-    public bool Found => Rows.Any();
+    public bool Found => HeaderValues.Any();
 
-    // DGV 用
     public List<Dictionary<int, string>> Rows { get; set; }
         = new List<Dictionary<int, string>>();
 
-    // 基本欄位用
     public Dictionary<string, string> HeaderValues { get; set; }
         = new Dictionary<string, string>();
 }
-
 public static class Page5LookupHelper
 {
     public static Page5LookupResult SearchByCylinderNo(string cylinderNo)
     {
-        string summaryPath = Path.Combine(
-            Application.StartupPath,
-            "總表.xlsx"
-        );
+        var result = new Page5LookupResult();
 
-        using (var wb = new XLWorkbook(summaryPath))
+        using (var conn = DbBootstrap.GetConnection())
         {
-            var ws = wb.Worksheet("濾筒");
-            var matchedRows = ws.RowsUsed()
-                .Where(r => r.Cell("W").GetString().Trim() == cylinderNo)
-                .ToList();
-            if (!matchedRows.Any())
-                return new Page5LookupResult();
-            var rowsWithBatchId = matchedRows
-                .Where(r => !string.IsNullOrWhiteSpace(r.Cell("BD").GetString()))
-                .ToList();
-            List<IXLRow> latestRows;
-            if (!rowsWithBatchId.Any())
-            {
-                latestRows = matchedRows;
-            }
-            else
-            {
-                var latestBatchId = rowsWithBatchId
-                    .Max(r => r.Cell("BD").GetString().Trim());
+            conn.Open();
 
-                latestRows = rowsWithBatchId
-                    .Where(r => r.Cell("BD").GetString().Trim() == latestBatchId)
-                    .ToList();
-            }
-            var result = new Page5LookupResult();
-            var headerRow = latestRows.First();
-            string Get(string col) => headerRow.Cell(col).GetString().Trim();
-            result.HeaderValues["U"] = Get("U");   // TestDate
-            result.HeaderValues["V"] = Get("V");   // ReportNo
-            result.HeaderValues["X"] = Get("X");
-            result.HeaderValues["Y"] = Get("Y");   // Customer
-            result.HeaderValues["AA"] = Get("AA");  // Type
-            result.HeaderValues["AB"] = Get("AB");  // ReCylinderNo
-            result.HeaderValues["AI"] = Get("AI");
-            result.HeaderValues["AJ"] = Get("AJ");
-            result.HeaderValues["AK"] = Get("AK");
+            // 1. 先找最新一筆 Batch
+            int batchId;
 
-            // ===== 4️⃣ DGV 欄位（只用最新那組）=====
-            var map = new Dictionary<string, int>
-            {
-                ["AC"] = 1,
-                ["AD"] = 2,
-                ["AL"] = 3,
-                ["AM"] = 4,
-                ["AO"] = 5,
-                ["AP"] = 6,
-                ["AR"] = 7,
-                ["AS"] = 8,
-                ["AU"] = 9,
-                ["AV"] = 10,
-                ["BB"] = 11
-            };
+            string batchSql = @"
+                SELECT TOP 1
+                    Id,
+                    TestDate,
+                    ReportNo,
+                    CylinderNo,
+                    Customer,
+                    FilterType,
+                    ReCylinderNo,
+                    CarbonLot
+                FROM P5_Batch
+                WHERE CylinderNo = @CylinderNo
+                ORDER BY Id DESC";
 
-            foreach (var excelRow in latestRows)
+            using (var cmd = new SqlCommand(batchSql, conn))
             {
-                var dict = new Dictionary<int, string>();
-                foreach (var kv in map)
+                cmd.Parameters.AddWithValue("@CylinderNo", cylinderNo);
+
+                using (var reader = cmd.ExecuteReader())
                 {
-                    dict[kv.Value] = excelRow.Cell(kv.Key).GetString();
+                    if (!reader.Read())
+                        return result;
+
+                    batchId = Convert.ToInt32(reader["Id"]);
+                    result.HeaderValues["TestDate"] = reader["TestDate"]?.ToString();
+                    result.HeaderValues["ReportNo"] = reader["ReportNo"]?.ToString();
+                    result.HeaderValues["CylinderNo"] = reader["CylinderNo"]?.ToString();
+                    result.HeaderValues["Customer"] = reader["Customer"]?.ToString();
+                    result.HeaderValues["FilterType"] = reader["FilterType"]?.ToString();
+                    result.HeaderValues["ReCylinderNo"] = reader["ReCylinderNo"]?.ToString();
+                    result.HeaderValues["CarbonLot"] = reader["CarbonLot"]?.ToString();
                 }
-                result.Rows.Add(dict);
             }
 
-            return result;
+            // 2. 再查 Row
+            string rowSql = @"
+                SELECT
+                    RowNo,
+                    SN,
+                    Weight,
+                    Efficiency,
+
+                    ParticleIn,
+                    ParticleOut,
+                    ParticleDiff,
+
+                    IPAIn,
+                    IPAOut,
+                    IPADiff,
+
+                    AcetoneIn,
+                    AcetoneOut,
+                    AcetoneDiff,
+
+                    NonTargetIn,
+                    NonTargetOut,
+                    NonTargetDiff,
+
+                    TotalDiff,
+                    PressureDrop
+                FROM P5_Row
+                WHERE BatchId = @BatchId
+                ORDER BY RowNo";
+
+            using (var cmd = new SqlCommand(rowSql, conn))
+            {
+                cmd.Parameters.AddWithValue("@BatchId", batchId);
+                bool efficiencySet = false;
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (!efficiencySet)
+                        {
+                            string eff = reader["Efficiency"]?.ToString();
+
+                            if (!string.IsNullOrWhiteSpace(eff))
+                            {
+                                result.HeaderValues["Efficiency"] = eff;
+                                efficiencySet = true;
+                            }
+                        }
+                        var dict = new Dictionary<int, string>();
+                        dict[1] = reader["SN"]?.ToString();
+                        dict[2] = reader["Weight"]?.ToString();
+                        dict[3] = reader["ParticleIn"]?.ToString();
+                        dict[4] = reader["ParticleOut"]?.ToString();
+                        dict[5] = reader["IPAIn"]?.ToString();
+                        dict[6] = reader["IPAOut"]?.ToString();
+                        dict[7] = reader["AcetoneIn"]?.ToString();
+                        dict[8] = reader["AcetoneOut"]?.ToString();
+                        dict[9] = reader["NonTargetIn"]?.ToString();
+                        dict[10] = reader["NonTargetOut"]?.ToString();
+                        dict[11] = reader["PressureDrop"]?.ToString();
+                        result.Rows.Add(dict);
+                    }
+                }
+            }
         }
+
+        return result;
     }
-    private static bool TryGetCellDateTime(IXLCell cell, out DateTime dt)
-    {
-        dt = default;
-
-        if (cell == null || cell.IsEmpty())
-            return false;
-
-        if (cell.DataType == XLDataType.DateTime)
-        {
-            dt = cell.GetDateTime();
-            return true;
-        }
-
-        // 嘗試從文字解析
-        return DateTime.TryParse(cell.GetString(), out dt);
-    }
-
 }
-
