@@ -536,7 +536,7 @@ namespace WindowsFormsApp1
                 if (string.IsNullOrWhiteSpace(effValueRaw))
                 {
                     MessageBox.Show(
-                        "查無此原料批號的歷史效率資料，請確認批號是否正確。",
+                        "查無此原料批號的歷史效率資料，請確認批號或原料種類是否正確。",
                         "查詢結果",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information

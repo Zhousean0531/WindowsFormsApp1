@@ -171,7 +171,6 @@
     <Compile Include="Data Access\Page2\P2Repository.cs" />
     <Compile Include="Data Access\Page3\P3Repository.cs" />
     <Compile Include="Data Access\Page3\P3Models.cs" />
-    <Compile Include="Data Access\Page3\P3Service.cs" />
     <Compile Include="Data Access\Page4\P4Models.cs" />
     <Compile Include="Data Access\Page4\P4Repository.cs" />
     <Compile Include="Data Access\Page5\P5Models.cs" />
@@ -182,7 +181,7 @@
     <Compile Include="Data Access\Page6\P6Repository.cs" />
     <Compile Include="Export\page1\Page1ReportExporter.cs" />
     <Compile Include="Export\page1\Page1DataCollector.cs" />
-    <Compile Include="Export\page3\Page3MasterExporter.cs" />
+    <Compile Include="Export\page3\Page3ReportExporter.cs" />
     <Compile Include="Export\page3\Page3ExportData.cs" />
     <Compile Include="Export\page3\Page3DataCollector.cs" />
     <Compile Include="Export\page4\Page4HelperExporter.cs" />
@@ -203,6 +202,12 @@
     <Compile Include="Export\page6\Page6DataCollector.cs" />
     <Compile Include="Export\page6\Page6ExportData.cs" />
     <Compile Include="Export\page6\Page6ReportExporter.cs" />
+    <Compile Include="CalibrationManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CalibrationManagerForm.Designer.cs">
+      <DependentUpon>CalibrationManagerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormCalcMoistureAsh.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -248,6 +253,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CalibrationManagerForm.resx">
+      <DependentUpon>CalibrationManagerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainform.resx">
       <DependentUpon>mainform.cs</DependentUpon>

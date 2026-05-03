@@ -19,12 +19,12 @@ public static class Page5ReportExporter
 
         string templatePath = Path.Combine(
             Application.StartupPath,
-            "CYLReport.xlsx"
+            "Report.xlsx"
         );
 
         if (!File.Exists(templatePath))
         {
-            MessageBox.Show("找不到 CYLReport.xlsx");
+            MessageBox.Show("找不到 Report.xlsx");
             return;
         }
 
@@ -64,6 +64,7 @@ public static class Page5ReportExporter
                     ws.Cell(row, "F").Value = d.FilterType;
                     ws.Cell(row, "G").Value = d.ReCylinderNo;
                     ws.Cell(row, "H").Value = r.SN;
+                    ws.Cell(row, "AK").Value = "150";
                     ws.Cell(row, "I").Value = r.Weight;
 
                     if (r.ControlValues != null)

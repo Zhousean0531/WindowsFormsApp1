@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using WindowsFormsApp1.Data_Access;
 using WindowsFormsApp1.Data_Access.Page1;
 using WindowsFormsApp1.Data_Access.Page2;
 using WindowsFormsApp1.Data_Access.Page4;
@@ -82,16 +83,27 @@ public static class ExportHelper_Page3
     {
         try
         {
-            var data = Page3DataCollector.Collect(tab);
-            if (data == null) return;
+            Page3ExportData data = Page3DataCollector.Collect(tab);
 
-            Page3MasterExporter.Export(data);
+            if (data == null)
+                return;
+
+            List<int> ids = new List<int> { 1, 2, 3, 5, 7, 9 };
+
+            List<CalibrationInfo> calibInfos =
+                CalibrationHelper.GetCalibrationInfos(ids);
+
+            CalibrationHelper.CheckByInstrumentIds(ids);
+
+            P3Repository.Insert(data);
+
+            Page3ReportExporter.Export(data);
 
             MessageBox.Show("匯出完成");
         }
         catch (Exception ex)
         {
-            MessageBox.Show("匯出錯誤：" + ex.Message);
+            MessageBox.Show("Page3 匯出錯誤：" + ex.Message);
         }
     }
 }
@@ -121,19 +133,14 @@ public static class ExportHelper_Page5
         {
             var data = Page5DataCollector.Collect(tab);
             if (data == null) return;
+
             var ids = new List<int> { 1, 2, 3, 4, 6, 8 };
             var calibInfos = CalibrationHelper.GetCalibrationInfos(ids);
-            //foreach (var info in calibInfos)
-            //{
-                //if (info.ExpireDate < DateTime.Today)
-                //{
-                    //MessageBox.Show($"{info.InstrumentName} 已過期");
 
-                    //return; // 👉 中止整個流程
-                //}
-            //}
+            CalibrationHelper.CheckByInstrumentIds(ids);
 
             string rawEfficiencyText = ControlHelper.GetText(tab, "CYLRawEffTB");
+
             P5Repository.Insert(data, rawEfficiencyText);
 
             Page5LookupResult lookupResult = null;
@@ -153,7 +160,7 @@ public static class ExportHelper_Page5
             {
                 lookupResult = new Page5LookupResult();
             }
-            
+
             Page5ReportExporter.Export(
                 data,
                 data.FilterType,

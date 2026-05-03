@@ -5,80 +5,169 @@ using System.Windows.Forms;
 
 public static class Page3DataCollector
 {
+    private const string DgvName = "FilterBox";
+
     public static Page3ExportData Collect(TabPage tab)
     {
-        var testPicker = ControlHelper.Find<DateTimePicker>(tab, "SemiTestDateBox");
-        var arrivePicker = ControlHelper.Find<DateTimePicker>(tab, "SemiArriveDateBox");
-        var materialBox = ControlHelper.Find<ComboBox>(tab, "SemiTypeBox");
-
-        if (testPicker == null || arrivePicker == null || materialBox == null)
+        var data = new Page3ExportData
         {
-            MessageBox.Show("缺少必要欄位");
-            return null;
-        }
-
-        string testDate = testPicker.Value.ToString("yyyy.MM.dd");
-        string arriveDate = arrivePicker.Value.ToString("yyyy.MM.dd");
-        string material = materialBox.Text.Trim();
-
-        var lotNos = StringUtil.Split(
-            ControlHelper.GetText(tab, "SemiLotBox")
-        );
-
-        var weights = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "SemiWeightBox")
-        );
-
-        var vocIn = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "SemiVocInBox")
-        );
-
-        var vocOut = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "SemiVocOutBox")
-        );
-
-        var deltas = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "SemiPressureBox")
-        );
-
-        int n = new[] {
-            lotNos.Count,
-            weights.Count,
-            vocIn.Count,
-            vocOut.Count,
-            deltas.Count
-        }.Min();
-
-        if (n <= 0)
-        {
-            MessageBox.Show("沒有可匯出的資料");
-            return null;
-        }
-
-        lotNos = lotNos.Take(n).ToList();
-        weights = weights.Take(n).ToList();
-        vocIn = vocIn.Take(n).ToList();
-        vocOut = vocOut.Take(n).ToList();
-        deltas = deltas.Take(n).ToList();
-
-        var outMinusIn = vocOut.Zip(vocIn, (o, i) =>
-        {
-            var d = o - i;
-            return d <= 0 ? "N.D." : d.ToString("F1");
-        }).ToList();
-
-        return new Page3ExportData
-        {
-            TestingDate = testDate,
-            ArrivalDate = arriveDate,
-            Material = material,
-
-            LotNos = lotNos,
-            Weights = weights,
-            DeltaPs = deltas,
-            VocIns = vocIn,
-            VocOuts = vocOut,
-            OutMinusIn = outMinusIn
+            TestingDate = ControlHelper.GetText(tab, "FilterTestDateBox"),
+            ArrivalDate = ControlHelper.GetText(tab, "FilterProductionBox"),
+            WorkOrder = ControlHelper.GetText(tab, "FilterOrderBox"),
+            CarbonLot = ControlHelper.GetText(tab, "FilterCarbonLotBox"),
+            FilterMaterialNo = ControlHelper.GetText(tab, "FilterMaterialNumerBox"),
+            FilterReportNo = ControlHelper.GetText(tab, "FilterReportBox"),
+            PackageNo = ControlHelper.GetText(tab, "FilterPackageNOBox"),
+            Customer = ControlHelper.GetText(tab, "FilterReportCustmorBox"),
+            Model = ControlHelper.GetText(tab, "FilterModelBox"),
+            ReFilterNo = ControlHelper.GetText(tab, "ReFilterNOBox"),
+            Alarm = ControlHelper.GetText(tab, "FilterAlarmBox"),
+            UserName = Environment.UserName
         };
+        var eff = P3EfficiencyFinder.FindMinEfficiencyByWorkOrderText(data.CarbonLot);
+
+        data.MA = eff["MA"];
+        data.MB = eff["MB"];
+        data.MC = eff["MC"];
+        var missingFields = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(data.TestingDate))
+            missingFields.Add("測試日期");
+
+        if (string.IsNullOrWhiteSpace(data.ArrivalDate))
+            missingFields.Add("到貨日期");
+
+        if (string.IsNullOrWhiteSpace(data.FilterReportNo))
+            missingFields.Add("報告編號");
+
+        if (string.IsNullOrWhiteSpace(data.Customer))
+            missingFields.Add("客戶");
+
+        if (string.IsNullOrWhiteSpace(data.Model))
+            missingFields.Add("型號");
+
+        if (missingFields.Any())
+        {
+            MessageBox.Show(
+                "以下基本欄位尚未填寫：\n" + string.Join("、", missingFields),
+                "資料未完成",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning
+            );
+            return null;
+        }
+
+        var dgv = tab.Controls.Find(DgvName, true)
+                              .FirstOrDefault() as DataGridView;
+
+        if (dgv == null)
+        {
+            MessageBox.Show(
+                DgvName,
+                "系統錯誤",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+            return null;
+        }
+
+        var rows = dgv.Rows.Cast<DataGridViewRow>()
+                           .Where(r => !r.IsNewRow)
+                           .ToList();
+
+        if (rows.Count == 0)
+        {
+            MessageBox.Show(
+                "尚未輸入任何量測資料。",
+                "資料未完成",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning
+            );
+            return null;
+        }
+
+        foreach (var r in rows)
+        {
+            string sn = GetCell(r, "生產序號");
+            string weight = GetCell(r, "重量");
+
+            var rowData = new Page3RowData
+            {
+                SN = sn,
+                Weight = weight,
+                Length = GetCell(r, "長"),
+                Width = GetCell(r, "寬"),
+                Height = GetCell(r, "高"),
+                Diagonal = GetCell(r, "對角線"),
+                ControlValues = BuildControlValues(r)
+            };
+
+            data.Rows.Add(rowData);
+        }
+
+        return data;
+    }
+
+    private static Dictionary<int, string> BuildControlValues(DataGridViewRow r)
+    {
+        string particleIn = GetCell(r, "Particle_In", "ParticleIn");
+        string particleOut = GetCell(r, "Particle_Out", "ParticleOut");
+
+        string ipaIn = GetCell(r, "IPA_In", "IPAIn");
+        string ipaOut = GetCell(r, "IPA_Out", "IPAOut");
+
+        string acetoneIn = GetCell(r, "Acetone_In", "AcetoneIn");
+        string acetoneOut = GetCell(r, "Acetone_Out", "AcetoneOut");
+
+        string nonTargetIn = GetCell(r, "Nontarget_In", "NonTargetIn");
+        string nonTargetOut = GetCell(r, "Nontarget_Out", "NonTargetOut");
+
+        string pressureDropSpec = GetCell(r, "Pressure_Drop_Spec", "PressureDropSpec");
+        string pressureDrop = GetCell(r, "Pressure_Drop", "PressureDrop");
+
+        return new Dictionary<int, string>
+        {
+            [38] = particleIn,
+            [39] = particleOut,
+            [40] = DiffUtil.GetDiff(particleOut, particleIn),
+
+            [41] = ipaIn,
+            [42] = ipaOut,
+            [43] = DiffUtil.GetDiff(ipaOut, ipaIn),
+
+            [44] = acetoneIn,
+            [45] = acetoneOut,
+            [46] = DiffUtil.GetDiff(acetoneOut, acetoneIn),
+
+            [47] = nonTargetIn,
+            [48] = nonTargetOut,
+            [49] = DiffUtil.GetDiff(nonTargetOut, nonTargetIn),
+
+            [50] = DiffUtil.GetSumDiff(
+                ipaOut, acetoneOut, nonTargetOut,
+                ipaIn, acetoneIn, nonTargetIn
+            ),
+
+            [53] = pressureDropSpec,
+            [54] = pressureDrop
+        };
+    }
+    private static string GetCell(DataGridViewRow row, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            foreach (DataGridViewColumn col in row.DataGridView.Columns)
+            {
+                bool nameMatch = string.Equals(col.Name, name, StringComparison.OrdinalIgnoreCase);
+                bool headerMatch = string.Equals(col.HeaderText, name, StringComparison.OrdinalIgnoreCase);
+
+                if (nameMatch || headerMatch)
+                {
+                    return row.Cells[col.Index]?.Value?.ToString() ?? "";
+                }
+            }
+        }
+
+        return "";
     }
 }
