@@ -1,12 +1,6 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Mysqlx.Crud;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.IO.Packaging;
-using System.Security.Claims;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 public class Page3RowData
 {

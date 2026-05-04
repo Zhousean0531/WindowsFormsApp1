@@ -159,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business Logic\EfficiencyFinder.cs" />
-    <Compile Include="Business Logic\EfficiencyGroup.cs" />
     <Compile Include="Business Logic\EfficiencyHelper.cs" />
     <Compile Include="Business Logic\EfficiencyResult.cs" />
     <Compile Include="Business Logic\Page5LookupResult.cs" />
@@ -170,10 +169,8 @@
     <Compile Include="Data Access\Page2\P2Models.cs" />
     <Compile Include="Data Access\Page2\P2Repository.cs" />
     <Compile Include="Data Access\Page3\P3Repository.cs" />
-    <Compile Include="Data Access\Page3\P3Models.cs" />
     <Compile Include="Data Access\Page4\P4Models.cs" />
     <Compile Include="Data Access\Page4\P4Repository.cs" />
-    <Compile Include="Data Access\Page5\P5Models.cs" />
     <Compile Include="Data Access\Page5\P5Repository.cs" />
     <Compile Include="Data Access\Page6\P6Item.cs" />
     <Compile Include="Data Access\Page6\Page6Mapper.cs" />
@@ -222,7 +219,6 @@
     <Compile Include="Data Access\DbBootstrap.cs" />
     <Compile Include="Utility\configHelper.cs" />
     <Compile Include="Utility\QCPathHelper.cs" />
-    <Compile Include="Utility\Copymaster.cs" />
     <Compile Include="Business Logic\MeshHelper.cs" />
     <Compile Include="Utility\XlsmHelper.cs" />
     <Compile Include="Utility\SignatureHelper.cs" />

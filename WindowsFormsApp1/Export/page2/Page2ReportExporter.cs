@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,7 +11,7 @@ public static class Page2ReportExporter
 {
     public static void Export(P2Batch batch)
     {
-        if (batch == null || batch.GasTests.Count == 0)
+        if (batch == null || batch.GasTests == null || batch.GasTests.Count == 0)
             return;
 
         using (var sfd = new SaveFileDialog())
@@ -22,12 +21,17 @@ public static class Page2ReportExporter
             var firstGas = batch.GasTests.First();
 
             sfd.FileName =
-                $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產)_{firstGas.GasName} .xlsx";
+                $"{batch.ReportNo}_{batch.Material}_{FormatDecimal(batch.TargetGsm)}gsm_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產)_{firstGas.GasName}.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
                 return;
 
             string folder = Path.GetDirectoryName(sfd.FileName);
+            string selectedBaseName = Path.GetFileNameWithoutExtension(sfd.FileName);
+            string selectedExt = Path.GetExtension(sfd.FileName);
+
+            if (string.IsNullOrWhiteSpace(selectedExt))
+                selectedExt = ".xlsx";
 
             Excel.Application app = null;
 
@@ -38,28 +42,59 @@ public static class Page2ReportExporter
                 app.DisplayAlerts = false;
                 app.EnableEvents = false;
 
+                bool multiGas = batch.GasTests.Count > 1;
+
                 foreach (var gas in batch.GasTests)
                 {
-                    Export_Report(app, folder, batch, gas);
+                    Export_Report(
+                        app,
+                        folder,
+                        selectedBaseName,
+                        selectedExt,
+                        batch,
+                        gas,
+                        multiGas
+                    );
                 }
 
                 foreach (var gas in batch.GasTests)
                 {
-                    Export_Helper(app, folder, batch, gas);
+                    Export_Helper(
+                        app,
+                        folder,
+                        selectedBaseName,
+                        batch,
+                        gas,
+                        multiGas
+                    );
                 }
+
+                MessageBox.Show("匯出完成！");
             }
             finally
             {
                 app?.Quit();
-                if (app != null) Marshal.ReleaseComObject(app);
+
+                if (app != null)
+                    Marshal.ReleaseComObject(app);
             }
         }
     }
-    private static void Export_Report(Excel.Application app,string folder,P2Batch batch,P2GasTest gas)
+
+    private static void Export_Report(
+        Excel.Application app,
+        string folder,
+        string selectedBaseName,
+        string selectedExt,
+        P2Batch batch,
+        P2GasTest gas,
+        bool multiGas
+    )
     {
         string templatePath = Path.Combine(
             Application.StartupPath,
-            "QC_SemiFinished_Template.xlsx");
+            "QC_SemiFinished_Template.xlsx"
+        );
 
         if (!File.Exists(templatePath))
         {
@@ -67,8 +102,16 @@ public static class Page2ReportExporter
             return;
         }
 
-        string fileName =
-            $"{batch.ReportNo}_{batch.Material}_{batch.TargetGsm}_{batch.WorkOrder}_{gas.GasName} ({batch.TestDate?.ToString("MMdd生產")}.xlsx";
+        string fileName;
+
+        if (multiGas)
+        {
+            fileName = $"{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}{selectedExt}";
+        }
+        else
+        {
+            fileName = $"{SafeFileName(selectedBaseName)}{selectedExt}";
+        }
 
         string savePath = Path.Combine(folder, fileName);
 
@@ -91,14 +134,18 @@ public static class Page2ReportExporter
             var weights = gas.Samples.Select(s => s.Weight ?? 0).ToList();
             var drops = gas.Samples.Select(s => s.PressureDrop ?? 0).ToList();
 
-            DateTime prodDt = batch.ProductionDate ?? DateTime.Now; ;
+            DateTime prodDt = batch.ProductionDate ?? DateTime.Now;
 
             string l1Text =
                 $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} {weights[idx]}gsm ({drops[idx]}Pa) -{prodDt:MMdd}生產";
 
             ws.Range["C6"].Value = batch.ReportNo;
-            ws.Range["F7"].Value = batch.Material;
-            ws.Range["F8"].Value = batch.FilterSize;    
+
+            // F7 = batch.Material + batch.TargetGsm + gsm + (MMdd生產)
+            ws.Range["F7"].Value =
+                $"{batch.Material}{FormatDecimal(batch.TargetGsm)}gsm({batch.TestDate?.ToString("MMdd")}生產)";
+
+            ws.Range["F8"].Value = batch.FilterSize;
             ws.Range["F9"].Value = batch.WorkOrder;
             ws.Range["H6"].Value = batch.TestDate;
 
@@ -128,15 +175,27 @@ public static class Page2ReportExporter
         {
             wb?.Close(false);
 
-            if (ws != null) Marshal.ReleaseComObject(ws);
-            if (wb != null) Marshal.ReleaseComObject(wb);
+            if (ws != null)
+                Marshal.ReleaseComObject(ws);
+
+            if (wb != null)
+                Marshal.ReleaseComObject(wb);
         }
     }
-    private static void Export_Helper(Excel.Application app,string folder,P2Batch batch,P2GasTest gas)
+
+    private static void Export_Helper(
+        Excel.Application app,
+        string folder,
+        string selectedBaseName,
+        P2Batch batch,
+        P2GasTest gas,
+        bool multiGas
+    )
     {
         string templatePath = Path.Combine(
             Application.StartupPath,
-            "Helper_Template.xlsm");
+            "Helper_Template.xlsm"
+        );
 
         if (!File.Exists(templatePath))
         {
@@ -144,8 +203,16 @@ public static class Page2ReportExporter
             return;
         }
 
-        string fileName =
-            $"Helper_{gas.GasName}.xlsm";
+        string fileName;
+
+        if (multiGas)
+        {
+            fileName = $"Helper_{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}.xlsm";
+        }
+        else
+        {
+            fileName = $"Helper_{SafeFileName(selectedBaseName)}.xlsm";
+        }
 
         string savePath = Path.Combine(folder, fileName);
 
@@ -172,7 +239,10 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 7].Value = batch.Glue;
                 ws.Cells[currentRow, 8].Value = batch.Speed;
                 ws.Cells[currentRow, 9].Value = batch.WindSpeed;
-                ws.Cells[currentRow, 8].Value = batch.Username;
+
+                // 原本寫到第 8 欄會覆蓋 Speed，這裡改第 10 欄
+                ws.Cells[currentRow, 10].Value = batch.Username;
+
                 ws.Cells[currentRow, 11].Value = sample.Weight;
                 ws.Cells[currentRow, 12].Value = sample.PressureDrop;
 
@@ -182,8 +252,10 @@ public static class Page2ReportExporter
                     ws.Cells[currentRow, 14].Value = gas.Concentration;
 
                     if (sample.Efficiencies.Count > 0)
+                    {
                         ws.Cells[currentRow, 15].Value =
                             sample.Efficiencies[0];
+                    }
                 }
 
                 currentRow++;
@@ -195,17 +267,50 @@ public static class Page2ReportExporter
         {
             wb?.Close(false);
 
-            if (ws != null) Marshal.ReleaseComObject(ws);
-            if (wb != null) Marshal.ReleaseComObject(wb);
+            if (ws != null)
+                Marshal.ReleaseComObject(ws);
+
+            if (wb != null)
+                Marshal.ReleaseComObject(wb);
         }
     }
-    private static void WriteTextWithSubscriptNumbers(Excel.Range cell,string text)
+
+    private static string FormatDecimal(decimal? value)
+    {
+        if (!value.HasValue)
+            return "";
+
+        return value.Value.ToString("0.##");
+    }
+
+    private static string SafeFileName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "";
+
+        string result = value.Trim();
+
+        foreach (char c in Path.GetInvalidFileNameChars())
+        {
+            result = result.Replace(c.ToString(), "_");
+        }
+
+        return result;
+    }
+
+    private static void WriteTextWithSubscriptNumbers(
+        Excel.Range cell,
+        string text
+    )
     {
         if (cell == null)
             return;
+
         cell.Value = text;
+
         if (string.IsNullOrWhiteSpace(text))
             return;
+
         for (int i = 0; i < text.Length; i++)
         {
             if (char.IsDigit(text[i]))

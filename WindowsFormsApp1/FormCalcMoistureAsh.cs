@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 public enum CalcMode { Moisture, Ash , NButane}
@@ -10,10 +8,10 @@ public class FormCalcMoistureAsh : Form
     private readonly CalcMode _mode;
 
     // 3 組並排
-    TextBox[] tbCrucible = new TextBox[3];
-    TextBox[] tbSample = new TextBox[3];
-    TextBox[] tbTotal = new TextBox[3];
-    TextBox[] tbResult = new TextBox[3];
+    readonly TextBox[] tbCrucible = new TextBox[3];
+    readonly TextBox[] tbSample = new TextBox[3];
+    readonly TextBox[] tbTotal = new TextBox[3];
+    readonly TextBox[] tbResult = new TextBox[3];
 
     TextBox tbAverage;
     Label lblMode;

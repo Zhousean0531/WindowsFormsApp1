@@ -1,16 +1,14 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using WindowsFormsApp1.Data_Access;
 using WindowsFormsApp1.Data_Access.Page1;
 using WindowsFormsApp1.Data_Access.Page2;
-using WindowsFormsApp1.Data_Access.Page4;
 using WindowsFormsApp1.Data_Access.Page5;
 using WindowsFormsApp1.Data_Access.Page6;
 public static class DiffUtil
 {
-    public static string GetSumDiff(string out1, string out2, string out3,string in1, string in2, string in3)
+    public static string GetSumDiff(string out1, string out2, string out3, string in1, string in2, string in3)
     {
         if (double.TryParse(out1, out double o1) &&
             double.TryParse(out2, out double o2) &&
@@ -19,9 +17,14 @@ public static class DiffUtil
             double.TryParse(in2, out double i2) &&
             double.TryParse(in3, out double i3))
         {
-            double diff = (o1 + o2 + o3) - (i1 + i2 + i3);
-            return diff <= 0 ? "N.D." : diff.ToString("0.###");
+            double diff =
+                Math.Max(o1 - i1, 0) +
+                Math.Max(o2 - i2, 0) +
+                Math.Max(o3 - i3, 0);
+
+            return diff > 0 ? diff.ToString("0.###") : "N.D.";
         }
+
         return "N.D.";
     }
     public static string GetDiff(string outVal, string inVal)

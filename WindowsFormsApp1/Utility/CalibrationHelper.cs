@@ -23,19 +23,39 @@ public static class CalibrationHelper
         if (infos == null || infos.Count == 0)
             return true;
 
-        List<string> expiredList = new List<string>();
         List<string> warningList = new List<string>();
+        List<string> expiredWarningList = new List<string>();
+        List<string> blockList = new List<string>();
 
         DateTime today = DateTime.Today;
 
         foreach (CalibrationInfo info in infos)
         {
+            if (info == null)
+                continue;
+
             DateTime expireDate = info.ExpireDate.Date;
             double daysDiff = (expireDate - today).TotalDays;
 
-            if (daysDiff < 0)
+            // ==============================
+            // 已過期超過 30 天：停止匯出
+            // ==============================
+            if (daysDiff < -30)
             {
-                expiredList.Add(
+                blockList.Add(
+                    info.InstrumentName + "：" +
+                    expireDate.ToString("yyyy.MM.dd") +
+                    " 已過期 " +
+                    Math.Abs(Math.Floor(daysDiff)).ToString("0") +
+                    " 天，超過 30 天，不可匯出"
+                );
+            }
+            // ==============================
+            // 已過期 1～30 天：提醒，但可以匯出
+            // ==============================
+            else if (daysDiff < 0)
+            {
+                expiredWarningList.Add(
                     info.InstrumentName + "：" +
                     expireDate.ToString("yyyy.MM.dd") +
                     " 已過期 " +
@@ -43,15 +63,21 @@ public static class CalibrationHelper
                     " 天"
                 );
             }
+            // ==============================
+            // 今天到期：提醒，但可以匯出
+            // ==============================
             else if (daysDiff == 0)
             {
-                expiredList.Add(
+                expiredWarningList.Add(
                     info.InstrumentName + "：" +
                     expireDate.ToString("yyyy.MM.dd") +
                     " 今天到期"
                 );
             }
-            else if (daysDiff > 0 && daysDiff <= 14)
+            // ==============================
+            // 30 天內到期：提醒，但可以匯出
+            // ==============================
+            else if (daysDiff > 0 && daysDiff <= 30)
             {
                 warningList.Add(
                     info.InstrumentName + "：" +
@@ -61,26 +87,65 @@ public static class CalibrationHelper
                     " 天"
                 );
             }
+            // ==============================
+            // 超過 30 天後才到期：不提醒
+            // ==============================
+            else
+            {
+                continue;
+            }
         }
 
-        if (expiredList.Count > 0 || warningList.Count > 0)
+        // =====================================================
+        // 已過期超過 30 天：停止流程
+        // =====================================================
+        if (blockList.Count > 0)
         {
             string message = "";
 
-            if (expiredList.Count > 0)
+            message += "【儀器校正已過期超過 30 天】\r\n";
+            message += string.Join("\r\n", blockList);
+            message += "\r\n\r\n";
+            message += "請先更新儀器校正日期與有效日期。\r\n";
+            message += "系統將停止匯出 DB 與匯出報告流程。";
+
+            MessageBox.Show(
+                message,
+                "儀器校正有效日期逾期",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+
+            using (CalibrationManagerForm form = new CalibrationManagerForm())
             {
-                message += "【儀器已過期 / 今天到期】\r\n";
-                message += string.Join("\r\n", expiredList);
-                message += "\r\n\r\n";
+                form.ShowDialog();
             }
+
+            return false;
+        }
+
+        // =====================================================
+        // 30 天內到期、今天到期、或已過期 30 天內：提醒但繼續
+        // =====================================================
+        if (warningList.Count > 0 || expiredWarningList.Count > 0)
+        {
+            string message = "";
 
             if (warningList.Count > 0)
             {
-                message += "【儀器校正提醒（14 天內）】\r\n";
+                message += "【儀器校正提醒（30 天內到期）】\r\n";
                 message += string.Join("\r\n", warningList);
                 message += "\r\n\r\n";
             }
 
+            if (expiredWarningList.Count > 0)
+            {
+                message += "【儀器校正已到期提醒（尚未超過 30 天）】\r\n";
+                message += string.Join("\r\n", expiredWarningList);
+                message += "\r\n\r\n";
+            }
+
+            message += "儀器尚未超過停止匯出的期限，可以繼續匯出。\r\n";
             message += "是否要現在重新填寫校正日期與有效日期？";
 
             DialogResult result = MessageBox.Show(
@@ -97,9 +162,10 @@ public static class CalibrationHelper
                     form.ShowDialog();
                 }
             }
+
+            return true;
         }
 
-        // 不管使用者是否更新，都繼續流程
         return true;
     }
 }
