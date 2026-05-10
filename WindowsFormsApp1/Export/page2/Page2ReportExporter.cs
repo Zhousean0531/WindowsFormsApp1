@@ -238,11 +238,8 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 6].Value = batch.TargetGsm;
                 ws.Cells[currentRow, 7].Value = batch.Glue;
                 ws.Cells[currentRow, 8].Value = batch.Speed;
-                ws.Cells[currentRow, 9].Value = batch.WindSpeed;
-
-                // 原本寫到第 8 欄會覆蓋 Speed，這裡改第 10 欄
-                ws.Cells[currentRow, 10].Value = batch.Username;
-
+                ws.Cells[currentRow, 9].value = batch.Pressure;
+                ws.Cells[currentRow, 10].Value = batch.WindSpeed;
                 ws.Cells[currentRow, 11].Value = sample.Weight;
                 ws.Cells[currentRow, 12].Value = sample.PressureDrop;
 
@@ -255,6 +252,8 @@ public static class Page2ReportExporter
                     {
                         ws.Cells[currentRow, 15].Value =
                             sample.Efficiencies[0];
+                        ws.Cells[currentRow, 16].Value =
+                            sample.Efficiencies[9];
                     }
                 }
 

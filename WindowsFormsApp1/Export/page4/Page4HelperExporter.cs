@@ -57,7 +57,7 @@ public static class Page4HelperExporter
 
                 ws.Cells[row, 8].Value = r.Weight;
                 ws.Cells[row, 9].Value = r.Density;
-
+                ws.Cells[row, 10].value = d.Moisture;
                 ws.Cells[row, 11].Value = r.VocIn;
                 ws.Cells[row, 12].Value = r.VocOut;
 

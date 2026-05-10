@@ -13,7 +13,6 @@ namespace WindowsFormsApp1.Data_Access.Page2
         public string ProductDisplay { get; set; }
         public string FilterSize { get; set; }
         public string Material { get; set; }
-        public string MaterialBatchNo { get; set; }
         public decimal? TargetGsm { get; set; }
         public decimal? Glue { get; set; }
         public decimal? Speed { get; set; }

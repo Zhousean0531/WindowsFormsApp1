@@ -92,7 +92,9 @@ public static class Page4ReportExporter
                 const int ROW_VOUT = 16;
                 const int ROW_OUTG = 17;
                 const int ROW_EFF = 18;
-
+                const int ROW_MOISTURE = 19;
+                const int ROW_BUTANE = 20;
+                const int ROW_ASH = 21;
                 for (int i = 0; i < d.Rows.Count; i++)
                 {
                     int col = COL_FIRST + i;
@@ -110,6 +112,22 @@ public static class Page4ReportExporter
                         r.IsSelected
                         ? (g.Eff0?.ToString("F1") ?? "N.D.")
                         : "N.D.";
+                    string moistureText = ToBlankIfNullOrZero(d.Moisture);
+                    string butaneText = ToBlankIfNullOrZero(d.Butane);
+                    string ashText = ToBlankIfNullOrZero(d.Ash);
+
+                    ws.Cells[ROW_MOISTURE, col].Value =
+                        r.IsSelected
+                            ? moistureText
+                            : (string.IsNullOrWhiteSpace(moistureText) ? "" : "N.D.");
+                    ws.Cells[ROW_BUTANE, col].Value =
+                        r.IsSelected
+                            ? butaneText
+                            : (string.IsNullOrWhiteSpace(butaneText) ? "" : "N.D.");
+                    ws.Cells[ROW_ASH, col].Value =
+                        r.IsSelected
+                            ? ashText
+                            : (string.IsNullOrWhiteSpace(ashText) ? "" : "N.D.");
                 }
 
                 ExcelSignatureHelper.TryAddSignature(ws, "E25");
@@ -130,5 +148,15 @@ public static class Page4ReportExporter
         Page4HelperExporter.Export(helperSavePath, d);
 
         Page4ReportExporterForNanJing.Export(d);
+    }
+    private static string ToBlankIfNullOrZero(decimal? value)
+    {
+        if (!value.HasValue)
+            return "";
+
+        if (value.Value == 0)
+            return "";
+
+        return value.Value.ToString("0.###");
     }
 }

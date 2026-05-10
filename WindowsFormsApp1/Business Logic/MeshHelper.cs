@@ -33,6 +33,7 @@ public static class MeshGridHelper
             {
                 if (TryParse(valText, out totalWeight))
                     totalFound = true;
+
                 break;
             }
         }
@@ -40,13 +41,13 @@ public static class MeshGridHelper
         if (!totalFound || totalWeight <= 0)
             return false;
 
-        // ───── 收集重量，找空白列 ─────
+        // ───── 檢查空白列，只允許一格空白 ─────
         int emptyRowIndex = -1;
-        double sum = 0;
 
         for (int i = 0; i < rows.Count; i++)
         {
             var r = rows[i];
+
             string key = r.Cells[0].Value?.ToString()?.Trim();
             string valText = r.Cells[1].Value?.ToString()?.Trim();
 
@@ -57,50 +58,73 @@ public static class MeshGridHelper
             {
                 if (emptyRowIndex != -1)
                     return false; // 超過一列空白
+
                 emptyRowIndex = i;
             }
             else
             {
-                if (!TryParse(valText, out double v))
+                if (!TryParse(valText, out double weight))
                     return false;
-                sum += v;
+
+                if (weight < 0)
+                    return false;
             }
         }
 
-        // ───── 補算空白列重量 ─────
-        if (emptyRowIndex != -1)
+        // ───── 計算百分比 ─────
+        double percentSum = 0;
+
+        for (int i = 0; i < rows.Count; i++)
         {
-            double missing = totalWeight - sum;
-            if (missing < 0) return false;
+            var r = rows[i];
 
-            rows[emptyRowIndex].Cells[1].Value =
-                missing.ToString("F2", CultureInfo.InvariantCulture);
-
-            sum += missing;
-        }
-
-        if (Math.Abs(sum - totalWeight) > 0.001)
-            return false;
-
-        // ───── 全部轉為百分比並回填 ─────
-        foreach (var r in rows)
-        {
             string key = r.Cells[0].Value?.ToString()?.Trim();
             string valText = r.Cells[1].Value?.ToString()?.Trim();
 
             if (string.IsNullOrWhiteSpace(key) || key.Contains("總重"))
                 continue;
 
-            if (!TryParse(valText, out double weight))
+            // 空白列先跳過，最後用 100 - 其他百分比補
+            if (i == emptyRowIndex)
                 continue;
 
+            if (!TryParse(valText, out double weight))
+                return false;
+
             double percent = weight / totalWeight * 100.0;
-            r.Cells[1].Value = percent.ToString("F1", CultureInfo.InvariantCulture);
+
+            // 先四捨五入到小數 1 位，避免最後加總和畫面不一致
+            double roundedPercent = Math.Round(percent, 1, MidpointRounding.AwayFromZero);
+
+            r.Cells[1].Value = roundedPercent.ToString("F1", CultureInfo.InvariantCulture);
+
+            percentSum += roundedPercent;
+        }
+
+        // ───── 空白列用 100 - 其他百分比補足 ─────
+        if (emptyRowIndex != -1)
+        {
+            double missingPercent = 100.0 - percentSum;
+
+            // 避免 -0.0
+            if (Math.Abs(missingPercent) < 0.0001)
+                missingPercent = 0;
+
+            if (missingPercent < 0)
+                return false;
+
+            rows[emptyRowIndex].Cells[1].Value =
+                missingPercent.ToString("F1", CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            // 如果沒有空白列，就檢查加總是否接近 100
+            if (Math.Abs(percentSum - 100.0) > 0.1)
+                return false;
         }
 
         return true;
     }
-
     private static bool TryParse(string text, out double value)
     {
         value = 0;

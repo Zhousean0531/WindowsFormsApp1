@@ -73,7 +73,6 @@ public static class ExportHelper_Page2
             if (batch == null) return;
             P2Repository.Insert(batch);
             Page2ReportExporter.Export(batch);
-            MessageBox.Show("完成");
         }
         catch (Exception ex)
         {

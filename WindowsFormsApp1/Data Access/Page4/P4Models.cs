@@ -38,6 +38,9 @@ namespace WindowsFormsApp1.Data_Access.Page4
 
         public double Weight { get; set; }
         public double Density { get; set; }
+        public double Butane { get; set; }
+        public double Ash { get; set; } 
+        public double Moisture {  get; set; }
         public double VocIn { get; set; }
         public double VocOut { get; set; }
         public double DeltaP { get; set; }

@@ -19,7 +19,6 @@ public static class Page2DataCollector
 
         string productDisplay = ControlHelper.GetText(tab, "FilterInProcessProductDisplayBox");
         string productSize = ControlHelper.GetText(tab, "FilterInProcessProductSizeBox");
-        string materialBatchNo = ControlHelper.GetText(tab, "FilterInProcessCarbonOrderBox");
         string rawOrder = ControlHelper.GetText(tab, "FilterInProcessCarbonOrderBox");
         string normalOrder = ControlHelper.GetText(tab, "FilterInProcessOrderBox");
         string materialNo = ControlHelper.GetText(tab, "FilterMaterialNOBox");
@@ -84,11 +83,8 @@ public static class Page2DataCollector
             ReportNo = reportNo,
             ProductionDate = prodDt,
             TestDate = testDt,
-
             WorkOrder = orderDisplay,
-
             Material = productType,
-            MaterialBatchNo = rawOrder,
             MaterialNo = materialNo,
             ProductDisplay = productDisplay,
             ProductSize = productSize,

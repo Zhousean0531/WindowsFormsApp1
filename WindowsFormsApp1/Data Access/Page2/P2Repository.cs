@@ -35,13 +35,13 @@ namespace WindowsFormsApp1.Data_Access.Page2
         {
             string sql = @"
                 INSERT INTO P2_Batch
-                (ProductionDate, TestDate, WorkOrder, Material, MaterialBatchNo, MaterialNo,
+                (ProductionDate, TestDate, WorkOrder, Material, MaterialNo,
                  TargetGsm, Glue, Speed, UpperTemp, LowerTemp,
                  Pressure, WindSpeed, CarbonLine,
                  ReportNo,  FilterSize,
                  CreatedAt, Username)
                 VALUES
-                (@ProductionDate, @TestDate, @WorkOrder, @Material, @MaterialBatchNo, @MaterialNo,
+                (@ProductionDate, @TestDate, @WorkOrder, @Material, @MaterialNo,
                  @TargetGsm, @Glue, @Speed, @UpperTemp, @LowerTemp,
                  @Pressure, @WindSpeed, @CarbonLine,
                  @ReportNo, @FilterSize,
@@ -55,7 +55,6 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 cmd.Parameters.AddWithValue("@TestDate", batch.TestDate);
                 cmd.Parameters.AddWithValue("@WorkOrder", batch.WorkOrder);
                 cmd.Parameters.AddWithValue("@Material", batch.Material);
-                cmd.Parameters.AddWithValue("@MaterialBatchNo", batch.MaterialBatchNo);
                 cmd.Parameters.AddWithValue("@MaterialNo", batch.MaterialNo);
                 cmd.Parameters.AddWithValue("@TargetGsm", batch.TargetGsm);
                 cmd.Parameters.AddWithValue("@Glue", batch.Glue);

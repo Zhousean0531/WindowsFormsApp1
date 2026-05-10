@@ -401,7 +401,7 @@
             this.CylinderBox.Name = "CylinderBox";
             this.CylinderBox.RowTemplate.Height = 24;
             this.CylinderBox.Size = new System.Drawing.Size(915, 270);
-            this.CylinderBox.TabIndex = 9;
+            this.CylinderBox.TabIndex = 10;
             this.CylinderBox.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.CylinderBox_RowPostPaint);
             // 
             // CYLSN
@@ -1941,7 +1941,7 @@
             this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.77017F));
             this.FilterInProcessEffPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.FilterInProcessEffPanel.Size = new System.Drawing.Size(407, 518);
-            this.FilterInProcessEffPanel.TabIndex = 19;
+            this.FilterInProcessEffPanel.TabIndex = 20;
             // 
             // label35
             // 
@@ -2330,7 +2330,7 @@
             this.FilterInProcessTypeBox.Location = new System.Drawing.Point(175, 265);
             this.FilterInProcessTypeBox.Name = "FilterInProcessTypeBox";
             this.FilterInProcessTypeBox.Size = new System.Drawing.Size(100, 28);
-            this.FilterInProcessTypeBox.TabIndex = 6;
+            this.FilterInProcessTypeBox.TabIndex = 8;
             // 
             // FilterInProcessTestBox
             // 
@@ -2361,7 +2361,7 @@
             this.FilterInProcessCarbonInfoBox.Location = new System.Drawing.Point(390, 179);
             this.FilterInProcessCarbonInfoBox.Name = "FilterInProcessCarbonInfoBox";
             this.FilterInProcessCarbonInfoBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessCarbonInfoBox.TabIndex = 16;
+            this.FilterInProcessCarbonInfoBox.TabIndex = 19;
             // 
             // FilterSizeTB
             // 
@@ -2369,7 +2369,7 @@
             this.FilterSizeTB.Location = new System.Drawing.Point(390, 141);
             this.FilterSizeTB.Name = "FilterSizeTB";
             this.FilterSizeTB.Size = new System.Drawing.Size(100, 29);
-            this.FilterSizeTB.TabIndex = 15;
+            this.FilterSizeTB.TabIndex = 18;
             // 
             // FilterInProcessPressureDropBox
             // 
@@ -2377,7 +2377,7 @@
             this.FilterInProcessPressureDropBox.Location = new System.Drawing.Point(390, 103);
             this.FilterInProcessPressureDropBox.Name = "FilterInProcessPressureDropBox";
             this.FilterInProcessPressureDropBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessPressureDropBox.TabIndex = 15;
+            this.FilterInProcessPressureDropBox.TabIndex = 17;
             // 
             // FilterInProcessTestGsmBox
             // 
@@ -2385,7 +2385,7 @@
             this.FilterInProcessTestGsmBox.Location = new System.Drawing.Point(390, 61);
             this.FilterInProcessTestGsmBox.Name = "FilterInProcessTestGsmBox";
             this.FilterInProcessTestGsmBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessTestGsmBox.TabIndex = 14;
+            this.FilterInProcessTestGsmBox.TabIndex = 16;
             // 
             // FilterInProcessWindBox
             // 
@@ -2393,7 +2393,7 @@
             this.FilterInProcessWindBox.Location = new System.Drawing.Point(390, 27);
             this.FilterInProcessWindBox.Name = "FilterInProcessWindBox";
             this.FilterInProcessWindBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessWindBox.TabIndex = 13;
+            this.FilterInProcessWindBox.TabIndex = 15;
             // 
             // FilterInProcessPressureBox
             // 
@@ -2401,7 +2401,7 @@
             this.FilterInProcessPressureBox.Location = new System.Drawing.Point(175, 505);
             this.FilterInProcessPressureBox.Name = "FilterInProcessPressureBox";
             this.FilterInProcessPressureBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessPressureBox.TabIndex = 12;
+            this.FilterInProcessPressureBox.TabIndex = 14;
             // 
             // FilterInProcessLowerBox
             // 
@@ -2409,7 +2409,7 @@
             this.FilterInProcessLowerBox.Location = new System.Drawing.Point(175, 465);
             this.FilterInProcessLowerBox.Name = "FilterInProcessLowerBox";
             this.FilterInProcessLowerBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessLowerBox.TabIndex = 11;
+            this.FilterInProcessLowerBox.TabIndex = 13;
             // 
             // FilterInProcessUpperBox
             // 
@@ -2417,7 +2417,7 @@
             this.FilterInProcessUpperBox.Location = new System.Drawing.Point(175, 425);
             this.FilterInProcessUpperBox.Name = "FilterInProcessUpperBox";
             this.FilterInProcessUpperBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessUpperBox.TabIndex = 10;
+            this.FilterInProcessUpperBox.TabIndex = 12;
             // 
             // FilterInProcessSpeedBox
             // 
@@ -2425,7 +2425,7 @@
             this.FilterInProcessSpeedBox.Location = new System.Drawing.Point(175, 385);
             this.FilterInProcessSpeedBox.Name = "FilterInProcessSpeedBox";
             this.FilterInProcessSpeedBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessSpeedBox.TabIndex = 9;
+            this.FilterInProcessSpeedBox.TabIndex = 11;
             // 
             // FilterInProcessGileBox
             // 
@@ -2433,7 +2433,7 @@
             this.FilterInProcessGileBox.Location = new System.Drawing.Point(175, 345);
             this.FilterInProcessGileBox.Name = "FilterInProcessGileBox";
             this.FilterInProcessGileBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessGileBox.TabIndex = 8;
+            this.FilterInProcessGileBox.TabIndex = 10;
             // 
             // FilterInProcessgsmBox
             // 
@@ -2441,7 +2441,7 @@
             this.FilterInProcessgsmBox.Location = new System.Drawing.Point(175, 305);
             this.FilterInProcessgsmBox.Name = "FilterInProcessgsmBox";
             this.FilterInProcessgsmBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessgsmBox.TabIndex = 7;
+            this.FilterInProcessgsmBox.TabIndex = 9;
             // 
             // FilterMaterialNOBox
             // 
@@ -2449,7 +2449,7 @@
             this.FilterMaterialNOBox.Location = new System.Drawing.Point(175, 223);
             this.FilterMaterialNOBox.Name = "FilterMaterialNOBox";
             this.FilterMaterialNOBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterMaterialNOBox.TabIndex = 5;
+            this.FilterMaterialNOBox.TabIndex = 7;
             // 
             // FilterInProcessCarbonOrderBox
             // 
@@ -2457,7 +2457,7 @@
             this.FilterInProcessCarbonOrderBox.Location = new System.Drawing.Point(175, 183);
             this.FilterInProcessCarbonOrderBox.Name = "FilterInProcessCarbonOrderBox";
             this.FilterInProcessCarbonOrderBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessCarbonOrderBox.TabIndex = 4;
+            this.FilterInProcessCarbonOrderBox.TabIndex = 6;
             // 
             // label2
             // 
@@ -2474,7 +2474,7 @@
             this.FilterInProcessReportNOTB.Location = new System.Drawing.Point(175, 103);
             this.FilterInProcessReportNOTB.Name = "FilterInProcessReportNOTB";
             this.FilterInProcessReportNOTB.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessReportNOTB.TabIndex = 3;
+            this.FilterInProcessReportNOTB.TabIndex = 4;
             // 
             // FilterInProcessOrderBox
             // 
@@ -2482,7 +2482,7 @@
             this.FilterInProcessOrderBox.Location = new System.Drawing.Point(175, 143);
             this.FilterInProcessOrderBox.Name = "FilterInProcessOrderBox";
             this.FilterInProcessOrderBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessOrderBox.TabIndex = 3;
+            this.FilterInProcessOrderBox.TabIndex = 5;
             // 
             // FilterSize
             // 
@@ -3207,6 +3207,7 @@
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
