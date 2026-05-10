@@ -9,25 +9,15 @@ public static class DbBootstrap
 
     public static void Init()
     {
-        var ip = ConfigurationManager.AppSettings["IP"];
-
-        var builder = new SqlConnectionStringBuilder
-        {
-            DataSource = $"tcp:{ip},1433",   // ⭐ 明確 TCP
-            InitialCatalog = "QC_DB",
-            UserID = "sa",
-            Password = "1234",
-            IntegratedSecurity = false,
-            Encrypt = false,
-            TrustServerCertificate = true
-        };
-
-        _connStr = builder.ConnectionString;
         try
         {
+            _connStr = ResolveConnectionString();
+
             using (var conn = GetConnection())
             {
                 conn.Open();
+
+                CreateInstrumentTables(conn);
                 CreatePage1Tables(conn);
                 CreatePage2Tables(conn);
                 CreatePage3Tables(conn);
@@ -42,8 +32,32 @@ public static class DbBootstrap
         }
     }
 
+    private static string ResolveConnectionString()
+    {
+        string mode = ConfigurationManager.AppSettings["DbMode"];
+
+        if (string.IsNullOrWhiteSpace(mode))
+            mode = "DEV";
+
+        mode = mode.Trim().ToUpper();
+
+        if (mode == "PROD")
+        {
+            return ConfigurationManager
+                .ConnectionStrings["ProdDb"]
+                .ConnectionString;
+        }
+
+        return ConfigurationManager
+            .ConnectionStrings["DevDb"]
+            .ConnectionString;
+    }
+
     public static SqlConnection GetConnection()
     {
+        if (string.IsNullOrWhiteSpace(_connStr))
+            _connStr = ResolveConnectionString();
+
         return new SqlConnection(_connStr);
     }
 
@@ -56,7 +70,6 @@ public static class DbBootstrap
                 conn.Open();
                 return true;
             }
-
         }
         catch (Exception ex)
         {
@@ -65,6 +78,24 @@ public static class DbBootstrap
         }
     }
 
+    // ===== INSTRUMENTS =====
+    private static void CreateInstrumentTables(SqlConnection conn)
+    {
+        string sql = @"
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Instruments' AND xtype='U')
+    CREATE TABLE Instruments (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        InstrumentName NVARCHAR(200),
+        CalibrationDate DATETIME,
+        ExpireDate DATETIME,
+        CreatedAt DATETIME,
+        UpdatedAt DATETIME,
+        UpdatedBy NVARCHAR(50)
+    );
+    ";
+
+        new SqlCommand(sql, conn).ExecuteNonQuery();
+    }
     // ===== PAGE 1 =====
     private static void CreatePage1Tables(SqlConnection conn)
     {
@@ -287,32 +318,43 @@ public static class DbBootstrap
             Username NVARCHAR(50)
         );
         ";
-
         new SqlCommand(sql, conn).ExecuteNonQuery();
-    }
-
-    // ===== PAGE 6 =====
+    }    // ===== PAGE 6 =====
     private static void CreatePage6Tables(SqlConnection conn)
     {
         string sql = @"
 
-        IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P6_Record' AND xtype='U')
-        CREATE TABLE P6_Record (
-            Id INT IDENTITY(1,1) PRIMARY KEY,
-            ReportNo NVARCHAR(50),
-            ArrivalDate DATETIME,
-            SampleDate DATETIME,
-            MaterialName NVARCHAR(50),
-            PartNo NVARCHAR(50),
-            Quantity FLOAT,
-            SampleQuantity FLOAT,
-            SpecValue FLOAT,
-            MeasuredValue FLOAT,
-            Remark NVARCHAR(100),
-            CreatedAt DATETIME,
-            Username NVARCHAR(50)
-        );
-        ";
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P6_Batch' AND xtype='U')
+    CREATE TABLE P6_Batch (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        ReportNo NVARCHAR(50),
+        TestDate DATETIME,
+        UserName NVARCHAR(50),
+        CreatedAt DATETIME
+    );
+
+    IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P6_Item' AND xtype='U')
+    CREATE TABLE P6_Item (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        BatchId INT,
+
+        Col1 NVARCHAR(100),
+        Col2 NVARCHAR(100),
+
+        Spec1 NVARCHAR(100),
+        Spec2 NVARCHAR(100),
+
+        Range1 NVARCHAR(100),
+        Range2 NVARCHAR(100),
+
+        Result NVARCHAR(100),
+        Judgment NVARCHAR(100),
+
+        Extra1 NVARCHAR(100),
+        Extra2 NVARCHAR(100),
+        Extra3 NVARCHAR(100)
+    );
+    ";
 
         new SqlCommand(sql, conn).ExecuteNonQuery();
     }

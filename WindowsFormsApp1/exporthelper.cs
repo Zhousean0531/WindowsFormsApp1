@@ -6,6 +6,7 @@ using WindowsFormsApp1.Data_Access.Page1;
 using WindowsFormsApp1.Data_Access.Page2;
 using WindowsFormsApp1.Data_Access.Page5;
 using WindowsFormsApp1.Data_Access.Page6;
+using static Page3ReportExporter;
 public static class DiffUtil
 {
     public static string GetSumDiff(string out1, string out2, string out3, string in1, string in2, string in3)
@@ -91,16 +92,14 @@ public static class ExportHelper_Page3
             if (data == null)
                 return;
 
-            List<int> ids = new List<int> { 1, 2, 3, 5, 7, 9 };
+            DialogResult result = PressureModeDialog.Show(out Page3PressureMode pressureMode);
 
-            List<CalibrationInfo> calibInfos =
-                CalibrationHelper.GetCalibrationInfos(ids);
-
-            CalibrationHelper.CheckByInstrumentIds(ids);
+            if (result == DialogResult.Cancel)
+                return;
 
             P3Repository.Insert(data);
 
-            Page3ReportExporter.Export(data);
+            Page3ReportExporter.Export(data, pressureMode);
 
             MessageBox.Show("匯出完成");
         }
@@ -137,11 +136,6 @@ public static class ExportHelper_Page5
             var data = Page5DataCollector.Collect(tab);
             if (data == null) return;
 
-            var ids = new List<int> { 1, 2, 3, 4, 6, 8 };
-            var calibInfos = CalibrationHelper.GetCalibrationInfos(ids);
-
-            CalibrationHelper.CheckByInstrumentIds(ids);
-
             string rawEfficiencyText = ControlHelper.GetText(tab, "CYLRawEffTB");
 
             P5Repository.Insert(data, rawEfficiencyText);
@@ -167,8 +161,7 @@ public static class ExportHelper_Page5
             Page5ReportExporter.Export(
                 data,
                 data.FilterType,
-                rawEfficiencyText,
-                ids
+                rawEfficiencyText
             );
         }
         catch (Exception ex)

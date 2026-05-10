@@ -11,9 +11,9 @@ public static class Page5ReportExporter
         Page5ExportData d,
         string cylTypeText,
         string rawEfficiencyText,
-        List<int> instrumentIds,
         string fileNameOverride = null
     )
+
     {
         if (d == null || d.Rows == null || d.Rows.Count == 0)
             return;
@@ -44,11 +44,8 @@ public static class Page5ReportExporter
             using (var wb = new XLWorkbook(sfd.FileName))
             {
                 var ws = wb.Worksheet(1);
-
                 // ===== 1. 儀器校正資訊 =====
-                var calibInfos = InstrumentRepository.GetByIds(instrumentIds);
-                WriteCalibrationInfo(ws, calibInfos);
-
+                WriteInstrumentInfo(ws, cylTypeText);
                 // ===== 2. 檢驗資料 =====
                 int row = 4; // Report 起始列
                 int? effCol = ResolveEfficiencyColumn(cylTypeText);
@@ -86,7 +83,7 @@ public static class Page5ReportExporter
                         {
                             if (ReportColumnMap.TryGetValue(kv.Key, out int reportCol))
                             {
-                                ws.Cell(row, reportCol).Value = kv.Value;
+                                ws.Cell(row, reportCol).Value = ToReportText(kv.Value);
                             }
                         }
                     }
@@ -183,80 +180,104 @@ public static class Page5ReportExporter
 
         return null;
     }
-
-    // ===== 儀器校正欄位對照 =====
-    private static readonly Dictionary<string, Tuple<string, string, string>>
-        CalibrationCellMap =
-        new Dictionary<string, Tuple<string, string, string>>(StringComparer.OrdinalIgnoreCase)
-        {
-            // SO2
-            { "SO2 ANALYZER 43I", Tuple.Create("Q4", "Q5", "Q6") },
-
-            // NH3
-            { "NH3 ANALYZER T201", Tuple.Create("R4", "R5", "R6") },
-
-            // VOC
-            { "PORTABLE HANDHELD VOC MONITOR PPBRAE 3000", Tuple.Create("S4", "S5", "S6") },
-
-            // Particle Counter
-            { "HANDHELD PARTICLE COUNTER GT 324", Tuple.Create("W4", "W5", "W6") },
-
-            // MiTAP
-            { "MITAP SFT3", Tuple.Create("AH4", "AH5", "AH6") },
-
-            // Pressure Drop
-            { "UNIVERSAL IAQ INSTRUMENT TESTO 440DP", Tuple.Create("AM4", "AM5", "AM6") },
-        };
-
-    // ===== 寫入儀器校正資訊 =====
-    private static void WriteCalibrationInfo(
-        IXLWorksheet ws,
-        List<CalibrationInfo> infos
-    )
+    private static void WriteInstrumentInfo(IXLWorksheet ws, string cylTypeText)
     {
-        if (infos == null || infos.Count == 0)
-            return;
+        // 先全部寫 N/A，避免模板殘留舊資料
+        WriteInstrumentNA(ws, "Q4", "Q5", "Q6");    // MA
+        WriteInstrumentNA(ws, "R4", "R5", "R6");    // MB
+        WriteInstrumentNA(ws, "S4", "S5", "S6");    // MC
+        WriteInstrumentNA(ws, "W4", "W5", "W6");    // Met One / GT-324
+        WriteInstrumentNA(ws, "AH4", "AH5", "AH6"); // FT3+
+        WriteInstrumentNA(ws, "AM4", "AM5", "AM6"); //PressureDrop
 
-        foreach (var info in infos)
+        List<string> instrumentNos = BuildPage5InstrumentNos(cylTypeText);
+
+        Dictionary<string, InstrumentReportInfo> instruments =
+            InstrumentRepository.GetByInstrumentNos(instrumentNos);
+
+        string type = "";
+        if (!string.IsNullOrWhiteSpace(cylTypeText))
+            type = cylTypeText.Trim().ToUpper();
+
+        // MA → Thermo Fisher / 43i
+        if (type.Contains("MA"))
         {
-            if (info == null)
-                continue;
-
-            string instrumentName = info.InstrumentName?.Trim();
-
-            if (string.IsNullOrWhiteSpace(instrumentName))
-                continue;
-
-            string key = NormalizeInstrumentName(instrumentName);
-
-            if (!CalibrationCellMap.TryGetValue(key, out var cellSet))
-                continue;
-
-            ws.Cell(cellSet.Item1).Value = instrumentName;
-            ws.Cell(cellSet.Item2).Value = info.CalibrationDate.ToString("yyyy.MM.dd");
-            ws.Cell(cellSet.Item3).Value = info.ExpireDate.ToString("yyyy.MM.dd");
+            WriteInstrumentByNo(ws, instruments, "QAD-API-05", "Q4", "Q5", "Q6");
         }
+
+        // MB → Teledyne / T201
+        if (type.Contains("MB"))
+        {
+            WriteInstrumentByNo(ws, instruments, "QAD-API-01", "R4", "R5", "R6");
+        }
+
+        // MC → Honeywell / RAE3000
+        if (type.Contains("MC"))
+        {
+            WriteInstrumentByNo(ws, instruments, "QAD-PID-01", "S4", "S5", "S6");
+        }
+
+        // Page5 固定顯示
+        WriteInstrumentByNo(ws, instruments, "QAD-GT-03", "W4", "W5", "W6");
+        WriteInstrumentByNo(ws, instruments, "QAD-MIT-03", "AH4", "AH5", "AH6");
+        WriteInstrumentByNo(ws, instruments, "QAD-IAQ-05", "AM4", "AM5", "AM6");
     }
 
-    // ===== 儀器名稱正規化 =====
-    private static string NormalizeInstrumentName(string name)
+    private static List<string> BuildPage5InstrumentNos(string cylTypeText)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return "";
+        List<string> nos = new List<string>();
 
-        string s = name.Trim().ToUpper();
+        string type = "";
+        if (!string.IsNullOrWhiteSpace(cylTypeText))
+            type = cylTypeText.Trim().ToUpper();
 
-        s = s.Replace("/", " ");
-        s = s.Replace("\\", " ");
-        s = s.Replace("-", " ");
-        s = s.Replace("_", " ");
-        s = s.Replace(".", " ");
+        if (type.Contains("MA"))
+            nos.Add("QAD-API-05");
 
-        while (s.Contains("  "))
+        if (type.Contains("MB"))
+            nos.Add("QAD-API-01");
+
+        if (type.Contains("MC"))
+            nos.Add("QAD-PID-01");
+
+        // Page5 固定顯示
+        nos.Add("QAD-GT-03");
+        nos.Add("QAD-MIT-03");
+        nos.Add("QAD-IAQ-05");
+        return nos;
+    }
+
+    private static void WriteInstrumentByNo(
+        IXLWorksheet ws,
+        Dictionary<string, InstrumentReportInfo> instruments,
+        string instrumentNo,
+        string nameCell,
+        string calibrationDateCell,
+        string expireDateCell
+    )
+    {
+        InstrumentReportInfo info;
+
+        if (instruments == null || !instruments.TryGetValue(instrumentNo, out info))
         {
-            s = s.Replace("  ", " ");
+            WriteInstrumentNA(ws, nameCell, calibrationDateCell, expireDateCell);
+            return;
         }
 
-        return s.Trim();
+        ws.Cell(nameCell).Value = ToReportText(info.InstrumentName);
+        ws.Cell(calibrationDateCell).Value = info.CalibrationDate.ToString("yyyy.MM.dd");
+        ws.Cell(expireDateCell).Value = info.ExpireDate.ToString("yyyy.MM.dd");
+    }
+
+    private static void WriteInstrumentNA(
+        IXLWorksheet ws,
+        string nameCell,
+        string calibrationDateCell,
+        string expireDateCell
+    )
+    {
+        ws.Cell(nameCell).Value = "N/A";
+        ws.Cell(calibrationDateCell).Value = "N/A";
+        ws.Cell(expireDateCell).Value = "N/A";
     }
 }

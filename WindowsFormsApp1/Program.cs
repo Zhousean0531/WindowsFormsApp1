@@ -16,6 +16,7 @@ namespace WindowsFormsApp1
             {
                 Application.Exit();
             }
+            InstrumentExcelImporter.ImportOnStartup();
             Application.Run(new Form1());
         }
     }

@@ -162,8 +162,7 @@
     <Compile Include="Business Logic\EfficiencyHelper.cs" />
     <Compile Include="Business Logic\EfficiencyResult.cs" />
     <Compile Include="Business Logic\Page5LookupResult.cs" />
-    <Compile Include="Data Access\CalibrationInfo.cs" />
-    <Compile Include="Data Access\InstrumentRepository.cs" />
+    <Compile Include="Utility\PressureModeDialog.cs" />
     <Compile Include="Data Access\Page1\P1Models.cs" />
     <Compile Include="Data Access\Page1\P1Repository.cs" />
     <Compile Include="Data Access\Page2\P2Models.cs" />
@@ -199,12 +198,6 @@
     <Compile Include="Export\page6\Page6DataCollector.cs" />
     <Compile Include="Export\page6\Page6ExportData.cs" />
     <Compile Include="Export\page6\Page6ReportExporter.cs" />
-    <Compile Include="CalibrationManagerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="CalibrationManagerForm.Designer.cs">
-      <DependentUpon>CalibrationManagerForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="FormCalcMoistureAsh.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -215,8 +208,9 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utility\CalibrationHelper.cs" />
     <Compile Include="Data Access\DbBootstrap.cs" />
+    <Compile Include="Utility\InstrumentRepository.cs" />
+    <Compile Include="Utility\InstrumentExcelImporter.cs" />
     <Compile Include="Utility\configHelper.cs" />
     <Compile Include="Utility\QCPathHelper.cs" />
     <Compile Include="Business Logic\MeshHelper.cs" />
@@ -249,9 +243,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CalibrationManagerForm.resx">
-      <DependentUpon>CalibrationManagerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainform.resx">
       <DependentUpon>mainform.cs</DependentUpon>
