@@ -121,7 +121,7 @@ CREATE TABLE P1_Sample (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     BatchId INT,
     InBatchNo NVARCHAR(50),
-    InternalBatchNo NVARCHAR(50),
+    SuppliedNO NVARCHAR(50),
     Weight DECIMAL(10,4),
     Density DECIMAL(10,4),
     PressureDrop INT,

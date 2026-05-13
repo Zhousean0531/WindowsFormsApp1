@@ -21,10 +21,7 @@ public static class ExcelReportUtil
         Export_QC_RawMaterial_Report(reportSavePath, batch);
         Export_Helper(helperSavePath, batch);
     }
-
-    // =====================================================
     // (A) 匯出 QC_RawMaterial_Template.xlsx（報告用）
-    // =====================================================
     private static void Export_QC_RawMaterial_Report(
         string savePath,
         P1Batch batch)
@@ -84,7 +81,7 @@ public static class ExcelReportUtil
                 var selectedSample = batch.Samples.FirstOrDefault(s => s.IsSelected);
                 decimal? eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
                 ws.Cells[ROW_LOTNO, col].Value = sample.LotFull;
-                ws.Cells[ROW_DENS, col].Value = sample.Density;
+                ws.Cells[ROW_DENS, col].Value = "N/A";
                 ws.Cells[ROW_DP, col].Value = sample.DeltaP;
                 ws.Cells[ROW_VIN, col].Value = sample.VocIn;
                 ws.Cells[ROW_VOUT, col].Value = sample.VocOut;
@@ -117,9 +114,7 @@ public static class ExcelReportUtil
         }
     }
 
-    // =====================================================
     // (B) 匯出 Helper_Template.xlsm（彙整用）
-    // =====================================================
     private static void Export_Helper(
         string helperSavePath,
         P1Batch batch)

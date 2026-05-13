@@ -72,10 +72,10 @@ namespace WindowsFormsApp1.Data_Access.Page1
         {
             string sql = @"
                 INSERT INTO P1_Sample
-                (BatchId, InBatchNo, InternalBatchNo, Weight,
+                (BatchId, InBatchNo, SuppliedNO, Weight,
                  Density, PressureDrop, VOCIn, VOCOut, VOCOutgassing)
                 VALUES
-                (@BatchId, @InBatchNo, @InternalBatchNo, @Weight,
+                (@BatchId, @InBatchNo, @SuppliedNO, @Weight,
                  @Density, @PressureDrop, @VOCIn, @VOCOut, @VOCOutgassing);
                 SELECT SCOPE_IDENTITY();
             ";
@@ -86,7 +86,7 @@ namespace WindowsFormsApp1.Data_Access.Page1
                 cmd.Parameters.Add("@InBatchNo", SqlDbType.NVarChar).Value =
                     (object)sample.LotFull ?? DBNull.Value;
 
-                cmd.Parameters.Add("@InternalBatchNo", SqlDbType.NVarChar).Value =
+                cmd.Parameters.Add("@SuppliedNO", SqlDbType.NVarChar).Value =
                     DBNull.Value;
 
                 cmd.Parameters.Add("@Weight", SqlDbType.Decimal).Value =

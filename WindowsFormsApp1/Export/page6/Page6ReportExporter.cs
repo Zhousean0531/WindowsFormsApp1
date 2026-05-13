@@ -107,8 +107,8 @@ public static class Page6ReportExporter
                 System.Threading.Thread.Sleep(90);
                 Application.DoEvents();
             }
-            // ===== 簽名（跟 Page2 一樣）=====
-            ExcelSignatureHelper.TryAddSignature(ws, "L18");
+            // =====簽名=====
+            ExcelSignatureHelper.TryAddSignature(ws, "J18");
 
             wb.Save();
         }
