@@ -24,6 +24,8 @@ namespace WindowsFormsApp1.Data_Access.Page1
     public class P1Sample
     {
         public string LotFull { get; set; }
+        public string SuppliedNO { get; set; }
+
         public decimal? Weight { get; set; }
         public decimal? Density { get; set; }
         public decimal? DeltaP { get; set; }

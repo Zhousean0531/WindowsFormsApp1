@@ -308,6 +308,9 @@
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
+            this.SearchButton = new System.Windows.Forms.Button();
+            this.label26 = new System.Windows.Forms.Label();
+            this.FilterRawSuppliedBox = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -2665,6 +2668,7 @@
             this.FilterRawPage.Controls.Add(this.FilterRawVOCsOutletBox);
             this.FilterRawPage.Controls.Add(this.FilterRawVOCsInletBox);
             this.FilterRawPage.Controls.Add(this.FilterRawWeightBox);
+            this.FilterRawPage.Controls.Add(this.FilterRawSuppliedBox);
             this.FilterRawPage.Controls.Add(this.FilterRawNumberBox);
             this.FilterRawPage.Controls.Add(this.FilterRawQuantityBox);
             this.FilterRawPage.Controls.Add(this.FilterRawQtyWeightBox);
@@ -2675,6 +2679,7 @@
             this.FilterRawPage.Controls.Add(this.FilterRawVOCsInlet);
             this.FilterRawPage.Controls.Add(this.FilterRawVOCs);
             this.FilterRawPage.Controls.Add(this.FilterRawWeight);
+            this.FilterRawPage.Controls.Add(this.label26);
             this.FilterRawPage.Controls.Add(this.FilterRawParticleSize);
             this.FilterRawPage.Controls.Add(this.FilterRawNumber);
             this.FilterRawPage.Controls.Add(this.FilterRawQuantity);
@@ -2708,7 +2713,7 @@
             this.FilterRawParticleSizeBox.Name = "FilterRawParticleSizeBox";
             this.FilterRawParticleSizeBox.RowTemplate.Height = 24;
             this.FilterRawParticleSizeBox.Size = new System.Drawing.Size(237, 156);
-            this.FilterRawParticleSizeBox.TabIndex = 16;
+            this.FilterRawParticleSizeBox.TabIndex = 17;
             // 
             // 目數
             // 
@@ -2788,7 +2793,7 @@
             this.FilterRawBackGroundBox.Location = new System.Drawing.Point(499, 93);
             this.FilterRawBackGroundBox.Name = "FilterRawBackGroundBox";
             this.FilterRawBackGroundBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawBackGroundBox.TabIndex = 14;
+            this.FilterRawBackGroundBox.TabIndex = 15;
             // 
             // FilterRawEffvalueBox
             // 
@@ -2798,42 +2803,42 @@
             this.FilterRawEffvalueBox.Name = "FilterRawEffvalueBox";
             this.FilterRawEffvalueBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.FilterRawEffvalueBox.Size = new System.Drawing.Size(129, 99);
-            this.FilterRawEffvalueBox.TabIndex = 15;
+            this.FilterRawEffvalueBox.TabIndex = 16;
             // 
             // FilterRawConcertrationBox
             // 
             this.FilterRawConcertrationBox.Location = new System.Drawing.Point(394, 93);
             this.FilterRawConcertrationBox.Name = "FilterRawConcertrationBox";
             this.FilterRawConcertrationBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawConcertrationBox.TabIndex = 13;
+            this.FilterRawConcertrationBox.TabIndex = 14;
             // 
             // FilterRawPressureBox
             // 
             this.FilterRawPressureBox.Location = new System.Drawing.Point(390, 25);
             this.FilterRawPressureBox.Name = "FilterRawPressureBox";
             this.FilterRawPressureBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawPressureBox.TabIndex = 12;
+            this.FilterRawPressureBox.TabIndex = 13;
             // 
             // FilterRawVOCsOutletBox
             // 
-            this.FilterRawVOCsOutletBox.Location = new System.Drawing.Point(175, 376);
+            this.FilterRawVOCsOutletBox.Location = new System.Drawing.Point(175, 410);
             this.FilterRawVOCsOutletBox.Name = "FilterRawVOCsOutletBox";
             this.FilterRawVOCsOutletBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawVOCsOutletBox.TabIndex = 11;
+            this.FilterRawVOCsOutletBox.TabIndex = 12;
             // 
             // FilterRawVOCsInletBox
             // 
-            this.FilterRawVOCsInletBox.Location = new System.Drawing.Point(175, 336);
+            this.FilterRawVOCsInletBox.Location = new System.Drawing.Point(175, 370);
             this.FilterRawVOCsInletBox.Name = "FilterRawVOCsInletBox";
             this.FilterRawVOCsInletBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawVOCsInletBox.TabIndex = 10;
+            this.FilterRawVOCsInletBox.TabIndex = 11;
             // 
             // FilterRawWeightBox
             // 
-            this.FilterRawWeightBox.Location = new System.Drawing.Point(175, 297);
+            this.FilterRawWeightBox.Location = new System.Drawing.Point(175, 331);
             this.FilterRawWeightBox.Name = "FilterRawWeightBox";
             this.FilterRawWeightBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawWeightBox.TabIndex = 9;
+            this.FilterRawWeightBox.TabIndex = 10;
             // 
             // FilterRawNumberBox
             // 
@@ -2885,7 +2890,7 @@
             // FilterRawVOCsOutlet
             // 
             this.FilterRawVOCsOutlet.AutoSize = true;
-            this.FilterRawVOCsOutlet.Location = new System.Drawing.Point(100, 379);
+            this.FilterRawVOCsOutlet.Location = new System.Drawing.Point(100, 413);
             this.FilterRawVOCsOutlet.Name = "FilterRawVOCsOutlet";
             this.FilterRawVOCsOutlet.Size = new System.Drawing.Size(57, 20);
             this.FilterRawVOCsOutlet.TabIndex = 0;
@@ -2894,7 +2899,7 @@
             // FilterRawVOCsInlet
             // 
             this.FilterRawVOCsInlet.AutoSize = true;
-            this.FilterRawVOCsInlet.Location = new System.Drawing.Point(100, 339);
+            this.FilterRawVOCsInlet.Location = new System.Drawing.Point(100, 373);
             this.FilterRawVOCsInlet.Name = "FilterRawVOCsInlet";
             this.FilterRawVOCsInlet.Size = new System.Drawing.Size(43, 20);
             this.FilterRawVOCsInlet.TabIndex = 0;
@@ -2903,7 +2908,7 @@
             // FilterRawVOCs
             // 
             this.FilterRawVOCs.AutoSize = true;
-            this.FilterRawVOCs.Location = new System.Drawing.Point(40, 361);
+            this.FilterRawVOCs.Location = new System.Drawing.Point(40, 395);
             this.FilterRawVOCs.Name = "FilterRawVOCs";
             this.FilterRawVOCs.Size = new System.Drawing.Size(51, 20);
             this.FilterRawVOCs.TabIndex = 0;
@@ -2912,7 +2917,7 @@
             // FilterRawWeight
             // 
             this.FilterRawWeight.AutoSize = true;
-            this.FilterRawWeight.Location = new System.Drawing.Point(40, 300);
+            this.FilterRawWeight.Location = new System.Drawing.Point(40, 334);
             this.FilterRawWeight.Name = "FilterRawWeight";
             this.FilterRawWeight.Size = new System.Drawing.Size(89, 20);
             this.FilterRawWeight.TabIndex = 0;
@@ -3197,12 +3202,40 @@
             this.label21.TabIndex = 23;
             this.label21.Text = "測試日期";
             // 
+            // SearchButton
+            // 
+            this.SearchButton.Font = new System.Drawing.Font("微軟正黑體", 15.75F);
+            this.SearchButton.Location = new System.Drawing.Point(681, 12);
+            this.SearchButton.Name = "SearchButton";
+            this.SearchButton.Size = new System.Drawing.Size(120, 53);
+            this.SearchButton.TabIndex = 4;
+            this.SearchButton.Text = "查詢";
+            this.SearchButton.UseVisualStyleBackColor = true;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(40, 299);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(89, 20);
+            this.label26.TabIndex = 0;
+            this.label26.Text = "供應商批號";
+            // 
+            // FilterRawSuppliedBox
+            // 
+            this.FilterRawSuppliedBox.Location = new System.Drawing.Point(175, 290);
+            this.FilterRawSuppliedBox.Name = "FilterRawSuppliedBox";
+            this.FilterRawSuppliedBox.ShortcutsEnabled = false;
+            this.FilterRawSuppliedBox.Size = new System.Drawing.Size(100, 29);
+            this.FilterRawSuppliedBox.TabIndex = 9;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(990, 669);
+            this.Controls.Add(this.SearchButton);
             this.Controls.Add(this.execute);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -3521,6 +3554,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Pressure_Drop;
         private System.Windows.Forms.TextBox FilterOrderBox;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Button SearchButton;
+        private System.Windows.Forms.TextBox FilterRawSuppliedBox;
+        private System.Windows.Forms.Label label26;
     }
 }
 

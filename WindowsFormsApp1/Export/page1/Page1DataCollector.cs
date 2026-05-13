@@ -18,6 +18,7 @@ public static class Page1DataCollector
         var tbBg = ControlHelper.Find<TextBox>(tab, "FilterRawBackGroundBox")?.Text;
         var tbVal = ControlHelper.Find<TextBox>(tab, "FilterRawEffvalueBox");
         var batchNo = ControlHelper.Find<TextBox>(tab, "FilterRawBatchNoBox")?.Text;
+        var suppliedText = ControlHelper.Find<TextBox>(tab, "FilterRawSuppliedBox")?.Text;
         if (arrivePicker == null || testPicker == null || materialBox == null || reportNoBox == null)
         {
             MessageBox.Show("UI 控制項未找到");
@@ -66,18 +67,18 @@ public static class Page1DataCollector
 
         // ───── 多筆資料 ─────
         var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "FilterRawNumberBox"));
+        var suppliedList = ParseHelper.SplitStr(suppliedText);
         var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawWeightBox"));
         var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsInletBox"));
         var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsOutletBox"));
         var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawPressureBox"));
-
         string qtyText = QuantityHelper.BuildQuantityText(
             ProductKind.Filter,
             materialBox.Text,
             ControlHelper.GetText(tab, "FilterRawQtyWeight"),
             ControlHelper.GetText(tab, "FilterRawQuantityBox"));
 
-        int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
+        int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count, suppliedList.Count }.Min();
         if (n <= 0)
         {
             MessageBox.Show("資料筆數錯誤");
@@ -113,7 +114,6 @@ public static class Page1DataCollector
             .ToList();
 
         var densities = weights.Take(n).Select(w => w / 50.0).ToList();
-
         for (int i = 0; i < n; i++)
         {
             decimal? outgassing = null;
@@ -123,6 +123,7 @@ public static class Page1DataCollector
             var sample = new P1Sample
             {
                 LotFull = lotFulls[i],
+                SuppliedNO = suppliedList[i],
                 Weight = (decimal?)weights[i],
                 Density = (decimal?)densities[i],
                 DeltaP = (decimal?)deltaPs[i],

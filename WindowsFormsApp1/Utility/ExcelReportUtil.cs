@@ -152,14 +152,14 @@ public static class ExcelReportUtil
                     var sample = batch.Samples[i];
                     wshelper.Cells[row, 1].Value = batch.TestingDate;
                     wshelper.Cells[row, 2].Value = batch.Material;
-                    wshelper.Cells[row, 3].Value = "";
+                    wshelper.Cells[row, 3].Value = sample.SuppliedNO;
                     wshelper.Cells[row, 4].Value = sample.LotFull;
                     wshelper.Cells[row, 5].Value = sample.VocIn;
                     wshelper.Cells[row, 6].Value = sample.VocOut;
                     wshelper.Cells[row, 7].Value =
-                        sample.Outgassing.HasValue && sample.Outgassing.Value < 0
-                        ? "N.D."
-                        : (object)sample.Outgassing;
+                        sample.Outgassing.HasValue && sample.Outgassing.Value > 0
+                        ? (object)sample.Outgassing
+                        : "N.D.";
                     wshelper.Cells[row, 8].Value = sample.DeltaP;
 
                     if (sample.IsSelected)
