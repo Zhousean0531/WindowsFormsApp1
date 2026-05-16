@@ -8,13 +8,14 @@ namespace WindowsFormsApp1.Data_Access.Page2
         public DateTime? TestDate { get; set; }
         public string WorkOrder { get; set; }
         public string MaterialNo { get; set; }
+        public string BatchNo{get;set;}
         public string ReportNo { get; set; }
         public string ProductSize { get; set; }
         public string ProductDisplay { get; set; }
         public string FilterSize { get; set; }
         public string Material { get; set; }
         public decimal? TargetGsm { get; set; }
-        public decimal? Glue { get; set; }
+        public string Glue { get; set; }
         public decimal? Speed { get; set; }
         public decimal? UpperTemp { get; set; }
         public decimal? LowerTemp { get; set; }

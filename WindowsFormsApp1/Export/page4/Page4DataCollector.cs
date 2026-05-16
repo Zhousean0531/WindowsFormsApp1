@@ -194,9 +194,9 @@ public static class Page4DataCollector
         }
 
         // ===== Moisture / Butane / Ash =====
-        decimal? moisture = null;
-        decimal? butane = null;
-        decimal? ash = null;
+        string moisture = null;
+        string butane = null;
+        string ash = null;
 
         var chkMoisture = ControlHelper.Find<CheckBox>(tab, "chkMoisture");
         var chkButane = ControlHelper.Find<CheckBox>(tab, "chkButane");
@@ -208,23 +208,65 @@ public static class Page4DataCollector
 
         if (chkMoisture != null && chkMoisture.Checked)
         {
-            decimal v;
-            if (decimal.TryParse(tbMoisture?.Text, out v))
-                moisture = v;
+            string input = (tbMoisture?.Text ?? "").Trim();
+
+            if (input == "-")
+                moisture = input;
+            else if (string.IsNullOrWhiteSpace(input))
+                moisture = null;
+            else
+            {
+                decimal v;
+                if (decimal.TryParse(input, out v))
+                    moisture = v.ToString("0.###");
+                else
+                {
+                    MessageBox.Show("水分只能輸入數字或 -");
+                    return null;
+                }
+            }
         }
 
         if (chkButane != null && chkButane.Checked)
         {
-            decimal v;
-            if (decimal.TryParse(tbButane?.Text, out v))
-                butane = v;
+            string input = (tbButane?.Text ?? "").Trim();
+
+            if (input == "-")
+                butane = input;
+            else if (string.IsNullOrWhiteSpace(input))
+                butane = null;
+            else
+            {
+                decimal v;
+                if (decimal.TryParse(input, out v))
+                    butane = v.ToString("0.###");
+                else
+                {
+                    MessageBox.Show("正丁烷只能輸入數字或 -");
+                    return null;
+                }
+            }
         }
 
-        if (chkAsh != null && chkAsh.Checked)
+            if (chkAsh != null && chkAsh.Checked)
         {
-            decimal v;
-            if (decimal.TryParse(tbAsh?.Text, out v))
-                ash = v;
+            string input = (tbAsh?.Text ?? "").Trim();
+
+            if (input == "-")
+                ash = input;
+            else if (string.IsNullOrWhiteSpace(input))
+                ash = null;
+            else
+            {
+                decimal v;
+                if (decimal.TryParse(input, out v))
+                    ash = v.ToString("0.###");
+                else
+                {
+                    MessageBox.Show("灰分只能輸入數字或 -");
+                    return null;
+                }
+            }
         }
         // ===== 回傳 =====
         return new P4Batch

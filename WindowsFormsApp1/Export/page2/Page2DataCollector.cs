@@ -13,7 +13,7 @@ public static class Page2DataCollector
         string reportNo = ControlHelper.GetText(tab, "FilterInProcessReportNOTB");
         string productionDate = ControlHelper.GetText(tab, "FilterInProcessProductionBox");
         string testDate = ControlHelper.GetText(tab, "FilterInProcessTestBox");
-
+         
         string productType = ControlHelper.GetText(tab, "FilterInProcessTypeBox");
         string gsm = ControlHelper.GetText(tab, "FilterInProcessgsmBox");
 
@@ -21,8 +21,8 @@ public static class Page2DataCollector
         string productSize = ControlHelper.GetText(tab, "FilterInProcessProductSizeBox");
         string rawOrder = ControlHelper.GetText(tab, "FilterInProcessCarbonOrderBox");
         string normalOrder = ControlHelper.GetText(tab, "FilterInProcessOrderBox");
-        string materialNo = ControlHelper.GetText(tab, "FilterMaterialNOBox");
-
+        string materialNo = ControlHelper.GetText(tab, "FilterInProcessMaterialNo");
+        string batchNo=ControlHelper.GetText(tab, "FilterBatchNOBox");
         string gile = ControlHelper.GetText(tab, "FilterInProcessGileBox");
         string speed = ControlHelper.GetText(tab, "FilterInProcessSpeedBox");
         string upper = ControlHelper.GetText(tab, "FilterInProcessUpperBox");
@@ -86,10 +86,11 @@ public static class Page2DataCollector
             WorkOrder = orderDisplay,
             Material = productType,
             MaterialNo = materialNo,
+            BatchNo=batchNo,
             ProductDisplay = productDisplay,
             ProductSize = productSize,
             TargetGsm = TryParse(gsm),
-            Glue = TryParse(gile),
+            Glue = gile,
             Speed = TryParse(speed),
             UpperTemp = TryParse(upper),
             LowerTemp = TryParse(lower),

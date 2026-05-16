@@ -227,7 +227,7 @@
             this.FilterInProcessSpeedBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessGileBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessgsmBox = new System.Windows.Forms.TextBox();
-            this.FilterMaterialNOBox = new System.Windows.Forms.TextBox();
+            this.FilterBatchNOBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessCarbonOrderBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.FilterInProcessReportNOTB = new System.Windows.Forms.TextBox();
@@ -268,6 +268,7 @@
             this.FilterRawVOCsOutletBox = new System.Windows.Forms.TextBox();
             this.FilterRawVOCsInletBox = new System.Windows.Forms.TextBox();
             this.FilterRawWeightBox = new System.Windows.Forms.TextBox();
+            this.FilterRawSuppliedBox = new System.Windows.Forms.TextBox();
             this.FilterRawNumberBox = new System.Windows.Forms.TextBox();
             this.FilterRawQuantityBox = new System.Windows.Forms.TextBox();
             this.FilterRawQtyWeightBox = new System.Windows.Forms.TextBox();
@@ -278,6 +279,7 @@
             this.FilterRawVOCsInlet = new System.Windows.Forms.Label();
             this.FilterRawVOCs = new System.Windows.Forms.Label();
             this.FilterRawWeight = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
             this.FilterRawParticleSize = new System.Windows.Forms.Label();
             this.FilterRawNumber = new System.Windows.Forms.Label();
             this.FilterRawQuantity = new System.Windows.Forms.Label();
@@ -303,14 +305,16 @@
             this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
+            this.SuppliedBox = new System.Windows.Forms.TextBox();
             this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
+            this.Supplied = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.SearchButton = new System.Windows.Forms.Button();
-            this.label26 = new System.Windows.Forms.Label();
-            this.FilterRawSuppliedBox = new System.Windows.Forms.TextBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.FilterInProcessMaterialNo = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -349,7 +353,7 @@
             this.CylinderPage.Controls.Add(this.CylinderTestDate);
             this.CylinderPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderPage.Name = "CylinderPage";
-            this.CylinderPage.Size = new System.Drawing.Size(1018, 626);
+            this.CylinderPage.Size = new System.Drawing.Size(978, 626);
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
             // 
@@ -653,7 +657,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawParticle);
             this.CylinderRawPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderRawPage.Name = "CylinderRawPage";
-            this.CylinderRawPage.Size = new System.Drawing.Size(1018, 626);
+            this.CylinderRawPage.Size = new System.Drawing.Size(978, 626);
             this.CylinderRawPage.TabIndex = 3;
             this.CylinderRawPage.Text = "濾筒原料";
             // 
@@ -1505,7 +1509,7 @@
             this.FilterPage.Controls.Add(this.FilterTestDate);
             this.FilterPage.Location = new System.Drawing.Point(4, 29);
             this.FilterPage.Name = "FilterPage";
-            this.FilterPage.Size = new System.Drawing.Size(1018, 626);
+            this.FilterPage.Size = new System.Drawing.Size(978, 626);
             this.FilterPage.TabIndex = 2;
             this.FilterPage.Text = "濾網成品";
             // 
@@ -1857,8 +1861,9 @@
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessUpperBox);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessSpeedBox);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessGileBox);
+            this.FilterInProcessPage.Controls.Add(this.FilterInProcessMaterialNo);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessgsmBox);
-            this.FilterInProcessPage.Controls.Add(this.FilterMaterialNOBox);
+            this.FilterInProcessPage.Controls.Add(this.FilterBatchNOBox);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessCarbonOrderBox);
             this.FilterInProcessPage.Controls.Add(this.label2);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessReportNOTB);
@@ -1877,6 +1882,7 @@
             this.FilterInProcessPage.Controls.Add(this.FilterMaterialNO);
             this.FilterInProcessPage.Controls.Add(this.label3);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessReportNO);
+            this.FilterInProcessPage.Controls.Add(this.label27);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessgsm);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessOrder);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessTest);
@@ -1884,7 +1890,7 @@
             this.FilterInProcessPage.Location = new System.Drawing.Point(4, 29);
             this.FilterInProcessPage.Name = "FilterInProcessPage";
             this.FilterInProcessPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterInProcessPage.Size = new System.Drawing.Size(1018, 626);
+            this.FilterInProcessPage.Size = new System.Drawing.Size(978, 626);
             this.FilterInProcessPage.TabIndex = 1;
             this.FilterInProcessPage.Text = "濾網半成品";
             // 
@@ -2361,7 +2367,7 @@
             // FilterInProcessCarbonInfoBox
             // 
             this.FilterInProcessCarbonInfoBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessCarbonInfoBox.Location = new System.Drawing.Point(390, 179);
+            this.FilterInProcessCarbonInfoBox.Location = new System.Drawing.Point(386, 219);
             this.FilterInProcessCarbonInfoBox.Name = "FilterInProcessCarbonInfoBox";
             this.FilterInProcessCarbonInfoBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessCarbonInfoBox.TabIndex = 19;
@@ -2369,7 +2375,7 @@
             // FilterSizeTB
             // 
             this.FilterSizeTB.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterSizeTB.Location = new System.Drawing.Point(390, 141);
+            this.FilterSizeTB.Location = new System.Drawing.Point(386, 181);
             this.FilterSizeTB.Name = "FilterSizeTB";
             this.FilterSizeTB.Size = new System.Drawing.Size(100, 29);
             this.FilterSizeTB.TabIndex = 18;
@@ -2377,7 +2383,7 @@
             // FilterInProcessPressureDropBox
             // 
             this.FilterInProcessPressureDropBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessPressureDropBox.Location = new System.Drawing.Point(390, 103);
+            this.FilterInProcessPressureDropBox.Location = new System.Drawing.Point(386, 143);
             this.FilterInProcessPressureDropBox.Name = "FilterInProcessPressureDropBox";
             this.FilterInProcessPressureDropBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessPressureDropBox.TabIndex = 17;
@@ -2385,7 +2391,7 @@
             // FilterInProcessTestGsmBox
             // 
             this.FilterInProcessTestGsmBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessTestGsmBox.Location = new System.Drawing.Point(390, 61);
+            this.FilterInProcessTestGsmBox.Location = new System.Drawing.Point(386, 101);
             this.FilterInProcessTestGsmBox.Name = "FilterInProcessTestGsmBox";
             this.FilterInProcessTestGsmBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessTestGsmBox.TabIndex = 16;
@@ -2393,7 +2399,7 @@
             // FilterInProcessWindBox
             // 
             this.FilterInProcessWindBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessWindBox.Location = new System.Drawing.Point(390, 27);
+            this.FilterInProcessWindBox.Location = new System.Drawing.Point(386, 67);
             this.FilterInProcessWindBox.Name = "FilterInProcessWindBox";
             this.FilterInProcessWindBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessWindBox.TabIndex = 15;
@@ -2401,7 +2407,7 @@
             // FilterInProcessPressureBox
             // 
             this.FilterInProcessPressureBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessPressureBox.Location = new System.Drawing.Point(175, 505);
+            this.FilterInProcessPressureBox.Location = new System.Drawing.Point(386, 29);
             this.FilterInProcessPressureBox.Name = "FilterInProcessPressureBox";
             this.FilterInProcessPressureBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessPressureBox.TabIndex = 14;
@@ -2409,7 +2415,7 @@
             // FilterInProcessLowerBox
             // 
             this.FilterInProcessLowerBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessLowerBox.Location = new System.Drawing.Point(175, 465);
+            this.FilterInProcessLowerBox.Location = new System.Drawing.Point(175, 494);
             this.FilterInProcessLowerBox.Name = "FilterInProcessLowerBox";
             this.FilterInProcessLowerBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessLowerBox.TabIndex = 13;
@@ -2417,7 +2423,7 @@
             // FilterInProcessUpperBox
             // 
             this.FilterInProcessUpperBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessUpperBox.Location = new System.Drawing.Point(175, 425);
+            this.FilterInProcessUpperBox.Location = new System.Drawing.Point(175, 454);
             this.FilterInProcessUpperBox.Name = "FilterInProcessUpperBox";
             this.FilterInProcessUpperBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessUpperBox.TabIndex = 12;
@@ -2425,7 +2431,7 @@
             // FilterInProcessSpeedBox
             // 
             this.FilterInProcessSpeedBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessSpeedBox.Location = new System.Drawing.Point(175, 385);
+            this.FilterInProcessSpeedBox.Location = new System.Drawing.Point(175, 414);
             this.FilterInProcessSpeedBox.Name = "FilterInProcessSpeedBox";
             this.FilterInProcessSpeedBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessSpeedBox.TabIndex = 11;
@@ -2433,7 +2439,7 @@
             // FilterInProcessGileBox
             // 
             this.FilterInProcessGileBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessGileBox.Location = new System.Drawing.Point(175, 345);
+            this.FilterInProcessGileBox.Location = new System.Drawing.Point(175, 374);
             this.FilterInProcessGileBox.Name = "FilterInProcessGileBox";
             this.FilterInProcessGileBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessGileBox.TabIndex = 10;
@@ -2441,18 +2447,18 @@
             // FilterInProcessgsmBox
             // 
             this.FilterInProcessgsmBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessgsmBox.Location = new System.Drawing.Point(175, 305);
+            this.FilterInProcessgsmBox.Location = new System.Drawing.Point(175, 334);
             this.FilterInProcessgsmBox.Name = "FilterInProcessgsmBox";
             this.FilterInProcessgsmBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessgsmBox.TabIndex = 9;
             // 
-            // FilterMaterialNOBox
+            // FilterBatchNOBox
             // 
-            this.FilterMaterialNOBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterMaterialNOBox.Location = new System.Drawing.Point(175, 223);
-            this.FilterMaterialNOBox.Name = "FilterMaterialNOBox";
-            this.FilterMaterialNOBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterMaterialNOBox.TabIndex = 7;
+            this.FilterBatchNOBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.FilterBatchNOBox.Location = new System.Drawing.Point(175, 223);
+            this.FilterBatchNOBox.Name = "FilterBatchNOBox";
+            this.FilterBatchNOBox.Size = new System.Drawing.Size(100, 29);
+            this.FilterBatchNOBox.TabIndex = 7;
             // 
             // FilterInProcessCarbonOrderBox
             // 
@@ -2465,7 +2471,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(310, 184);
+            this.label2.Location = new System.Drawing.Point(306, 224);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 20);
             this.label2.TabIndex = 12;
@@ -2490,7 +2496,7 @@
             // FilterSize
             // 
             this.FilterSize.AutoSize = true;
-            this.FilterSize.Location = new System.Drawing.Point(310, 146);
+            this.FilterSize.Location = new System.Drawing.Point(306, 186);
             this.FilterSize.Name = "FilterSize";
             this.FilterSize.Size = new System.Drawing.Size(73, 20);
             this.FilterSize.TabIndex = 12;
@@ -2499,7 +2505,7 @@
             // FilterInProcessWire
             // 
             this.FilterInProcessWire.AutoSize = true;
-            this.FilterInProcessWire.Location = new System.Drawing.Point(310, 108);
+            this.FilterInProcessWire.Location = new System.Drawing.Point(306, 148);
             this.FilterInProcessWire.Name = "FilterInProcessWire";
             this.FilterInProcessWire.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessWire.TabIndex = 12;
@@ -2517,7 +2523,7 @@
             // FilterInProcessTestGsm
             // 
             this.FilterInProcessTestGsm.AutoSize = true;
-            this.FilterInProcessTestGsm.Location = new System.Drawing.Point(310, 66);
+            this.FilterInProcessTestGsm.Location = new System.Drawing.Point(306, 106);
             this.FilterInProcessTestGsm.Name = "FilterInProcessTestGsm";
             this.FilterInProcessTestGsm.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessTestGsm.TabIndex = 2;
@@ -2526,7 +2532,7 @@
             // FilterInProcessWind
             // 
             this.FilterInProcessWind.AutoSize = true;
-            this.FilterInProcessWind.Location = new System.Drawing.Point(310, 30);
+            this.FilterInProcessWind.Location = new System.Drawing.Point(306, 70);
             this.FilterInProcessWind.Name = "FilterInProcessWind";
             this.FilterInProcessWind.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessWind.TabIndex = 2;
@@ -2535,7 +2541,7 @@
             // FilterInProcessPressure
             // 
             this.FilterInProcessPressure.AutoSize = true;
-            this.FilterInProcessPressure.Location = new System.Drawing.Point(40, 508);
+            this.FilterInProcessPressure.Location = new System.Drawing.Point(306, 30);
             this.FilterInProcessPressure.Name = "FilterInProcessPressure";
             this.FilterInProcessPressure.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessPressure.TabIndex = 2;
@@ -2544,7 +2550,7 @@
             // FilterInProcessLower
             // 
             this.FilterInProcessLower.AutoSize = true;
-            this.FilterInProcessLower.Location = new System.Drawing.Point(40, 468);
+            this.FilterInProcessLower.Location = new System.Drawing.Point(40, 497);
             this.FilterInProcessLower.Name = "FilterInProcessLower";
             this.FilterInProcessLower.Size = new System.Drawing.Size(89, 20);
             this.FilterInProcessLower.TabIndex = 2;
@@ -2553,7 +2559,7 @@
             // FilterInProcessUpper
             // 
             this.FilterInProcessUpper.AutoSize = true;
-            this.FilterInProcessUpper.Location = new System.Drawing.Point(40, 428);
+            this.FilterInProcessUpper.Location = new System.Drawing.Point(40, 457);
             this.FilterInProcessUpper.Name = "FilterInProcessUpper";
             this.FilterInProcessUpper.Size = new System.Drawing.Size(89, 20);
             this.FilterInProcessUpper.TabIndex = 2;
@@ -2562,7 +2568,7 @@
             // FilterInProcessSpeed
             // 
             this.FilterInProcessSpeed.AutoSize = true;
-            this.FilterInProcessSpeed.Location = new System.Drawing.Point(40, 388);
+            this.FilterInProcessSpeed.Location = new System.Drawing.Point(40, 417);
             this.FilterInProcessSpeed.Name = "FilterInProcessSpeed";
             this.FilterInProcessSpeed.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessSpeed.TabIndex = 2;
@@ -2571,7 +2577,7 @@
             // FilterInProcessGile
             // 
             this.FilterInProcessGile.AutoSize = true;
-            this.FilterInProcessGile.Location = new System.Drawing.Point(40, 348);
+            this.FilterInProcessGile.Location = new System.Drawing.Point(40, 377);
             this.FilterInProcessGile.Name = "FilterInProcessGile";
             this.FilterInProcessGile.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessGile.TabIndex = 2;
@@ -2616,7 +2622,7 @@
             // FilterInProcessgsm
             // 
             this.FilterInProcessgsm.AutoSize = true;
-            this.FilterInProcessgsm.Location = new System.Drawing.Point(40, 308);
+            this.FilterInProcessgsm.Location = new System.Drawing.Point(40, 337);
             this.FilterInProcessgsm.Name = "FilterInProcessgsm";
             this.FilterInProcessgsm.Size = new System.Drawing.Size(73, 20);
             this.FilterInProcessgsm.TabIndex = 2;
@@ -2692,7 +2698,7 @@
             this.FilterRawPage.Location = new System.Drawing.Point(4, 29);
             this.FilterRawPage.Name = "FilterRawPage";
             this.FilterRawPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterRawPage.Size = new System.Drawing.Size(1018, 626);
+            this.FilterRawPage.Size = new System.Drawing.Size(978, 626);
             this.FilterRawPage.TabIndex = 0;
             this.FilterRawPage.Text = "濾網原料";
             // 
@@ -2840,6 +2846,14 @@
             this.FilterRawWeightBox.Size = new System.Drawing.Size(100, 29);
             this.FilterRawWeightBox.TabIndex = 10;
             // 
+            // FilterRawSuppliedBox
+            // 
+            this.FilterRawSuppliedBox.Location = new System.Drawing.Point(175, 290);
+            this.FilterRawSuppliedBox.Name = "FilterRawSuppliedBox";
+            this.FilterRawSuppliedBox.ShortcutsEnabled = false;
+            this.FilterRawSuppliedBox.Size = new System.Drawing.Size(100, 29);
+            this.FilterRawSuppliedBox.TabIndex = 9;
+            // 
             // FilterRawNumberBox
             // 
             this.FilterRawNumberBox.Location = new System.Drawing.Point(175, 255);
@@ -2922,6 +2936,15 @@
             this.FilterRawWeight.Size = new System.Drawing.Size(89, 20);
             this.FilterRawWeight.TabIndex = 0;
             this.FilterRawWeight.Text = "測試品重量";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(40, 299);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(89, 20);
+            this.label26.TabIndex = 0;
+            this.label26.Text = "供應商批號";
             // 
             // FilterRawParticleSize
             // 
@@ -3009,7 +3032,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 50);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1026, 659);
+            this.tabControl1.Size = new System.Drawing.Size(986, 659);
             this.tabControl1.TabIndex = 2;
             // 
             // RawMaterialPage
@@ -3018,7 +3041,9 @@
             this.RawMaterialPage.Controls.Add(this.MaterialTypeTB);
             this.RawMaterialPage.Controls.Add(this.label12);
             this.RawMaterialPage.Controls.Add(this.MaterialTestDateBox);
+            this.RawMaterialPage.Controls.Add(this.SuppliedBox);
             this.RawMaterialPage.Controls.Add(this.RawMaterialNOtb);
+            this.RawMaterialPage.Controls.Add(this.Supplied);
             this.RawMaterialPage.Controls.Add(this.label23);
             this.RawMaterialPage.Controls.Add(this.MaterialReportNOTB);
             this.RawMaterialPage.Controls.Add(this.label22);
@@ -3026,7 +3051,7 @@
             this.RawMaterialPage.Location = new System.Drawing.Point(4, 29);
             this.RawMaterialPage.Name = "RawMaterialPage";
             this.RawMaterialPage.Padding = new System.Windows.Forms.Padding(3);
-            this.RawMaterialPage.Size = new System.Drawing.Size(1018, 626);
+            this.RawMaterialPage.Size = new System.Drawing.Size(978, 626);
             this.RawMaterialPage.TabIndex = 5;
             this.RawMaterialPage.Text = "物料";
             this.RawMaterialPage.UseVisualStyleBackColor = true;
@@ -3049,11 +3074,11 @@
             this.dataGridViewTextBoxColumn10,
             this.dataGridViewTextBoxColumn11});
             this.RawMaterialdgv.Cursor = System.Windows.Forms.Cursors.Default;
-            this.RawMaterialdgv.Location = new System.Drawing.Point(44, 164);
+            this.RawMaterialdgv.Location = new System.Drawing.Point(44, 201);
             this.RawMaterialdgv.Name = "RawMaterialdgv";
             this.RawMaterialdgv.RowTemplate.Height = 24;
-            this.RawMaterialdgv.Size = new System.Drawing.Size(929, 341);
-            this.RawMaterialdgv.TabIndex = 5;
+            this.RawMaterialdgv.Size = new System.Drawing.Size(911, 341);
+            this.RawMaterialdgv.TabIndex = 6;
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -3157,6 +3182,16 @@
             this.MaterialTestDateBox.TabIndex = 2;
             this.MaterialTestDateBox.ValueChanged += new System.EventHandler(this.MaterialTestDateBox_ValueChanged);
             // 
+            // SuppliedBox
+            // 
+            this.SuppliedBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.SuppliedBox.Location = new System.Drawing.Point(175, 165);
+            this.SuppliedBox.Name = "SuppliedBox";
+            this.SuppliedBox.Size = new System.Drawing.Size(164, 29);
+            this.SuppliedBox.TabIndex = 5;
+            this.SuppliedBox.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
+            this.SuppliedBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
+            // 
             // RawMaterialNOtb
             // 
             this.RawMaterialNOtb.Cursor = System.Windows.Forms.Cursors.Default;
@@ -3166,6 +3201,15 @@
             this.RawMaterialNOtb.TabIndex = 4;
             this.RawMaterialNOtb.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
             this.RawMaterialNOtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
+            // 
+            // Supplied
+            // 
+            this.Supplied.AutoSize = true;
+            this.Supplied.Location = new System.Drawing.Point(40, 168);
+            this.Supplied.Name = "Supplied";
+            this.Supplied.Size = new System.Drawing.Size(57, 20);
+            this.Supplied.TabIndex = 22;
+            this.Supplied.Text = "供應商";
             // 
             // label23
             // 
@@ -3209,25 +3253,25 @@
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(120, 53);
             this.SearchButton.TabIndex = 4;
-            this.SearchButton.Text = "查詢";
+            this.SearchButton.Text = "匯入";
             this.SearchButton.UseVisualStyleBackColor = true;
             // 
-            // label26
+            // label27
             // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(40, 299);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(89, 20);
-            this.label26.TabIndex = 0;
-            this.label26.Text = "供應商批號";
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(40, 302);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(41, 20);
+            this.label27.TabIndex = 2;
+            this.label27.Text = "料號";
             // 
-            // FilterRawSuppliedBox
+            // FilterInProcessMaterialNo
             // 
-            this.FilterRawSuppliedBox.Location = new System.Drawing.Point(175, 290);
-            this.FilterRawSuppliedBox.Name = "FilterRawSuppliedBox";
-            this.FilterRawSuppliedBox.ShortcutsEnabled = false;
-            this.FilterRawSuppliedBox.Size = new System.Drawing.Size(100, 29);
-            this.FilterRawSuppliedBox.TabIndex = 9;
+            this.FilterInProcessMaterialNo.Cursor = System.Windows.Forms.Cursors.Default;
+            this.FilterInProcessMaterialNo.Location = new System.Drawing.Point(175, 299);
+            this.FilterInProcessMaterialNo.Name = "FilterInProcessMaterialNo";
+            this.FilterInProcessMaterialNo.Size = new System.Drawing.Size(100, 29);
+            this.FilterInProcessMaterialNo.TabIndex = 9;
             // 
             // Form1
             // 
@@ -3431,7 +3475,7 @@
         private System.Windows.Forms.TextBox FilterInValueH2SBox;
         private System.Windows.Forms.TextBox FilterInValueNH3Box;
         private System.Windows.Forms.TextBox FilterInValueTolueneBox;
-        private System.Windows.Forms.TextBox FilterMaterialNOBox;
+        private System.Windows.Forms.TextBox FilterBatchNOBox;
         private System.Windows.Forms.Label FilterMaterialNO;
         private System.Windows.Forms.TextBox FilterCarbonLotBox;
         private System.Windows.Forms.Label label1;
@@ -3557,6 +3601,10 @@
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.TextBox FilterRawSuppliedBox;
         private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.TextBox SuppliedBox;
+        private System.Windows.Forms.Label Supplied;
+        private System.Windows.Forms.TextBox FilterInProcessMaterialNo;
+        private System.Windows.Forms.Label label27;
     }
 }
 

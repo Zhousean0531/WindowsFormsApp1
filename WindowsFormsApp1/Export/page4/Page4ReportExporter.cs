@@ -112,9 +112,9 @@ public static class Page4ReportExporter
                         r.IsSelected
                         ? (g.Eff0?.ToString("F1") ?? "N.D.")
                         : "N.D.";
-                    string moistureText = ToBlankIfNullOrZero(d.Moisture);
-                    string butaneText = ToBlankIfNullOrZero(d.Butane);
-                    string ashText = ToBlankIfNullOrZero(d.Ash);
+                    string moistureText = d.Moisture;
+                    string butaneText = d.Butane;
+                    string ashText = d.Ash;
 
                     ws.Cells[ROW_MOISTURE, col].Value =
                         r.IsSelected

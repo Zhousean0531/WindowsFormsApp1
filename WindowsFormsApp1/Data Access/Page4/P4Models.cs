@@ -20,9 +20,9 @@ namespace WindowsFormsApp1.Data_Access.Page4
 
         public List<P4Row> Rows { get; set; } = new List<P4Row>();
 
-        public decimal? Moisture { get; set; }
-        public decimal? Butane { get; set; }
-        public decimal? Ash { get; set; }
+        public string Moisture { get; set; }
+        public string Butane { get; set; }
+        public string Ash { get; set; }
 
         public Dictionary<string, double> ParticleSizePercentages
             = new Dictionary<string, double>();

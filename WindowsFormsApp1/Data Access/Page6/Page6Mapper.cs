@@ -10,7 +10,8 @@ namespace WindowsFormsApp1.Data_Access.Page6
             {
                 ReportNo = d.ReportNo,
                 TestDate = d.TestDate,
-                UserName = userName
+                UserName = userName,
+                SuppliedNO = d.SuppliedNO
             };
 
             foreach (DataGridViewRow row in d.DataGrid.Rows)

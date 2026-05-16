@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using WindowsFormsApp1.Data_Access.Page1;
+using WindowsFormsApp1.Data_Access.Page2;
 using static SignatureHelper;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -170,7 +171,12 @@ public static class ExcelReportUtil
                         wshelper.Cells[row, 10].Value = "N.D.";
                     }
                 }
-
+                wshelper.Cells[10, 2].Value =batch.Concentration;
+                wshelper.Cells[1, 19].Value =
+                    $"{batch.TestingDate:MM.dd} {batch.Material} " +
+                    $"{(selectedSample?.LotFull?.Contains("#") == true ? selectedSample.LotFull.Substring(selectedSample.LotFull.LastIndexOf('#')) : selectedSample?.LotFull)} " +
+                    $"({selectedSample?.DeltaP:0.##}Pa) - " +
+                    $"{batch.ArrivalDate:MM.dd} Arrived";
                 // ===== Mesh（粒徑）=====
                 if (batch.ParticleSizePercentages != null)
                 {

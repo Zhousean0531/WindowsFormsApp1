@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -143,7 +144,7 @@ public static class Page2ReportExporter
 
             // F7 = batch.Material + batch.TargetGsm + gsm + (MMdd生產)
             ws.Range["F7"].Value =
-                $"{batch.Material}{FormatDecimal(batch.TargetGsm)}gsm({batch.TestDate?.ToString("MMdd")}生產)";
+                $"{batch.Material}{FormatDecimal(batch.TargetGsm)}gsm({batch.ProductionDate?.ToString("MMdd")}生產)";
 
             ws.Range["F8"].Value = batch.FilterSize;
             ws.Range["F9"].Value = batch.WorkOrder;
@@ -242,7 +243,11 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 10].Value = batch.WindSpeed;
                 ws.Cells[currentRow, 11].Value = sample.Weight;
                 ws.Cells[currentRow, 12].Value = sample.PressureDrop;
-
+                ws.Cells[1, 21].Value =
+                    $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} " +
+                    $"{FormatDecimal(sample.Weight)}gsm " +
+                    $"({FormatDecimal(sample.PressureDrop)}Pa) - " +
+                    $"{batch.ProductionDate?.ToString("MMdd")}生產";
                 if (sample.IsSelected)
                 {
                     ws.Cells[currentRow, 13].Value = gas.GasName;
@@ -256,7 +261,10 @@ public static class Page2ReportExporter
                             sample.Efficiencies[9];
                     }
                 }
-
+                for(int i = 0; i < sample.Efficiencies.Count && i < 11; i++)
+                {
+                    ws.Cells[3 + i, 21].Value = sample.Efficiencies[i];
+                }
                 currentRow++;
             }
 
