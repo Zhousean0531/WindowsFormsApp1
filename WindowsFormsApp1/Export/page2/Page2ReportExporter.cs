@@ -235,7 +235,7 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 2].Value = batch.TestDate;
                 ws.Cells[currentRow, 3].Value = batch.WorkOrder;
                 ws.Cells[currentRow, 4].Value = batch.Material;
-                ws.Cells[currentRow, 5].Value = batch.MaterialNo;
+                ws.Cells[currentRow, 5].Value = batch.BatchNo;
                 ws.Cells[currentRow, 6].Value = batch.TargetGsm;
                 ws.Cells[currentRow, 7].Value = batch.Glue;
                 ws.Cells[currentRow, 8].Value = batch.Speed;

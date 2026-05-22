@@ -226,6 +226,7 @@
             this.FilterInProcessUpperBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessSpeedBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessGileBox = new System.Windows.Forms.TextBox();
+            this.FilterInProcessMaterialNo = new System.Windows.Forms.TextBox();
             this.FilterInProcessgsmBox = new System.Windows.Forms.TextBox();
             this.FilterBatchNOBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessCarbonOrderBox = new System.Windows.Forms.TextBox();
@@ -246,6 +247,7 @@
             this.FilterMaterialNO = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.FilterInProcessReportNO = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
             this.FilterInProcessgsm = new System.Windows.Forms.Label();
             this.FilterInProcessOrder = new System.Windows.Forms.Label();
             this.FilterInProcessTest = new System.Windows.Forms.Label();
@@ -302,19 +304,16 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RawMaterialSupplierColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MaterialTypeTB = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.MaterialTestDateBox = new System.Windows.Forms.DateTimePicker();
-            this.SuppliedBox = new System.Windows.Forms.TextBox();
             this.RawMaterialNOtb = new System.Windows.Forms.TextBox();
-            this.Supplied = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.MaterialReportNOTB = new System.Windows.Forms.TextBox();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.SearchButton = new System.Windows.Forms.Button();
-            this.label27 = new System.Windows.Forms.Label();
-            this.FilterInProcessMaterialNo = new System.Windows.Forms.TextBox();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
@@ -2444,6 +2443,14 @@
             this.FilterInProcessGileBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessGileBox.TabIndex = 10;
             // 
+            // FilterInProcessMaterialNo
+            // 
+            this.FilterInProcessMaterialNo.Cursor = System.Windows.Forms.Cursors.Default;
+            this.FilterInProcessMaterialNo.Location = new System.Drawing.Point(175, 299);
+            this.FilterInProcessMaterialNo.Name = "FilterInProcessMaterialNo";
+            this.FilterInProcessMaterialNo.Size = new System.Drawing.Size(100, 29);
+            this.FilterInProcessMaterialNo.TabIndex = 9;
+            // 
             // FilterInProcessgsmBox
             // 
             this.FilterInProcessgsmBox.Cursor = System.Windows.Forms.Cursors.Default;
@@ -2618,6 +2625,15 @@
             this.FilterInProcessReportNO.Size = new System.Drawing.Size(73, 20);
             this.FilterInProcessReportNO.TabIndex = 2;
             this.FilterInProcessReportNO.Text = "報告編號";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(40, 302);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(41, 20);
+            this.label27.TabIndex = 2;
+            this.label27.Text = "料號";
             // 
             // FilterInProcessgsm
             // 
@@ -3041,9 +3057,7 @@
             this.RawMaterialPage.Controls.Add(this.MaterialTypeTB);
             this.RawMaterialPage.Controls.Add(this.label12);
             this.RawMaterialPage.Controls.Add(this.MaterialTestDateBox);
-            this.RawMaterialPage.Controls.Add(this.SuppliedBox);
             this.RawMaterialPage.Controls.Add(this.RawMaterialNOtb);
-            this.RawMaterialPage.Controls.Add(this.Supplied);
             this.RawMaterialPage.Controls.Add(this.label23);
             this.RawMaterialPage.Controls.Add(this.MaterialReportNOTB);
             this.RawMaterialPage.Controls.Add(this.label22);
@@ -3072,7 +3086,8 @@
             this.dataGridViewTextBoxColumn8,
             this.dataGridViewTextBoxColumn9,
             this.dataGridViewTextBoxColumn10,
-            this.dataGridViewTextBoxColumn11});
+            this.dataGridViewTextBoxColumn11,
+            this.RawMaterialSupplierColumn});
             this.RawMaterialdgv.Cursor = System.Windows.Forms.Cursors.Default;
             this.RawMaterialdgv.Location = new System.Drawing.Point(44, 201);
             this.RawMaterialdgv.Name = "RawMaterialdgv";
@@ -3149,6 +3164,12 @@
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
             this.dataGridViewTextBoxColumn11.Width = 140;
             // 
+            // RawMaterialSupplierColumn
+            // 
+            this.RawMaterialSupplierColumn.HeaderText = "供應商";
+            this.RawMaterialSupplierColumn.Name = "RawMaterialSupplierColumn";
+            this.RawMaterialSupplierColumn.Width = 130;
+            // 
             // MaterialTypeTB
             // 
             this.MaterialTypeTB.Cursor = System.Windows.Forms.Cursors.Default;
@@ -3182,16 +3203,6 @@
             this.MaterialTestDateBox.TabIndex = 2;
             this.MaterialTestDateBox.ValueChanged += new System.EventHandler(this.MaterialTestDateBox_ValueChanged);
             // 
-            // SuppliedBox
-            // 
-            this.SuppliedBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.SuppliedBox.Location = new System.Drawing.Point(175, 165);
-            this.SuppliedBox.Name = "SuppliedBox";
-            this.SuppliedBox.Size = new System.Drawing.Size(164, 29);
-            this.SuppliedBox.TabIndex = 5;
-            this.SuppliedBox.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
-            this.SuppliedBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
-            // 
             // RawMaterialNOtb
             // 
             this.RawMaterialNOtb.Cursor = System.Windows.Forms.Cursors.Default;
@@ -3201,15 +3212,6 @@
             this.RawMaterialNOtb.TabIndex = 4;
             this.RawMaterialNOtb.TextChanged += new System.EventHandler(this.CylinderRawTypeBox_SelectedIndexChanged);
             this.RawMaterialNOtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.RawMaterialNOtb_keyDown);
-            // 
-            // Supplied
-            // 
-            this.Supplied.AutoSize = true;
-            this.Supplied.Location = new System.Drawing.Point(40, 168);
-            this.Supplied.Name = "Supplied";
-            this.Supplied.Size = new System.Drawing.Size(57, 20);
-            this.Supplied.TabIndex = 22;
-            this.Supplied.Text = "供應商";
             // 
             // label23
             // 
@@ -3255,23 +3257,7 @@
             this.SearchButton.TabIndex = 4;
             this.SearchButton.Text = "匯入";
             this.SearchButton.UseVisualStyleBackColor = true;
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(40, 302);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(41, 20);
-            this.label27.TabIndex = 2;
-            this.label27.Text = "料號";
-            // 
-            // FilterInProcessMaterialNo
-            // 
-            this.FilterInProcessMaterialNo.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessMaterialNo.Location = new System.Drawing.Point(175, 299);
-            this.FilterInProcessMaterialNo.Name = "FilterInProcessMaterialNo";
-            this.FilterInProcessMaterialNo.Size = new System.Drawing.Size(100, 29);
-            this.FilterInProcessMaterialNo.TabIndex = 9;
+            this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
             // 
             // Form1
             // 
@@ -3574,6 +3560,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RawMaterialSupplierColumn;
         private System.Windows.Forms.TextBox CYLRawMaterialBox;
         private System.Windows.Forms.Label CylinderMaterialSN;
         private System.Windows.Forms.TextBox CYLRawEffTB;
@@ -3601,8 +3588,6 @@
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.TextBox FilterRawSuppliedBox;
         private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.TextBox SuppliedBox;
-        private System.Windows.Forms.Label Supplied;
         private System.Windows.Forms.TextBox FilterInProcessMaterialNo;
         private System.Windows.Forms.Label label27;
     }

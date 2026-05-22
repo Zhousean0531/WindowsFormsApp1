@@ -38,9 +38,9 @@ namespace WindowsFormsApp1.Data_Access.Page6
         {
             string sql = @"
                 INSERT INTO P6_Batch
-                (ReportNo, TestDate, UserName, SuppliedNO,CreatedAt)
+                (ReportNo, TestDate, UserName, CreatedAt)
                 VALUES
-                (@ReportNo, @TestDate, @UserName,@SuppliedNO, GETDATE());
+                (@ReportNo, @TestDate, @UserName, GETDATE());
 
                 SELECT SCOPE_IDENTITY();
             ";
@@ -50,7 +50,6 @@ namespace WindowsFormsApp1.Data_Access.Page6
                 cmd.Parameters.AddWithValue("@ReportNo", batch.ReportNo);
                 cmd.Parameters.AddWithValue("@TestDate", batch.TestDate);
                 cmd.Parameters.AddWithValue("@UserName", batch.UserName ?? "");
-                cmd.Parameters.AddWithValue("@SuppliedNO", batch.SuppliedNO ?? "");
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
@@ -65,7 +64,8 @@ namespace WindowsFormsApp1.Data_Access.Page6
                     Spec1, Spec2,
                     Range1, Range2,
                     Result, Judgment,
-                    Extra1, Extra2, Extra3
+                    Extra1, Extra2, Extra3,
+                    Supplier
                 )
                 VALUES
                 (
@@ -74,7 +74,8 @@ namespace WindowsFormsApp1.Data_Access.Page6
                     @Spec1, @Spec2,
                     @Range1, @Range2,
                     @Result, @Judgment,
-                    @Extra1, @Extra2, @Extra3
+                    @Extra1, @Extra2, @Extra3,
+                    @Supplier
                 );
             ";
 
@@ -97,6 +98,7 @@ namespace WindowsFormsApp1.Data_Access.Page6
                 cmd.Parameters.AddWithValue("@Extra1", item.Extra1 ?? "");
                 cmd.Parameters.AddWithValue("@Extra2", item.Extra2 ?? "");
                 cmd.Parameters.AddWithValue("@Extra3", item.Extra3 ?? "");
+                cmd.Parameters.AddWithValue("@Supplier", item.Supplier ?? "");
 
                 cmd.ExecuteNonQuery();
             }

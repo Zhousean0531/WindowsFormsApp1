@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace WindowsFormsApp1.Data_Access.Page2
 {
@@ -51,24 +52,24 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
-                cmd.Parameters.AddWithValue("@ProductionDate", batch.ProductionDate);
-                cmd.Parameters.AddWithValue("@TestDate", batch.TestDate);
-                cmd.Parameters.AddWithValue("@WorkOrder", batch.WorkOrder);
-                cmd.Parameters.AddWithValue("@Material", batch.Material);
-                cmd.Parameters.AddWithValue("@MaterialNo", batch.MaterialNo);
-                cmd.Parameters.AddWithValue("@BatchNo", (object)batch.BatchNo ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@TargetGsm", batch.TargetGsm);
-                cmd.Parameters.AddWithValue("@Glue", batch.Glue);
-                cmd.Parameters.AddWithValue("@Speed", batch.Speed);
-                cmd.Parameters.AddWithValue("@UpperTemp", batch.UpperTemp);
-                cmd.Parameters.AddWithValue("@LowerTemp", batch.LowerTemp);
-                cmd.Parameters.AddWithValue("@Pressure", batch.Pressure);
-                cmd.Parameters.AddWithValue("@WindSpeed", batch.WindSpeed);
-                cmd.Parameters.AddWithValue("@CarbonLine", batch.CarbonLine);
+                cmd.Parameters.AddWithValue("@ProductionDate", DbValue(batch.ProductionDate));
+                cmd.Parameters.AddWithValue("@TestDate", DbValue(batch.TestDate));
+                cmd.Parameters.AddWithValue("@WorkOrder", DbValue(batch.WorkOrder));
+                cmd.Parameters.AddWithValue("@Material", DbValue(batch.Material));
+                cmd.Parameters.AddWithValue("@MaterialNo", DbValue(batch.MaterialNo));
+                cmd.Parameters.AddWithValue("@BatchNo", DbValue(batch.BatchNo));
+                cmd.Parameters.AddWithValue("@TargetGsm", DbValue(batch.TargetGsm));
+                cmd.Parameters.AddWithValue("@Glue", DbValue(batch.Glue));
+                cmd.Parameters.AddWithValue("@Speed", DbValue(batch.Speed));
+                cmd.Parameters.AddWithValue("@UpperTemp", DbValue(batch.UpperTemp));
+                cmd.Parameters.AddWithValue("@LowerTemp", DbValue(batch.LowerTemp));
+                cmd.Parameters.AddWithValue("@Pressure", DbValue(batch.Pressure));
+                cmd.Parameters.AddWithValue("@WindSpeed", DbValue(batch.WindSpeed));
+                cmd.Parameters.AddWithValue("@CarbonLine", DbValue(batch.CarbonLine));
                 cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-                cmd.Parameters.AddWithValue("@Username", batch.Username);
-                cmd.Parameters.AddWithValue("@ReportNo", (object)batch.ReportNo ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@FilterSize", (object)batch.FilterSize ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Username", DbValue(batch.Username));
+                cmd.Parameters.AddWithValue("@ReportNo", DbValue(batch.ReportNo));
+                cmd.Parameters.AddWithValue("@FilterSize", DbValue(batch.FilterSize));
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
@@ -86,9 +87,9 @@ namespace WindowsFormsApp1.Data_Access.Page2
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@BatchId", batchId);
-                cmd.Parameters.AddWithValue("@GasName", gas.GasName);
-                cmd.Parameters.AddWithValue("@Concentration", gas.Concentration);
-                cmd.Parameters.AddWithValue("@Background", gas.Background);
+                cmd.Parameters.AddWithValue("@GasName", DbValue(gas.GasName));
+                cmd.Parameters.AddWithValue("@Concentration", DbValue(gas.Concentration));
+                cmd.Parameters.AddWithValue("@Background", DbValue(gas.Background));
 
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
@@ -107,8 +108,8 @@ namespace WindowsFormsApp1.Data_Access.Page2
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@GasTestId", gasId);
-                cmd.Parameters.AddWithValue("@Weight", sample.Weight);
-                cmd.Parameters.AddWithValue("@PressureDrop", sample.PressureDrop);
+                cmd.Parameters.AddWithValue("@Weight", DbValue(sample.Weight));
+                cmd.Parameters.AddWithValue("@PressureDrop", DbValue(sample.PressureDrop));
                 cmd.Parameters.AddWithValue("@IsSelected", sample.IsSelected);
 
                 return Convert.ToInt64(cmd.ExecuteScalar());
@@ -117,7 +118,13 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
         private static void InsertEfficiencies(SqlConnection conn, SqlTransaction tran, long sampleId, P2Sample sample)
         {
-            if (sample.Efficiencies == null || sample.Efficiencies.Count == 0)
+            bool hasPointEfficiencies =
+                sample.EfficiencyPoints != null && sample.EfficiencyPoints.Count > 0;
+
+            bool hasListEfficiencies =
+                sample.Efficiencies != null && sample.Efficiencies.Count > 0;
+
+            if (!hasPointEfficiencies && !hasListEfficiencies)
                 return;
 
             string sql = @"
@@ -126,6 +133,23 @@ namespace WindowsFormsApp1.Data_Access.Page2
                 VALUES
                 (@SampleId, @SequenceIndex, @EfficiencyValue);
             ";
+
+            if (hasPointEfficiencies)
+            {
+                foreach (var kv in sample.EfficiencyPoints.OrderBy(x => x.Key))
+                {
+                    using (var cmd = new SqlCommand(sql, conn, tran))
+                    {
+                        cmd.Parameters.AddWithValue("@SampleId", sampleId);
+                        cmd.Parameters.AddWithValue("@SequenceIndex", kv.Key);
+                        cmd.Parameters.AddWithValue("@EfficiencyValue", kv.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                return;
+            }
 
             for (int i = 0; i < sample.Efficiencies.Count; i++)
             {
@@ -138,6 +162,14 @@ namespace WindowsFormsApp1.Data_Access.Page2
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+
+        private static object DbValue(object value)
+        {
+            if (value == null)
+                return DBNull.Value;
+
+            return value;
         }
     }
 }

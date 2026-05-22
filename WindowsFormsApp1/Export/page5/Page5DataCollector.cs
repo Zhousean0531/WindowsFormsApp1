@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -46,6 +47,10 @@ public static class Page5DataCollector
             );
             return null;
         }
+
+        data.MaterialNo = ResolveMaterialNo(data.FilterType);
+        if (data.MaterialNo == null)
+            return null;
 
         // ===== 取得 DataGridView =====
         var dgv = tab.Controls.Find("CylinderBox", true)
@@ -210,5 +215,121 @@ public static class Page5DataCollector
 
             [54] = Get("CYL_Pressure_Drop")
         };
+    }
+
+    private static string ResolveMaterialNo(string filterType)
+    {
+        string text = (filterType ?? "").Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(text))
+            return null;
+
+        var materialNos = new List<string>();
+
+        foreach (string token in text.Split(new[] { '+', '/', ',', '，', '、' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            string type = token.Trim().ToUpperInvariant();
+            string materialNo = ResolveSingleMaterialNo(type);
+
+            if (materialNo == null)
+                return null;
+
+            if (!materialNos.Contains(materialNo))
+                materialNos.Add(materialNo);
+        }
+
+        if (materialNos.Count == 0)
+        {
+            string materialNo = ResolveSingleMaterialNo(text);
+            if (materialNo == null)
+                return null;
+
+            materialNos.Add(materialNo);
+        }
+
+        return string.Join("+", materialNos);
+    }
+
+    private static string ResolveSingleMaterialNo(string type)
+    {
+        if (type == "ACID")
+            return "11A0C00Y000002";
+
+        if (type == "DMS")
+            return "11D0S00Y000002";
+
+        if (type == "MA")
+            return AskMaMaterialNo();
+
+        if (type == "MB" || type == "BASE")
+            return "11B0B00Y000002";
+
+        if (type == "MC" || type == "TOC")
+            return "11T0C00Y000002";
+
+        MessageBox.Show(
+            $"無法判斷原料種類「{type}」對應的料號。",
+            "原料種類錯誤",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Warning
+        );
+
+        return null;
+    }
+
+    private static string AskMaMaterialNo()
+    {
+        string selected = null;
+
+        using (var form = new Form())
+        using (var label = new Label())
+        using (var acidButton = new Button())
+        using (var dmsButton = new Button())
+        using (var cancelButton = new Button())
+        {
+            form.Text = "選擇 MA 料號";
+            form.StartPosition = FormStartPosition.CenterScreen;
+            form.FormBorderStyle = FormBorderStyle.FixedDialog;
+            form.MaximizeBox = false;
+            form.MinimizeBox = false;
+            form.ShowIcon = false;
+            form.ClientSize = new Size(360, 145);
+
+            label.AutoSize = false;
+            label.Text = "原料種類為 MA，請選擇要寫入 P5_Batch 的料號：";
+            label.Location = new Point(18, 18);
+            label.Size = new Size(320, 42);
+
+            acidButton.Text = "ACID";
+            acidButton.Location = new Point(35, 82);
+            acidButton.Size = new Size(85, 34);
+            acidButton.Click += (s, e) =>
+            {
+                selected = "11A0C00Y000002";
+                form.DialogResult = DialogResult.OK;
+            };
+
+            dmsButton.Text = "DMS";
+            dmsButton.Location = new Point(137, 82);
+            dmsButton.Size = new Size(85, 34);
+            dmsButton.Click += (s, e) =>
+            {
+                selected = "11D0S00Y000002";
+                form.DialogResult = DialogResult.OK;
+            };
+
+            cancelButton.Text = "取消";
+            cancelButton.Location = new Point(239, 82);
+            cancelButton.Size = new Size(85, 34);
+            cancelButton.DialogResult = DialogResult.Cancel;
+
+            form.Controls.Add(label);
+            form.Controls.Add(acidButton);
+            form.Controls.Add(dmsButton);
+            form.Controls.Add(cancelButton);
+            form.AcceptButton = acidButton;
+            form.CancelButton = cancelButton;
+
+            return form.ShowDialog() == DialogResult.OK ? selected : null;
+        }
     }
 }

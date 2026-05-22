@@ -55,8 +55,11 @@ namespace WindowsFormsApp1.Data_Access.Page4
         public double? Concentration { get; set; }
 
         public double? Eff0 { get; set; }   // 初始
-        public double? Eff10 { get; set; }  // 40分鐘
+        public double? Eff10 { get; set; }  // 10分鐘
 
         public List<double> Efficiencies11 { get; set; } = new List<double>();
+
+        // Excel 匯入時可只提供指定分鐘，例如 0 與 10 分鐘
+        public Dictionary<int, double> EfficiencyPoints { get; set; } = new Dictionary<int, double>();
     }
 }

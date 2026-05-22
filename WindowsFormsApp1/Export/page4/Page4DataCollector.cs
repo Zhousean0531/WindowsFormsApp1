@@ -59,7 +59,7 @@ public static class Page4DataCollector
         var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
         var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
         var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
-
+        var supplierLots = ParseHelper.SplitStr(supplierLot);
         int n = new[] { weights.Count,  vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
 
         if (n == 0)
@@ -81,7 +81,7 @@ public static class Page4DataCollector
             }
             rows.Add(new P4Row
             {
-                LotNo = supplierLot,
+                LotNo = i < supplierLots.Count ? supplierLots[i] : "",
                 LotFull = string.IsNullOrWhiteSpace(num)
                     ? factoryLot
                     : factoryLot + "#" + num,

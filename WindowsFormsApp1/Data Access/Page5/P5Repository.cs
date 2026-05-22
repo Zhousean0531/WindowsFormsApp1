@@ -23,6 +23,7 @@ namespace WindowsFormsApp1.Data_Access.Page5
                                 CylinderNo,
                                 Customer,
                                 FilterType,
+                                MaterialNo,
                                 TestDate,
                                 ReCylinderNo,
                                 CarbonLot,
@@ -36,6 +37,7 @@ namespace WindowsFormsApp1.Data_Access.Page5
                                 @CylinderNo,
                                 @Customer,
                                 @FilterType,
+                                @MaterialNo,
                                 @TestDate,
                                 @ReCylinderNo,
                                 @CarbonLot,
@@ -51,6 +53,7 @@ namespace WindowsFormsApp1.Data_Access.Page5
                             cmd.Parameters.AddWithValue("@CylinderNo", DbValue(data.CylinderNo));
                             cmd.Parameters.AddWithValue("@Customer", DbValue(data.Customer));
                             cmd.Parameters.AddWithValue("@FilterType", DbValue(data.FilterType));
+                            cmd.Parameters.AddWithValue("@MaterialNo", DbValue(data.MaterialNo));
                             cmd.Parameters.AddWithValue("@TestDate", DbValue(data.TestDate));
                             cmd.Parameters.AddWithValue("@ReCylinderNo", DbValue(data.ReCylinderNo));
                             cmd.Parameters.AddWithValue("@CarbonLot", DbValue(data.CarbonLot));

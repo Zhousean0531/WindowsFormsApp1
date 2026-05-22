@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Linq;
 using WindowsFormsApp1.Data_Access.Page4;
 
 public static class P4Repository
@@ -33,18 +34,18 @@ public static class P4Repository
 
         using (var cmd = new SqlCommand(sql, conn, tran))
         {
-            cmd.Parameters.AddWithValue("@ReportNo", b.ReportNo);
-            cmd.Parameters.AddWithValue("@Material", b.Material);
-            cmd.Parameters.AddWithValue("@MaterialNo", b.MaterialNo);
-            cmd.Parameters.AddWithValue("@ArrivalDate", b.ArrivalDate);
-            cmd.Parameters.AddWithValue("@TestingDate", b.TestingDate);
-            cmd.Parameters.AddWithValue("@QtyText", b.QtyText);
+            cmd.Parameters.AddWithValue("@ReportNo", DbValue(b.ReportNo));
+            cmd.Parameters.AddWithValue("@Material", DbValue(b.Material));
+            cmd.Parameters.AddWithValue("@MaterialNo", DbValue(b.MaterialNo));
+            cmd.Parameters.AddWithValue("@ArrivalDate", DbValue(b.ArrivalDate));
+            cmd.Parameters.AddWithValue("@TestingDate", DbValue(b.TestingDate));
+            cmd.Parameters.AddWithValue("@QtyText", DbValue(b.QtyText));
             cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-            cmd.Parameters.AddWithValue("@Username", b.UserName);
+            cmd.Parameters.AddWithValue("@Username", DbValue(b.UserName));
 
-            cmd.Parameters.AddWithValue("@Moisture", (object)b.Moisture ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Butane", (object)b.Butane ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Ash", (object)b.Ash ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@Moisture", DbValue(b.Moisture));
+            cmd.Parameters.AddWithValue("@Butane", DbValue(b.Butane));
+            cmd.Parameters.AddWithValue("@Ash", DbValue(b.Ash));
 
             return Convert.ToInt64(cmd.ExecuteScalar());
         }
@@ -62,14 +63,14 @@ public static class P4Repository
             using (var cmd = new SqlCommand(sql, conn, tran)) 
             {
                 cmd.Parameters.AddWithValue("@BatchId", batchId);
-                cmd.Parameters.AddWithValue("@LotNo", r.LotNo);
-                cmd.Parameters.AddWithValue("@LotFull", r.LotFull);
+                cmd.Parameters.AddWithValue("@LotNo", DbValue(r.LotNo));
+                cmd.Parameters.AddWithValue("@LotFull", DbValue(r.LotFull));
                 cmd.Parameters.AddWithValue("@Weight", r.Weight);
                 cmd.Parameters.AddWithValue("@Density", r.Density);
                 cmd.Parameters.AddWithValue("@VocIn", r.VocIn);
                 cmd.Parameters.AddWithValue("@VocOut", r.VocOut);
                 cmd.Parameters.AddWithValue("@DeltaP", r.DeltaP);
-                cmd.Parameters.AddWithValue("@Outgassing", r.Outgassing);
+                cmd.Parameters.AddWithValue("@Outgassing", DbValue(r.Outgassing));
                 cmd.Parameters.AddWithValue("@IsSelected", r.IsSelected);
 
                 cmd.ExecuteNonQuery();
@@ -89,7 +90,7 @@ public static class P4Repository
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@BatchId", batchId);
-                cmd.Parameters.AddWithValue("@SizeName", p.Key);
+                cmd.Parameters.AddWithValue("@SizeName", DbValue(p.Key));
                 cmd.Parameters.AddWithValue("@Percentage", p.Value);
 
                 cmd.ExecuteNonQuery();
@@ -106,13 +107,32 @@ public static class P4Repository
 
         foreach (var g in b.EfficiencyGroups)
         {
+            if (g.EfficiencyPoints != null && g.EfficiencyPoints.Count > 0)
+            {
+                foreach (var kv in g.EfficiencyPoints.OrderBy(x => x.Key))
+                {
+                    using (var cmd = new SqlCommand(sql, conn, tran))
+                    {
+                        cmd.Parameters.AddWithValue("@BatchId", batchId);
+                        cmd.Parameters.AddWithValue("@GasName", DbValue(g.GasName));
+                        cmd.Parameters.AddWithValue("@Concentration", DbValue(g.Concentration));
+                        cmd.Parameters.AddWithValue("@Index", kv.Key);
+                        cmd.Parameters.AddWithValue("@Value", kv.Value);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                continue;
+            }
+
             for (int i = 0; i < g.Efficiencies11.Count; i++)
             {
                 using (var cmd = new SqlCommand(sql, conn, tran))
                 {
                     cmd.Parameters.AddWithValue("@BatchId", batchId);
-                    cmd.Parameters.AddWithValue("@GasName", g.GasName);
-                    cmd.Parameters.AddWithValue("@Concentration", (object)g.Concentration ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@GasName", DbValue(g.GasName));
+                    cmd.Parameters.AddWithValue("@Concentration", DbValue(g.Concentration));
                     cmd.Parameters.AddWithValue("@Index", i);
                     cmd.Parameters.AddWithValue("@Value", g.Efficiencies11[i]);
 
@@ -120,5 +140,13 @@ public static class P4Repository
                 }
             }
         }
+    }
+
+    private static object DbValue(object value)
+    {
+        if (value == null)
+            return DBNull.Value;
+
+        return value;
     }
 }

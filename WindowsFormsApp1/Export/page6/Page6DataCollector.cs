@@ -18,7 +18,6 @@ public static class Page6DataCollector
 
         var testDatePicker =
             ControlHelper.Find<DateTimePicker>(tab, "MaterialTestDateBox");
-        var suppliedBox = ControlHelper.Find<TextBox>(tab, "SuppliedBox");
         if (reportNoTB == null || testDatePicker == null)
         {
             MessageBox.Show("找不到報告編號或測試日期欄位");
@@ -29,8 +28,7 @@ public static class Page6DataCollector
         {
             ReportNo = reportNoTB.Text.Trim(),
             TestDate = testDatePicker.Value,
-            DataGrid = dgv,
-            SuppliedNO = suppliedBox?.Text.Trim()
+            DataGrid = dgv
         };
     }
 

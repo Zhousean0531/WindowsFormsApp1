@@ -24,6 +24,7 @@ public static class DbBootstrap
                 CreatePage4Tables(conn);
                 CreatePage5Tables(conn);
                 CreatePage6Tables(conn);
+                CreateQualityAnalysisTables(conn);
             }
         }
         catch (Exception ex)
@@ -352,12 +353,16 @@ CREATE TABLE P5_Batch (
     CylinderNo NVARCHAR(50),
     Customer NVARCHAR(100),
     FilterType NVARCHAR(50),
+    MaterialNo NVARCHAR(50),
     TestDate DATETIME,
     UserName NVARCHAR(50),
     CreatedAt DATETIME,
     ReCylinderNo NVARCHAR(50),
     CarbonLot NVARCHAR(50)
 );
+
+IF COL_LENGTH('dbo.P5_Batch', 'MaterialNo') IS NULL
+    ALTER TABLE P5_Batch ADD MaterialNo NVARCHAR(50) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P5_Row' AND xtype='U')
 CREATE TABLE P5_Row (
@@ -424,8 +429,44 @@ CREATE TABLE P6_Item (
 
     Extra1 NVARCHAR(100),
     Extra2 NVARCHAR(100),
-    Extra3 NVARCHAR(100)
+    Extra3 NVARCHAR(100),
+    Supplier NVARCHAR(100)
 );
+
+IF COL_LENGTH('dbo.P6_Item', 'Supplier') IS NULL
+    ALTER TABLE P6_Item ADD Supplier NVARCHAR(100) NULL;
+";
+
+        new SqlCommand(sql, conn).ExecuteNonQuery();
+    }
+
+    // ===== QUALITY ANALYSIS =====
+    private static void CreateQualityAnalysisTables(SqlConnection conn)
+    {
+        string sql = @"
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='QualityAnalysisSetting' AND xtype='U')
+CREATE TABLE QualityAnalysisSetting (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Material NVARCHAR(50) NOT NULL,
+    MetricName NVARCHAR(50) NOT NULL,
+    SigmaMode NVARCHAR(30) NOT NULL,
+    SigmaMonths INT NULL,
+    SigmaStartDate DATE NULL,
+    SigmaEndDate DATE NULL,
+    USL DECIMAL(18,4) NULL,
+    LSL DECIMAL(18,4) NULL,
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME NULL,
+    UpdatedBy NVARCHAR(50) NULL
+);
+
+IF NOT EXISTS (
+    SELECT * FROM sys.indexes
+    WHERE name='UX_QualityAnalysisSetting_Material_MetricName'
+      AND object_id=OBJECT_ID('QualityAnalysisSetting')
+)
+CREATE UNIQUE INDEX UX_QualityAnalysisSetting_Material_MetricName
+ON QualityAnalysisSetting (Material, MetricName);
 ";
 
         new SqlCommand(sql, conn).ExecuteNonQuery();

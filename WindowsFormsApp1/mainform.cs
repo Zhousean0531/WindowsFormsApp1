@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
@@ -22,6 +23,9 @@ namespace WindowsFormsApp1
             chkAsh.CheckedChanged += (s, e) => ToggleAshUI();
             ToggleMoistureUI();
             ToggleAshUI();
+            InitializeQueryPage();
+            InitializeQualityAnalysisLauncher();
+            InitializeResponsiveLayout();
         }
         private void ClearPage5()
         {
@@ -239,6 +243,9 @@ namespace WindowsFormsApp1
                 case "RawMaterialPage":
                     ExportHelper_Page6.Handle(currentTab);
                     break;
+                case "QueryPage":
+                    RunQcQuery();
+                    break;
                 default:
                     MessageBox.Show("找不到對應頁面模組");
                     break;
@@ -346,7 +353,8 @@ namespace WindowsFormsApp1
                 info.Spec,
                 info.Spec,
                 "合格",
-                "N/A"
+                "N/A",
+                ""
             );
         }
         private void RawMaterialNOtb_keyDown(object sender, KeyEventArgs e)
@@ -576,6 +584,21 @@ namespace WindowsFormsApp1
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
+            }
+        }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Excel (*.xlsx)|*.xlsx";
+
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                int count = Page1ExcelImporter.ImportFromExcel(ofd.FileName);
+
+                MessageBox.Show($"匯入完成，共 {count} 批");
             }
         }
     }

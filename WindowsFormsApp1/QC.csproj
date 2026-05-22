@@ -183,6 +183,16 @@
     <Compile Include="Business Logic\EfficiencyHelper.cs" />
     <Compile Include="Business Logic\EfficiencyResult.cs" />
     <Compile Include="Business Logic\Page5LookupResult.cs" />
+    <Compile Include="Analysis\QualityAnalysisForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Data Access\Analysis\QualityAnalysisModels.cs" />
+    <Compile Include="Data Access\Analysis\QualityAnalysisRepository.cs" />
+    <Compile Include="Import\Page1ExcelImporter.cs" />
+    <Compile Include="Import\Page2ExcelImporter.cs" />
+    <Compile Include="Import\Page3ExcelImporter.cs" />
+    <Compile Include="Import\Page4ExcelImporter.cs" />
+    <Compile Include="Import\Page5ExcelImporter.cs" />
     <Compile Include="Utility\PressureModeDialog.cs" />
     <Compile Include="Data Access\Page1\P1Models.cs" />
     <Compile Include="Data Access\Page1\P1Repository.cs" />
@@ -196,6 +206,8 @@
     <Compile Include="Data Access\Page6\Page6Mapper.cs" />
     <Compile Include="Data Access\Page6\P6Models.cs" />
     <Compile Include="Data Access\Page6\P6Repository.cs" />
+    <Compile Include="Data Access\Query\QcQueryModels.cs" />
+    <Compile Include="Data Access\Query\QcQueryRepository.cs" />
     <Compile Include="Export\page1\Page1ReportExporter.cs" />
     <Compile Include="Export\page1\Page1DataCollector.cs" />
     <Compile Include="Export\page3\Page3ReportExporter.cs" />
@@ -210,6 +222,7 @@
     <Compile Include="Export\page5\Page5ReportExporter.cs" />
     <Compile Include="Export\page5\Page5DataCollector.cs" />
     <Compile Include="Export\page5\Page5ExportData.cs" />
+    <Compile Include="Export\query\QueryExcelExporter.cs" />
     <Compile Include="AddMaterial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -252,6 +265,18 @@
       <DependentUpon>MaterialSelectForm.cs</DependentUpon>
     </Compile>
     <Compile Include="mainform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mainform.Query.cs">
+      <DependentUpon>mainform.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mainform.Analysis.cs">
+      <DependentUpon>mainform.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mainform.ResponsiveLayout.cs">
+      <DependentUpon>mainform.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="mainform.Designer.cs">

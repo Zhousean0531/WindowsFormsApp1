@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel;
 using WindowsFormsApp1.Data_Access.Page4;
+using Excel = Microsoft.Office.Interop.Excel;
 
 public static class Page4HelperExporter
 {
@@ -41,7 +42,6 @@ public static class Page4HelperExporter
 
             wb = app.Workbooks.Open(helperSavePath);
             ws = (Excel.Worksheet)wb.Worksheets["濾筒工作表"];
-
             int startRow = 2;
             int row = startRow;
 
@@ -86,7 +86,7 @@ public static class Page4HelperExporter
             // ===== Efficiency
             if (d.EfficiencyGroups != null && d.EfficiencyGroups.Count > 0)
             {
-                int defaultCol = 21;
+                int defaultCol = 27;
 
                 //找選中的 row
                 var selected = d.Rows.FirstOrDefault(x => x.IsSelected);
@@ -101,10 +101,10 @@ public static class Page4HelperExporter
                     int col = defaultCol;
 
                     if (string.Equals(g.GasName, "Acetone", StringComparison.OrdinalIgnoreCase))
-                        col = 22;
+                        col = 28;
 
                     if (string.Equals(g.GasName, "IPA", StringComparison.OrdinalIgnoreCase))
-                        col = 23;
+                        col = 29;
 
                     string testDate =
                         DateTime.Parse(d.TestingDate).ToString("MM.dd");
@@ -120,6 +120,20 @@ public static class Page4HelperExporter
                         var parts = materialLot.Split('#');
                         materialLot = parts.Length > 1 ? parts[parts.Length - 1] : materialLot;
                     }
+                    int selectedRow = startRow + d.Rows.IndexOf(selected);
+                    int summaryCol = 15;
+
+                    if (string.Equals(g.GasName, "Acetone", StringComparison.OrdinalIgnoreCase))
+                        summaryCol = 17;
+
+                    if (string.Equals(g.GasName, "IPA", StringComparison.OrdinalIgnoreCase))
+                        summaryCol = 19;
+
+                    ws.Cells[selectedRow, summaryCol].Value =
+                        g.Eff0.HasValue ? (object)g.Eff0.Value : "N.D.";
+
+                    ws.Cells[selectedRow, summaryCol + 1].Value =
+                        g.Eff10.HasValue ? (object)g.Eff10.Value : "N.D.";
 
                     string header =
                         $"{testDate} {d.Material}#{materialLot}({selected.DeltaP}Pa)-{arrivalDate}Arrival_{g.GasName}";

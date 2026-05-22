@@ -10,9 +10,10 @@ namespace WindowsFormsApp1.Data_Access.Page6
             {
                 ReportNo = d.ReportNo,
                 TestDate = d.TestDate,
-                UserName = userName,
-                SuppliedNO = d.SuppliedNO
+                UserName = userName
             };
+
+            int supplierColumnIndex = GetSupplierColumnIndex(d.DataGrid);
 
             foreach (DataGridViewRow row in d.DataGrid.Rows)
             {
@@ -34,13 +35,33 @@ namespace WindowsFormsApp1.Data_Access.Page6
 
                     Extra1 = row.Cells.Count > 8 ? row.Cells[8].Value?.ToString() : "",
                     Extra2 = row.Cells.Count > 9 ? row.Cells[9].Value?.ToString() : "",
-                    Extra3 = row.Cells.Count > 10 ? row.Cells[10].Value?.ToString() : ""
+                    Extra3 = row.Cells.Count > 10 ? row.Cells[10].Value?.ToString() : "",
+                    Supplier = supplierColumnIndex >= 0 && row.Cells.Count > supplierColumnIndex
+                        ? row.Cells[supplierColumnIndex].Value?.ToString()
+                        : ""
                 };
 
                 batch.Items.Add(item);
             }
 
             return batch;
+        }
+
+        private static int GetSupplierColumnIndex(DataGridView dgv)
+        {
+            if (dgv == null)
+                return -1;
+
+            foreach (DataGridViewColumn column in dgv.Columns)
+            {
+                if (column.Name == "RawMaterialSupplierColumn" ||
+                    column.HeaderText == "供應商")
+                {
+                    return column.Index;
+                }
+            }
+
+            return dgv.Columns.Count > 11 ? dgv.Columns.Count - 1 : -1;
         }
     }
 }

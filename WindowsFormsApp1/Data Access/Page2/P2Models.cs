@@ -42,5 +42,8 @@ namespace WindowsFormsApp1.Data_Access.Page2
 
         // 可動態 11~40~N 筆效率
         public List<decimal> Efficiencies { get; set; } = new List<decimal>();
+
+        // Excel 匯入時可只提供指定分鐘，例如 0 與 10 分鐘
+        public Dictionary<int, decimal> EfficiencyPoints { get; set; } = new Dictionary<int, decimal>();
     }
 }

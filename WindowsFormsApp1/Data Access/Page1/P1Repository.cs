@@ -36,6 +36,7 @@ namespace WindowsFormsApp1.Data_Access.Page1
                 VALUES
                 (@ArrivalDate, @TestingDate, @ReportNo, @Material,
                  @QtyText, @ParticleAnalysis, @Concentration, @Background, @CreatedAt, @Username);
+                SELECT CAST(SCOPE_IDENTITY() AS BIGINT);
             ";
 
             using (var cmd = new SqlCommand(sql, conn, tran))
@@ -87,7 +88,7 @@ namespace WindowsFormsApp1.Data_Access.Page1
                     (object)sample.LotFull ?? DBNull.Value;
 
                 cmd.Parameters.Add("@SuppliedNO", SqlDbType.NVarChar).Value =
-                    DBNull.Value;
+                     (object)sample.SuppliedNO ?? DBNull.Value;
 
                 cmd.Parameters.Add("@Weight", SqlDbType.Decimal).Value =
                     (object)sample.Weight ?? DBNull.Value;
