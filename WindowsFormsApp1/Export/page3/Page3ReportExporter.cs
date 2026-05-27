@@ -7,14 +7,14 @@ using WindowsFormsApp1.Data_Access;
 
 public static class Page3ReportExporter
 {
-    public static void Export(
+    public static bool Export(
         Page3ExportData d,
         Page3PressureMode pressureMode,
         string fileNameOverride = null
     )
     {
         if (d == null || d.Rows == null || d.Rows.Count == 0)
-            return;
+            return false;
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -24,7 +24,7 @@ public static class Page3ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Report.xlsx");
-            return;
+            return false;
         }
 
         using (SaveFileDialog sfd = new SaveFileDialog())
@@ -33,7 +33,7 @@ public static class Page3ReportExporter
             sfd.FileName = BuildFileName(d, fileNameOverride);
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             File.Copy(templatePath, sfd.FileName, true);
 
@@ -57,7 +57,7 @@ public static class Page3ReportExporter
                     ws.Cell(row, "G").Value = ToReportText(d.ReFilterNo);
 
                     ws.Cell(row, "H").Value = ToReportText(r.SN);
-                    ws.Cell(row, "I").Value = ToReportText(r.Weight);
+                    ws.Cell(row, "I").Value = ToReportTextOrBlank(r.Weight);
                     ws.Cell(row, "J").Value = "V";
                     ws.Cell(row, "K").Value = "V";
                     ws.Cell(row, "L").Value = "V";
@@ -89,6 +89,8 @@ public static class Page3ReportExporter
                 wb.Save();
             }
         }
+
+        return true;
     }
 
     // ===== 檔名處理 =====
@@ -149,6 +151,13 @@ public static class Page3ReportExporter
     {
         return string.IsNullOrWhiteSpace(value)
             ? "N/A"
+            : value.Trim();
+    }
+
+    private static string ToReportTextOrBlank(string value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? ""
             : value.Trim();
     }
 
@@ -232,7 +241,7 @@ public static class Page3ReportExporter
         if (types.Count == 0)
             return "N/A";
 
-        return string.Join("/", types);
+        return string.Join("+", types);
     }
     private static void WriteInstrumentInfo(IXLWorksheet ws, Page3ExportData d)
     {

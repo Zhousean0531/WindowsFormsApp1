@@ -10,6 +10,7 @@ namespace WindowsFormsApp1.Data_Access.Query
         public string RawMaterialType { get; set; }
         public string SemiProductType { get; set; }
         public string SemiProductGsm { get; set; }
+        public string SemiProductMaterialNo { get; set; }
         public string ProductNo { get; set; }
     }
 }

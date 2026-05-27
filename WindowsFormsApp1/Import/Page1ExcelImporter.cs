@@ -7,13 +7,23 @@ using WindowsFormsApp1.Data_Access.Page1;
 
 public static class Page1ExcelImporter
 {
+    private const string SheetName = "濾網原料";
+
     public static int ImportFromExcel(string excelPath)
+    {
+        return ImportFromExcel(excelPath, SheetName);
+    }
+
+    public static int ImportFromExcel(string excelPath, string sheetName)
     {
         int importCount = 0;
 
         using (var wb = new XLWorkbook(excelPath))
         {
-            var ws = wb.Worksheets.First();
+            var ws = FindWorksheet(wb, sheetName);
+            if (ws == null)
+                throw new InvalidOperationException("Cannot find sheet: " + sheetName);
+
             var batches = new Dictionary<string, P1Batch>();
 
             int row = 2;
@@ -77,6 +87,12 @@ public static class Page1ExcelImporter
         return importCount;
     }
 
+    private static IXLWorksheet FindWorksheet(XLWorkbook wb, string sheetName)
+    {
+        return wb.Worksheets
+            .FirstOrDefault(x => string.Equals(x.Name, sheetName, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static bool IsEmptyRow(IXLWorksheet ws, int row)
     {
         for (int col = 1; col <= 13; col++)
@@ -90,7 +106,7 @@ public static class Page1ExcelImporter
 
     private static string GetText(IXLCell cell)
     {
-        return cell?.GetString()?.Trim() ?? "";
+        return ImportTextNormalizer.ToPlainText(cell?.GetString()?.Trim() ?? "");
     }
 
     private static DateTime GetDate(IXLCell cell, string fieldName)

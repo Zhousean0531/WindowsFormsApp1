@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using WindowsFormsApp1.Data_Access.Page2;
@@ -23,6 +24,7 @@ public static class Page2DataCollector
         string normalOrder = ControlHelper.GetText(tab, "FilterInProcessOrderBox");
         string materialNo = ControlHelper.GetText(tab, "FilterInProcessMaterialNo");
         string batchNo=ControlHelper.GetText(tab, "FilterBatchNOBox");
+        string thickness = ControlHelper.GetText(tab, "FilterInProcessThicknessBox");
         string gile = ControlHelper.GetText(tab, "FilterInProcessGileBox");
         string speed = ControlHelper.GetText(tab, "FilterInProcessSpeedBox");
         string upper = ControlHelper.GetText(tab, "FilterInProcessUpperBox");
@@ -44,6 +46,8 @@ public static class Page2DataCollector
             ControlHelper.GetText(tab, "FilterInProcessPressureDropBox")
         );
 
+        var thicknesses = StringUtil.SplitDouble(thickness);
+
         int n = Math.Min(weights.Count, deltas.Count);
 
         if (n == 0)
@@ -52,21 +56,18 @@ public static class Page2DataCollector
             return null;
         }
 
+        if (thicknesses.Count > 0 && thicknesses.Count != n)
+        {
+            MessageBox.Show("厚度筆數需和重量 / 壓損筆數一致");
+            return null;
+        }
+
         weights = weights.Take(n).ToList();
         deltas = deltas.Take(n).ToList();
+        thicknesses = thicknesses.Take(n).ToList();
 
         DateTime? prodDt = TryParseDate(productionDate);
         DateTime? testDt = TryParseDate(testDate);
-
-        int selectedIdx;
-
-        using (var f = new Form2(deltas, "請選擇用哪一筆壓損"))
-        {
-            if (f.ShowDialog() != DialogResult.OK)
-                return null;
-
-            selectedIdx = f.SelectedIndex0;
-        }
 
         if (string.IsNullOrWhiteSpace(productDisplay))
         {
@@ -107,6 +108,7 @@ public static class Page2DataCollector
         );
 
         var pageType = GasPageType.FilterInProcess;
+        var usedSelectedIndexes = new Dictionary<int, string>();
 
         foreach (var chk in ControlHelper.FindAll<System.Windows.Forms.CheckBox>(tab))
         {
@@ -155,6 +157,17 @@ public static class Page2DataCollector
                 readings
             );
 
+            int selectedIdx = AskSelectedPressureIndex(
+                deltas,
+                gasKey,
+                usedSelectedIndexes
+            );
+
+            if (selectedIdx < 0)
+                return null;
+
+            usedSelectedIndexes[selectedIdx] = gasKey;
+
             var gasTest = new P2GasTest
             {
                 GasName = gasKey,
@@ -167,6 +180,7 @@ public static class Page2DataCollector
                 var sample = new P2Sample
                 {
                     Weight = (decimal)weights[i],
+                    Thickness = thicknesses.Count > i ? (decimal)thicknesses[i] : (decimal?)null,
                     PressureDrop = (decimal)deltas[i],
                     IsSelected = (i == selectedIdx)
                 };
@@ -191,6 +205,40 @@ public static class Page2DataCollector
         }
 
         return batch;
+    }
+
+    private static int AskSelectedPressureIndex(
+        System.Collections.Generic.List<double> deltas,
+        string gasKey,
+        Dictionary<int, string> usedSelectedIndexes
+    )
+    {
+        if (deltas == null || deltas.Count == 0)
+            return -1;
+
+        if (usedSelectedIndexes.Count >= deltas.Count)
+        {
+            MessageBox.Show("勾選的氣體數量超過可選擇的壓損樣品數量");
+            return -1;
+        }
+
+        while (true)
+        {
+            using (var f = new Form2(deltas, $"請選擇 {gasKey} 用哪一筆壓損"))
+            {
+                if (f.ShowDialog() != DialogResult.OK)
+                    return -1;
+
+                int idx = f.SelectedIndex0;
+
+                if (!usedSelectedIndexes.TryGetValue(idx, out string usedGas))
+                    return idx;
+
+                MessageBox.Show(
+                    $"第 {idx + 1} 筆壓損已經給 {usedGas} 使用，請替 {gasKey} 選另一筆"
+                );
+            }
+        }
     }
 
     private static string ResolveOrderDisplay(

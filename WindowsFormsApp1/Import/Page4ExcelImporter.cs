@@ -33,15 +33,19 @@ public static class Page4ExcelImporter
 
     public static int ImportFromExcel(string excelPath)
     {
+        return ImportFromExcel(excelPath, SheetName);
+    }
+
+    public static int ImportFromExcel(string excelPath, string sheetName)
+    {
         int importCount = 0;
 
         using (var wb = new XLWorkbook(excelPath))
         {
-            var ws = wb.Worksheets
-                .FirstOrDefault(x => string.Equals(x.Name, SheetName, StringComparison.OrdinalIgnoreCase));
+            var ws = FindWorksheet(wb, sheetName);
 
             if (ws == null)
-                throw new InvalidOperationException("Cannot find sheet: " + SheetName);
+                throw new InvalidOperationException("Cannot find sheet: " + sheetName);
 
             var batches = new Dictionary<string, P4Batch>();
             var gasGroups = new Dictionary<string, Dictionary<string, P4EfficiencyGroup>>();
@@ -188,6 +192,12 @@ public static class Page4ExcelImporter
         return importCount;
     }
 
+    private static IXLWorksheet FindWorksheet(XLWorkbook wb, string sheetName)
+    {
+        return wb.Worksheets
+            .FirstOrDefault(x => string.Equals(x.Name, sheetName, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static void FillMissingBatchValues(
         P4Batch batch,
         string testingDate,
@@ -234,7 +244,7 @@ public static class Page4ExcelImporter
         if (cell.DataType == XLDataType.Number)
             return cell.GetDouble().ToString("0.###", CultureInfo.InvariantCulture);
 
-        return cell.GetString().Trim();
+        return ImportTextNormalizer.ToPlainText(cell.GetString().Trim());
     }
 
     private static string GetNullableText(IXLCell cell)

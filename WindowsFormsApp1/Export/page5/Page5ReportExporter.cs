@@ -7,7 +7,7 @@ using WindowsFormsApp1.Data_Access;
 
 public static class Page5ReportExporter
 {
-    public static void Export(
+    public static bool Export(
         Page5ExportData d,
         string cylTypeText,
         string rawEfficiencyText,
@@ -16,7 +16,7 @@ public static class Page5ReportExporter
 
     {
         if (d == null || d.Rows == null || d.Rows.Count == 0)
-            return;
+            return false;
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -26,7 +26,7 @@ public static class Page5ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Report.xlsx");
-            return;
+            return false;
         }
 
         string reportType = ResolveReportType(d.FilterType);
@@ -37,7 +37,7 @@ public static class Page5ReportExporter
             sfd.FileName = BuildFileName(d, reportType, fileNameOverride);
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             File.Copy(templatePath, sfd.FileName, true);
 
@@ -92,9 +92,9 @@ public static class Page5ReportExporter
 
                 wb.Save();
             }
-
-            MessageBox.Show("匯出完成！");
         }
+
+        return true;
     }
 
     // ===== 檔名處理 =====

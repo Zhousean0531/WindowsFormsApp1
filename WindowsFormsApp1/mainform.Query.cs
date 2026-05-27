@@ -20,6 +20,7 @@ namespace WindowsFormsApp1
         private TextBox QueryRawMaterialBox;
         private TextBox QuerySemiProductBox;
         private TextBox QuerySemiGsmBox;
+        private TextBox QuerySemiMaterialNoBox;
         private TextBox QueryProductNoBox;
         private Button QuerySearchButton;
         private Button QueryExportButton;
@@ -62,6 +63,7 @@ namespace WindowsFormsApp1
             QueryRawMaterialBox = BuildConditionTextBox("QueryRawMaterialBox", 132, 172);
             QuerySemiProductBox = BuildConditionTextBox("QuerySemiProductBox", 132, 218);
             QuerySemiGsmBox = BuildConditionTextBox("QuerySemiGsmBox", 430, 218);
+            QuerySemiMaterialNoBox = BuildConditionTextBox("QuerySemiMaterialNoBox", 430, 264);
             QueryProductNoBox = BuildConditionTextBox("QueryProductNoBox", 132, 264);
 
             QuerySearchButton = new Button
@@ -116,6 +118,8 @@ namespace WindowsFormsApp1
             QueryPage.Controls.Add(QuerySemiProductBox);
             QueryPage.Controls.Add(BuildLabel("半成品克重：", 330, 222));
             QueryPage.Controls.Add(QuerySemiGsmBox);
+            QueryPage.Controls.Add(BuildLabel("半成品料號：", 330, 268));
+            QueryPage.Controls.Add(QuerySemiMaterialNoBox);
             QueryPage.Controls.Add(BuildLabel("成品料號：", 48, 268));
             QueryPage.Controls.Add(QueryProductNoBox);
             QueryPage.Controls.Add(QuerySearchButton);
@@ -210,6 +214,7 @@ namespace WindowsFormsApp1
             SetBoxEnabled(QueryRawMaterialBox, isRaw);
             SetBoxEnabled(QuerySemiProductBox, isSemi);
             SetBoxEnabled(QuerySemiGsmBox, isSemi);
+            SetBoxEnabled(QuerySemiMaterialNoBox, isSemi);
             SetBoxEnabled(QueryProductNoBox, isProduct);
 
             QuerySearchButton.Enabled = !string.IsNullOrWhiteSpace(kind);
@@ -250,6 +255,7 @@ namespace WindowsFormsApp1
                     RawMaterialType = QueryRawMaterialBox.Text.Trim(),
                     SemiProductType = QuerySemiProductBox.Text.Trim(),
                     SemiProductGsm = QuerySemiGsmBox.Text.Trim(),
+                    SemiProductMaterialNo = QuerySemiMaterialNoBox.Text.Trim(),
                     ProductNo = QueryProductNoBox.Text.Trim()
                 };
 

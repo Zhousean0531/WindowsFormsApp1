@@ -8,12 +8,12 @@ using static SignatureHelper;
 
 public static class Page4ReportExporter
 {
-    public static void Export(P4Batch d)
+    public static bool Export(P4Batch d)
     {
         if (d == null || d.EfficiencyGroups.Count == 0)
         {
             MessageBox.Show("沒有效率資料");
-            return;
+            return false;
         }
 
         string helperSavePath;
@@ -24,7 +24,7 @@ public static class Page4ReportExporter
             sfd.FileName = "Helper.xlsm";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             helperSavePath = sfd.FileName;
         }
@@ -37,12 +37,12 @@ public static class Page4ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到報告範本");
-            return;
+            return false;
         }
 
         foreach (var g in d.EfficiencyGroups)
         {
-            DateTime arrivalDt = DateTime.Parse(d.ArrivalDate);
+            DateTime arrivalDt = ParseDateOrToday(d.ArrivalDate);
 
             string savePath;
 
@@ -54,7 +54,7 @@ public static class Page4ReportExporter
                     $"{d.ReportNo}_{d.Material}({arrivalDt:MMdd}到廠)_{g.GasName}.xlsx";
 
                 if (sfd.ShowDialog() != DialogResult.OK)
-                    continue;
+                    return false;
 
                 savePath = sfd.FileName;
             }
@@ -67,13 +67,8 @@ public static class Page4ReportExporter
 
             try
             {
-                app = new Excel.Application
-                {
-                    Visible = false,
-                    DisplayAlerts = false
-                };
-
-                wb = app.Workbooks.Open(savePath);
+                app = ExcelInteropHelper.CreateApplication();
+                wb = ExcelInteropHelper.OpenWorkbook(app, savePath);
                 ws = (Excel.Worksheet)wb.Worksheets["濾網原料報告"];
 
 
@@ -132,12 +127,12 @@ public static class Page4ReportExporter
 
                 ExcelSignatureHelper.TryAddSignature(ws, "E25");
 
-                wb.Save();
+                ExcelInteropHelper.Save(wb);
             }
             finally
             {
-                wb?.Close(false);
-                app?.Quit();
+                ExcelInteropHelper.CloseWorkbook(wb, false);
+                ExcelInteropHelper.Quit(app);
 
                 if (ws != null) Marshal.ReleaseComObject(ws);
                 if (wb != null) Marshal.ReleaseComObject(wb);
@@ -147,8 +142,20 @@ public static class Page4ReportExporter
 
         Page4HelperExporter.Export(helperSavePath, d);
 
-        Page4ReportExporterForNanJing.Export(d);
+        if (!Page4ReportExporterForNanJing.Export(d))
+            return false;
+
+        return true;
     }
+
+    private static DateTime ParseDateOrToday(string value)
+    {
+        if (DateTime.TryParse(value, out DateTime result))
+            return result;
+
+        return DateTime.Today;
+    }
+
     private static string ToBlankIfNullOrZero(decimal? value)
     {
         if (!value.HasValue)

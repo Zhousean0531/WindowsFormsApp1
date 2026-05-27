@@ -8,10 +8,10 @@ using static SignatureHelper;
 
 public static class Page4ReportExporterForNanJing
 {
-    public static void Export(P4Batch d)
+    public static bool Export(P4Batch d)
     {
         if (d.Material != "SG017_A" && d.Material != "SG017_D")
-            return;
+            return true;
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -21,7 +21,7 @@ public static class Page4ReportExporterForNanJing
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到南京範本");
-            return;
+            return false;
         }
 
         using (var sfd = new SaveFileDialog())
@@ -30,7 +30,7 @@ public static class Page4ReportExporterForNanJing
             sfd.FileName = d.ReportNo + "_" + d.Material + "_加測.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             Excel.Application app = null;
             Excel.Workbook wb = null;
@@ -38,11 +38,8 @@ public static class Page4ReportExporterForNanJing
 
             try
             {
-                app = new Excel.Application();
-                app.Visible = false;
-                app.DisplayAlerts = false;
-
-                wb = app.Workbooks.Open(templatePath);
+                app = ExcelInteropHelper.CreateApplication();
+                wb = ExcelInteropHelper.OpenWorkbook(app, templatePath);
                 ws = (Excel.Worksheet)wb.Worksheets[1];
 
                 // ⭐ 統一抓一次（重點修正）
@@ -90,17 +87,19 @@ public static class Page4ReportExporterForNanJing
 
                 ExcelSignatureHelper.TryAddSignature(ws, "G26");
 
-                wb.SaveAs(sfd.FileName);
+                ExcelInteropHelper.SaveAs(wb, sfd.FileName);
             }
             finally
             {
-                if (wb != null) wb.Close(false);
-                if (app != null) app.Quit();
+                ExcelInteropHelper.CloseWorkbook(wb, false);
+                ExcelInteropHelper.Quit(app);
 
                 if (ws != null) Marshal.ReleaseComObject(ws);
                 if (wb != null) Marshal.ReleaseComObject(wb);
                 if (app != null) Marshal.ReleaseComObject(app);
             }
         }
+
+        return true;
     }
 }

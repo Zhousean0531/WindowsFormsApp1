@@ -37,8 +37,8 @@ public static class P4Repository
             cmd.Parameters.AddWithValue("@ReportNo", DbValue(b.ReportNo));
             cmd.Parameters.AddWithValue("@Material", DbValue(b.Material));
             cmd.Parameters.AddWithValue("@MaterialNo", DbValue(b.MaterialNo));
-            cmd.Parameters.AddWithValue("@ArrivalDate", DbValue(b.ArrivalDate));
-            cmd.Parameters.AddWithValue("@TestingDate", DbValue(b.TestingDate));
+            cmd.Parameters.AddWithValue("@ArrivalDate", DbDateValue(b.ArrivalDate));
+            cmd.Parameters.AddWithValue("@TestingDate", DbDateValue(b.TestingDate));
             cmd.Parameters.AddWithValue("@QtyText", DbValue(b.QtyText));
             cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
             cmd.Parameters.AddWithValue("@Username", DbValue(b.UserName));
@@ -146,6 +146,17 @@ public static class P4Repository
     {
         if (value == null)
             return DBNull.Value;
+
+        return value;
+    }
+
+    private static object DbDateValue(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return DBNull.Value;
+
+        if (DateTime.TryParse(value.Replace(".", "/"), out DateTime date))
+            return date.Date;
 
         return value;
     }

@@ -7,12 +7,12 @@ using static SignatureHelper;
 
 public static class Page6ReportExporter
 {
-    public static void Export(Page6ExportData d)
+    public static bool Export(Page6ExportData d)
     {
         if (d == null || d.DataGrid == null || d.DataGrid.Rows.Count == 0)
         {
             MessageBox.Show("目前沒有資料可匯出");
-            return;
+            return false;
         }
 
         string templatePath = Path.Combine(
@@ -23,7 +23,7 @@ public static class Page6ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到物料報告範本");
-            return;
+            return false;
         }
 
         string savePath;
@@ -34,7 +34,7 @@ public static class Page6ReportExporter
                 $"{d.ReportNo}({d.TestDate:MMdd}到廠).xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             savePath = sfd.FileName;
         }
@@ -47,8 +47,8 @@ public static class Page6ReportExporter
 
         try
         {
-            app = new Excel.Application();
-            wb = app.Workbooks.Open(savePath);
+            app = ExcelInteropHelper.CreateApplication();
+            wb = ExcelInteropHelper.OpenWorkbook(app, savePath);
             ws = (Excel.Worksheet)wb.Sheets[1]; // 或指定名稱
 
             // ===== 表頭 =====
@@ -60,15 +60,15 @@ public static class Page6ReportExporter
 
             // ===== DGV 資料（B6 起）=====
             int startRow = 6;
-            int maxRow = Math.Min(
-                12,
-                d.DataGrid.Rows.Count - 1   // 排除最後的新資料列
-            );
+            int writtenRows = 0;
 
-            for (int r = 0; r < maxRow; r++)
+            for (int r = 0; r < d.DataGrid.Rows.Count && writtenRows < 12; r++)
             {
                 var row = d.DataGrid.Rows[r];
-                int excelRow = startRow + r;
+                if (row.IsNewRow)
+                    continue;
+
+                int excelRow = startRow + writtenRows;
 
                 // B ← 日期
                 ws.Cells[excelRow, 2].Value = row.Cells[0].Value?.ToString();
@@ -104,22 +104,23 @@ public static class Page6ReportExporter
                 ws.Cells[excelRow, 11].Value =
                     row.Cells[10].Value?.ToString();
 
-                System.Threading.Thread.Sleep(90);
-                Application.DoEvents();
+                writtenRows++;
             }
             // =====簽名=====
             ExcelSignatureHelper.TryAddSignature(ws, "J18");
 
-            wb.Save();
+            ExcelInteropHelper.Save(wb);
         }
         finally
         {
-            if (wb != null) wb.Close(false);
-            if (app != null) app.Quit();
+            ExcelInteropHelper.CloseWorkbook(wb, false);
+            ExcelInteropHelper.Quit(app);
 
             if (ws != null) Marshal.ReleaseComObject(ws);
             if (wb != null) Marshal.ReleaseComObject(wb);
             if (app != null) Marshal.ReleaseComObject(app);
         }
+
+        return true;
     }
 }

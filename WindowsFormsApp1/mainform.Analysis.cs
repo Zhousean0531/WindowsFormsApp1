@@ -7,27 +7,20 @@ namespace WindowsFormsApp1
 {
     public partial class Form1
     {
-        private PictureBox QualityAnalysisImageButton;
         private ToolTip QualityAnalysisToolTip;
 
         private void InitializeQualityAnalysisLauncher()
         {
-            QualityAnalysisImageButton = new PictureBox
-            {
-                Name = "QualityAnalysisImageButton",
-                Size = new Size(54, 53),
-                Location = new Point(610, 12),
-                Cursor = Cursors.Hand,
-                Image = BuildQualityAnalysisIcon(new Size(54, 53)),
-                SizeMode = PictureBoxSizeMode.CenterImage,
-                BackColor = Color.White
-            };
+            if (QualityAnalysisImageButton == null)
+                return;
+
+            QualityAnalysisImageButton.Image = BuildQualityAnalysisIcon(QualityAnalysisImageButton.Size);
 
             QualityAnalysisToolTip = new ToolTip();
             QualityAnalysisToolTip.SetToolTip(QualityAnalysisImageButton, "品保數據分析");
 
+            QualityAnalysisImageButton.Click -= QualityAnalysisImageButton_Click;
             QualityAnalysisImageButton.Click += QualityAnalysisImageButton_Click;
-            Controls.Add(QualityAnalysisImageButton);
             QualityAnalysisImageButton.BringToFront();
         }
 

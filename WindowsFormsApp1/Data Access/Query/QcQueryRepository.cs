@@ -69,6 +69,9 @@ namespace WindowsFormsApp1.Data_Access.Query
 
             cmd.Parameters.Add("@SemiGsm", SqlDbType.NVarChar, 50).Value =
                 criteria.SemiProductGsm ?? "";
+
+            cmd.Parameters.Add("@SemiMaterialNo", SqlDbType.NVarChar, 100).Value =
+                criteria.SemiProductMaterialNo ?? "";
         }
 
         private static string GetFilterValue(QcQueryCriteria criteria, string filterName)
@@ -225,9 +228,13 @@ SELECT
     CONVERT(NVARCHAR(100), g.GasName) AS [P2_GasTest_GasName],
     CONVERT(NVARCHAR(50), g.Concentration) AS [P2_GasTest_Concentration],
     CONVERT(NVARCHAR(50), g.Background) AS [P2_GasTest_Background],
-    CONVERT(NVARCHAR(50), s.Id) AS [P2_Sample_Id],
+    CASE
+        WHEN s.Id IS NULL THEN NULL
+        ELSE CONVERT(NVARCHAR(50), ROW_NUMBER() OVER (PARTITION BY g.Id ORDER BY s.Id))
+    END AS [P2_Sample_Id],
     CONVERT(NVARCHAR(50), s.GasTestId) AS [P2_Sample_GasTestId],
     CONVERT(NVARCHAR(50), s.Weight) AS [P2_Sample_Weight],
+    CONVERT(NVARCHAR(50), s.Thickness) AS [P2_Sample_Thickness],
     CONVERT(NVARCHAR(50), s.PressureDrop) AS [P2_Sample_PressureDrop],
     e.EfficiencyAll AS [P2_Efficiency_All]
 FROM P2_Batch b
@@ -247,6 +254,7 @@ OUTER APPLY (
 WHERE (@StartDate IS NULL OR CONVERT(date, b.TestDate) >= @StartDate)
   AND (@EndDate IS NULL OR CONVERT(date, b.TestDate) <= @EndDate)
   AND (@Filter = '' OR LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Filter)))
+  AND (@SemiMaterialNo = '' OR LTRIM(RTRIM(ISNULL(b.MaterialNo, ''))) = LTRIM(RTRIM(@SemiMaterialNo)))
   AND (
         @SemiGsm = ''
         OR (

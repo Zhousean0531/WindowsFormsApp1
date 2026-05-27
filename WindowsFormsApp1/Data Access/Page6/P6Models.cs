@@ -8,6 +8,7 @@ namespace WindowsFormsApp1.Data_Access.Page6
         public string ReportNo { get; set; }
         public DateTime TestDate { get; set; }
         public string UserName { get; set; }
+        public string SuppliedNO { get; set; }
 
         public List<P6Item> Items { get; set; } = new List<P6Item>();
     }

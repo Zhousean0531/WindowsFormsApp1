@@ -4,7 +4,7 @@ using WindowsFormsApp1.Data_Access.Page1;
 
 public static class Page1ReportExporter
 {
-    public static void Export(P1Batch batch)
+    public static bool Export(P1Batch batch)
     {
         DateTime arrivalDt = batch.ArrivalDate;
 
@@ -16,12 +16,11 @@ public static class Page1ReportExporter
             sfd.FileName = $"{batch.ReportNo}_{batch.Material}({arrivalDt:MMdd}到廠).xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             reportSavePath = sfd.FileName;
         }
 
-        // ───── 選擇 Helper 存檔路徑 ─────
         string helperSavePath;
         using (var sfd = new SaveFileDialog())
         {
@@ -30,13 +29,13 @@ public static class Page1ReportExporter
             sfd.Title = "請選擇 Helper 檔案存放位置";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             helperSavePath = sfd.FileName;
         }
 
         // ───── 呼叫原本的 Excel 工具 ─────
-        ExcelReportUtil.ExportPage1(
+        return ExcelReportUtil.ExportPage1(
             reportSavePath,
             helperSavePath,
             batch

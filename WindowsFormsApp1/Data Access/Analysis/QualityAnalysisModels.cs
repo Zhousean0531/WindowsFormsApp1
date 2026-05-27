@@ -10,6 +10,7 @@ namespace WindowsFormsApp1.Data_Access.Analysis
         public string Source { get; set; }
         public int? BatchId { get; set; }
         public int? RowNo { get; set; }
+        public string GroupKey { get; set; }
     }
 
     public class QualityAnalysisSetting

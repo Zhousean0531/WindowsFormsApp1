@@ -8,7 +8,7 @@ using WindowsFormsApp1.Data_Access.Page2;
 
 public static class Page2ExcelImporter
 {
-    private const string SheetName = "濾網圓片";
+    private const string SheetName = "濾網半成品";
 
     public static int ImportWithFileDialog(IWin32Window owner = null)
     {
@@ -31,18 +31,24 @@ public static class Page2ExcelImporter
 
     public static int ImportFromExcel(string excelPath)
     {
+        return ImportFromExcel(excelPath, SheetName);
+    }
+
+    public static int ImportFromExcel(string excelPath, string sheetName)
+    {
         int importCount = 0;
 
         using (var wb = new XLWorkbook(excelPath))
         {
-            var ws = wb.Worksheets
-                .FirstOrDefault(x => string.Equals(x.Name, SheetName, StringComparison.OrdinalIgnoreCase));
+            var ws = FindWorksheet(wb, sheetName);
 
             if (ws == null)
-                throw new InvalidOperationException("Cannot find sheet: " + SheetName);
+                throw new InvalidOperationException("Cannot find sheet: " + sheetName);
 
             var batches = new Dictionary<string, P2Batch>();
             var gasTests = new Dictionary<string, Dictionary<string, P2GasTest>>();
+            int thicknessColumn = FindColumnByHeader(ws, "厚度", "Thickness");
+            int thicknessOffset = thicknessColumn == 8 ? 1 : 0;
 
             int row = 2;
 
@@ -56,19 +62,20 @@ public static class Page2ExcelImporter
                 string materialNo = null;
                 string productType = GetText(ws.Cell(row, 6));
                 decimal? targetGsm = GetDecimal(ws.Cell(row, 7));
-                string glue = GetText(ws.Cell(row, 8));
-                decimal? speed = GetDecimal(ws.Cell(row, 9));
-                decimal? upperTemp = GetDecimal(ws.Cell(row, 10));
-                decimal? lowerTemp = GetDecimal(ws.Cell(row, 11));
-                decimal? pressure = GetDecimal(ws.Cell(row, 12));
-                decimal? windSpeed = GetDecimal(ws.Cell(row, 13));
-                decimal? weight = GetDecimal(ws.Cell(row, 14));
-                decimal? pressureDrop = GetDecimal(ws.Cell(row, 15));
-                string gasName = GetText(ws.Cell(row, 16));
-                decimal? concentration = GetDecimal(ws.Cell(row, 17));
-                decimal? eff0 = GetEfficiency(ws.Cell(row, 18));
-                decimal? eff10 = GetEfficiency(ws.Cell(row, 19));
-                string carbonLine = GetText(ws.Cell(row, 20));
+                decimal? thickness = thicknessColumn > 0 ? GetDecimal(ws.Cell(row, thicknessColumn)) : null;
+                string glue = GetText(ws.Cell(row, 8 + thicknessOffset));
+                decimal? speed = GetDecimal(ws.Cell(row, 9 + thicknessOffset));
+                decimal? upperTemp = GetDecimal(ws.Cell(row, 10 + thicknessOffset));
+                decimal? lowerTemp = GetDecimal(ws.Cell(row, 11 + thicknessOffset));
+                decimal? pressure = GetDecimal(ws.Cell(row, 12 + thicknessOffset));
+                decimal? windSpeed = GetDecimal(ws.Cell(row, 13 + thicknessOffset));
+                decimal? weight = GetDecimal(ws.Cell(row, 14 + thicknessOffset));
+                decimal? pressureDrop = GetDecimal(ws.Cell(row, 15 + thicknessOffset));
+                string gasName = GetText(ws.Cell(row, 16 + thicknessOffset));
+                decimal? concentration = GetDecimal(ws.Cell(row, 17 + thicknessOffset));
+                decimal? eff0 = GetEfficiency(ws.Cell(row, 18 + thicknessOffset));
+                decimal? eff10 = GetEfficiency(ws.Cell(row, 19 + thicknessOffset));
+                string carbonLine = GetText(ws.Cell(row, 20 + thicknessOffset));
 
                 if (string.IsNullOrWhiteSpace(gasName))
                 {
@@ -133,6 +140,7 @@ public static class Page2ExcelImporter
                 var sample = new P2Sample
                 {
                     Weight = weight,
+                    Thickness = thickness,
                     PressureDrop = pressureDrop,
                     IsSelected = eff0.HasValue || eff10.HasValue
                 };
@@ -158,6 +166,12 @@ public static class Page2ExcelImporter
         return importCount;
     }
 
+    private static IXLWorksheet FindWorksheet(XLWorkbook wb, string sheetName)
+    {
+        return wb.Worksheets
+            .FirstOrDefault(x => string.Equals(x.Name, sheetName, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static void FillMissingBatchValues(P2Batch batch, DateTime? testDate, string carbonLine)
     {
         if (!batch.TestDate.HasValue && testDate.HasValue)
@@ -172,6 +186,25 @@ public static class Page2ExcelImporter
         }
     }
 
+    private static int FindColumnByHeader(IXLWorksheet ws, params string[] headers)
+    {
+        for (int col = 1; col <= 40; col++)
+        {
+            string header = GetText(ws.Cell(1, col));
+
+            if (string.IsNullOrWhiteSpace(header))
+                continue;
+
+            foreach (string expected in headers)
+            {
+                if (header.IndexOf(expected, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return col;
+            }
+        }
+
+        return -1;
+    }
+
     private static string BuildReportNo(DateTime? testDate)
     {
         if (!testDate.HasValue)
@@ -182,7 +215,7 @@ public static class Page2ExcelImporter
 
     private static bool IsEmptyRow(IXLWorksheet ws, int row)
     {
-        for (int col = 1; col <= 20; col++)
+        for (int col = 1; col <= 22; col++)
         {
             if (!ws.Cell(row, col).IsEmpty())
                 return false;
@@ -202,7 +235,7 @@ public static class Page2ExcelImporter
         if (cell.DataType == XLDataType.Number)
             return cell.GetDouble().ToString("0.###", CultureInfo.InvariantCulture);
 
-        return cell.GetString().Trim();
+        return ImportTextNormalizer.ToPlainText(cell.GetString().Trim());
     }
 
     private static DateTime? GetDate(IXLCell cell)

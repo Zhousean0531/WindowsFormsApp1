@@ -158,6 +158,8 @@ WHERE LTRIM(RTRIM(Material)) = LTRIM(RTRIM(@Material))
                 }
             }
 
+            ApplyIdentifierKeys(conn, points);
+
             points = points
                 .OrderBy(x => x.TestDate)
                 .ThenBy(x => x.Source)
@@ -165,7 +167,149 @@ WHERE LTRIM(RTRIM(Material)) = LTRIM(RTRIM(@Material))
                 .ThenBy(x => x.RowNo ?? 0)
                 .ToList();
 
+            points = ApplyLatestBatchPerIdentifier(points);
+
             return ApplyPointSampling(points, metricName);
+        }
+
+        private static void ApplyIdentifierKeys(SqlConnection conn, List<QualityAnalysisPoint> points)
+        {
+            ApplyBatchKeys(
+                points,
+                "P3",
+                LoadBatchIdentifierMap(conn, "P3_Batch", "PackageNo", GetBatchIds(points, "P3")));
+
+            ApplyBatchKeys(
+                points,
+                "P5",
+                LoadBatchIdentifierMap(conn, "P5_Batch", "CylinderNo", GetBatchIds(points, "P5")));
+        }
+
+        private static List<int> GetBatchIds(List<QualityAnalysisPoint> points, string source)
+        {
+            return points
+                .Where(x => IsSource(x, source) && x.BatchId.HasValue)
+                .Select(x => x.BatchId.Value)
+                .Distinct()
+                .ToList();
+        }
+
+        private static Dictionary<int, string> LoadBatchIdentifierMap(
+            SqlConnection conn,
+            string tableName,
+            string keyColumn,
+            List<int> batchIds)
+        {
+            var map = new Dictionary<int, string>();
+
+            if (batchIds == null || batchIds.Count == 0)
+                return map;
+
+            using (var cmd = conn.CreateCommand())
+            {
+                var parameterNames = new List<string>();
+
+                for (int i = 0; i < batchIds.Count; i++)
+                {
+                    string parameterName = "@Id" + i.ToString(CultureInfo.InvariantCulture);
+                    parameterNames.Add(parameterName);
+                    cmd.Parameters.Add(parameterName, SqlDbType.Int).Value = batchIds[i];
+                }
+
+                cmd.CommandText =
+                    "SELECT Id, CONVERT(NVARCHAR(100), " + keyColumn + ") AS GroupKey " +
+                    "FROM " + tableName + " " +
+                    "WHERE Id IN (" + string.Join(",", parameterNames) + ");";
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["Id"] == DBNull.Value)
+                            continue;
+
+                        int id = Convert.ToInt32(reader["Id"]);
+                        string groupKey = reader["GroupKey"] == DBNull.Value
+                            ? ""
+                            : reader["GroupKey"].ToString();
+
+                        map[id] = groupKey;
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        private static void ApplyBatchKeys(
+            List<QualityAnalysisPoint> points,
+            string source,
+            Dictionary<int, string> batchKeys)
+        {
+            if (batchKeys == null || batchKeys.Count == 0)
+                return;
+
+            foreach (var point in points.Where(x => IsSource(x, source) && x.BatchId.HasValue))
+            {
+                string groupKey;
+
+                if (batchKeys.TryGetValue(point.BatchId.Value, out groupKey))
+                    point.GroupKey = groupKey;
+            }
+        }
+
+        private static List<QualityAnalysisPoint> ApplyLatestBatchPerIdentifier(List<QualityAnalysisPoint> points)
+        {
+            var latestBatchByKey = new Dictionary<string, int>();
+
+            foreach (var point in points)
+            {
+                string key = BuildIdentifierKey(point);
+
+                if (string.IsNullOrWhiteSpace(key))
+                    continue;
+
+                int currentLatest;
+
+                if (!latestBatchByKey.TryGetValue(key, out currentLatest) ||
+                    point.BatchId.Value > currentLatest)
+                {
+                    latestBatchByKey[key] = point.BatchId.Value;
+                }
+            }
+
+            return points
+                .Where(point =>
+                {
+                    string key = BuildIdentifierKey(point);
+
+                    if (string.IsNullOrWhiteSpace(key))
+                        return true;
+
+                    int latestBatchId;
+                    return !latestBatchByKey.TryGetValue(key, out latestBatchId) ||
+                           point.BatchId.Value == latestBatchId;
+                })
+                .OrderBy(x => x.TestDate)
+                .ThenBy(x => x.Source)
+                .ThenBy(x => x.BatchId ?? 0)
+                .ThenBy(x => x.RowNo ?? 0)
+                .ToList();
+        }
+
+        private static string BuildIdentifierKey(QualityAnalysisPoint point)
+        {
+            if (point == null ||
+                !point.BatchId.HasValue ||
+                string.IsNullOrWhiteSpace(point.GroupKey) ||
+                (!IsSource(point, "P3") && !IsSource(point, "P5")))
+            {
+                return null;
+            }
+
+            return (point.Source ?? "").Trim().ToUpperInvariant() +
+                   "|" +
+                   point.GroupKey.Trim().ToUpperInvariant();
         }
 
         private static List<QualityAnalysisPoint> ApplyPointSampling(
@@ -227,6 +371,7 @@ WHERE LTRIM(RTRIM(Material)) = LTRIM(RTRIM(@Material))
 
         private static string BuildPointsSql(string metricName)
         {
+            // Current analysis scope is P3/P5 only; legacy P1/P2/P4 clauses are kept disabled below.
             switch ((metricName ?? "").Trim())
             {
                 case "Weight":
@@ -252,6 +397,7 @@ FROM P1_Batch b
 INNER JOIN P1_Sample s ON s.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -261,6 +407,7 @@ INNER JOIN P2_GasTest g ON g.BatchId = b.Id
 INNER JOIN P2_Sample s ON s.GasTestId = g.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -277,6 +424,7 @@ FROM P4_Batch b
 INNER JOIN P4_Lot l ON l.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -310,6 +458,7 @@ FROM P1_Batch b
 INNER JOIN P1_Sample s ON s.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -319,6 +468,7 @@ INNER JOIN P2_GasTest g ON g.BatchId = b.Id
 INNER JOIN P2_Sample s ON s.GasTestId = g.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -335,6 +485,7 @@ FROM P4_Batch b
 INNER JOIN P4_Lot l ON l.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -401,6 +552,7 @@ FROM P1_Batch b
 INNER JOIN P1_Sample s ON s.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -417,6 +569,7 @@ FROM P4_Batch b
 INNER JOIN P4_Lot l ON l.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -451,6 +604,7 @@ INNER JOIN P1_Sample s ON s.BatchId = b.Id
 INNER JOIN P1_Efficiency e ON e.SampleId = s.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -461,6 +615,7 @@ INNER JOIN P2_Sample s ON s.GasTestId = g.Id
 INNER JOIN P2_Efficiency e ON e.SampleId = s.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -469,6 +624,7 @@ FROM P4_Batch b
 INNER JOIN P4_Efficiency e ON e.BatchId = b.Id
 WHERE LTRIM(RTRIM(ISNULL(b.Material, ''))) = LTRIM(RTRIM(@Material))
   AND CONVERT(date, b.TestingDate) BETWEEN @StartDate AND @EndDate
+  AND 1 = 0
 
 UNION ALL
 
@@ -518,9 +674,13 @@ WHERE (
             if (string.IsNullOrWhiteSpace(text))
                 return false;
 
-            string upper = text.ToUpperInvariant();
-            if (upper == "N.D." || upper == "ND" || upper == "N/A" || upper == "NA" || upper == "-")
-                return false;
+            string upper = text.ToUpperInvariant().Replace(" ", "");
+            if (upper == "N.D." || upper == "N.D" || upper == "ND" ||
+                upper == "N/A" || upper == "NA" || upper == "-")
+            {
+                number = 0;
+                return true;
+            }
 
             text = text
                 .Replace("，", ",")

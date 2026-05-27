@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 public static class SignatureHelper
 {
     public static string FindSignaturePath()
@@ -36,23 +37,48 @@ public static class SignatureHelper
 
             if (!string.IsNullOrEmpty(sigPath) && File.Exists(sigPath))
             {
-                Excel.Range target = ws.Range[cellAddress];
+                Excel.Range target = null;
+                Excel.Shape pic = null;
 
-                var pic = ws.Shapes.AddPicture(
-                    sigPath,
-                    Microsoft.Office.Core.MsoTriState.msoFalse,
-                    Microsoft.Office.Core.MsoTriState.msoTrue,
-                    (float)target.Left,
-                    (float)target.Top,
-                    -1,
-                    -1
-                );
-
-                pic.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
-                pic.Width = 110;
-                if (cellAddress.Equals("L18", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    pic.Width = 160; // Page6 要比較大的簽名
+                    target = ExcelInteropHelper.Retry(() => ws.Range[cellAddress]);
+
+                    pic = ExcelInteropHelper.Retry(() => ws.Shapes.AddPicture(
+                        sigPath,
+                        Microsoft.Office.Core.MsoTriState.msoFalse,
+                        Microsoft.Office.Core.MsoTriState.msoTrue,
+                        (float)target.Left,
+                        (float)target.Top,
+                        -1,
+                        -1
+                    ));
+
+                    ExcelInteropHelper.Retry(() =>
+                    {
+                        pic.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+                        pic.Width = 110;
+
+                        if (cellAddress.Equals("L18", StringComparison.OrdinalIgnoreCase))
+                            pic.Width = 160; // Page6 要比較大的簽名
+                    });
+                }
+                catch (COMException ex) when (ExcelInteropHelper.IsRetryable(ex))
+                {
+                    MessageBox.Show(
+                        "Excel 目前忙碌，簽名圖片加入失敗；報告仍會繼續匯出。",
+                        "簽名略過",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                }
+                finally
+                {
+                    if (pic != null)
+                        Marshal.ReleaseComObject(pic);
+
+                    if (target != null)
+                        Marshal.ReleaseComObject(target);
                 }
             }
             else

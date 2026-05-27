@@ -402,11 +402,11 @@ namespace WindowsFormsApp1
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.Clear(Color.White);
 
-            using (var titleFont = new Font("Microsoft JhengHei UI", 16F, FontStyle.Bold))
-            using (var axisFont = new Font("Microsoft JhengHei UI", 9F, FontStyle.Regular))
-            using (var legendFont = new Font("Microsoft JhengHei UI", 9F, FontStyle.Regular))
+            using (var titleFont = new Font("Microsoft JhengHei UI", 20F, FontStyle.Bold))
+            using (var axisFont = new Font("Microsoft JhengHei UI", 12.5F, FontStyle.Regular))
+            using (var legendFont = new Font("Microsoft JhengHei UI", 12F, FontStyle.Regular))
             {
-                Rectangle plot = new Rectangle(70, 70, Math.Max(200, Width - 118), Math.Max(180, Height - 260));
+                Rectangle plot = new Rectangle(96, 62, Math.Max(260, Width - 160), Math.Max(220, Height - 250));
                 double minY;
                 double maxY;
                 ResolveYAxis(out minY, out maxY);
@@ -419,9 +419,9 @@ namespace WindowsFormsApp1
 
                 DrawSamplePoints(e.Graphics, plot, minY, maxY);
 
-                using (var redSolid = new Pen(Color.Red, 2F))
-                using (var redDash = new Pen(Color.Red, 2F) { DashStyle = DashStyle.Dash })
-                using (var greenSolid = new Pen(Color.FromArgb(64, 160, 46), 2F))
+                using (var redSolid = new Pen(Color.Red, 2.5F))
+                using (var redDash = new Pen(Color.Red, 2.5F) { DashStyle = DashStyle.Dash })
+                using (var greenSolid = new Pen(Color.FromArgb(64, 160, 46), 2.5F))
                 {
                     if (ShowUsl && usl.HasValue) DrawHorizontalLine(e.Graphics, plot, minY, maxY, usl.Value, redSolid);
                     if (ShowLsl && lsl.HasValue) DrawHorizontalLine(e.Graphics, plot, minY, maxY, lsl.Value, redSolid);
@@ -453,23 +453,7 @@ namespace WindowsFormsApp1
                 return;
             }
 
-            var values = new List<double>();
-            values.AddRange(points.Select(x => x.Value));
-
-            if (average.HasValue)
-                values.Add(average.Value);
-
-            if (average.HasValue && sigma.HasValue)
-            {
-                values.Add(GetSigmaLineValue(3));
-                values.Add(GetSigmaLineValue(-3));
-            }
-
-            if (usl.HasValue)
-                values.Add(usl.Value);
-
-            if (lsl.HasValue)
-                values.Add(lsl.Value);
+            var values = points.Select(x => x.Value).ToList();
 
             if (values.Count == 0)
             {
@@ -478,27 +462,20 @@ namespace WindowsFormsApp1
                 return;
             }
 
-            minY = values.Min();
-            maxY = values.Max();
+            double pointMin = values.Min();
+            double pointMax = values.Max();
 
-            if (Math.Abs(maxY - minY) < 0.000001)
-            {
-                maxY += 1;
-                minY -= 1;
-            }
+            minY = pointMin < 0 ? Math.Floor(pointMin) : 0;
+            maxY = Math.Ceiling(pointMax);
 
-            double padding = Math.Abs(maxY - minY) * 0.08;
-            minY -= padding;
-            maxY += padding;
-
-            if (minY > 0 && values.Min() >= 0)
-                minY = 0;
+            if (maxY <= minY)
+                maxY = minY + 1;
         }
 
         private void DrawTitle(Graphics g, Font font, string text, Rectangle plot)
         {
             SizeF size = g.MeasureString(text, font);
-            g.DrawString(text, font, Brushes.Black, plot.Left + (plot.Width - size.Width) / 2F, 22);
+            g.DrawString(text, font, Brushes.Black, plot.Left + (plot.Width - size.Width) / 2F, 18);
         }
 
         private void DrawAxis(Graphics g, Font font, Rectangle plot, double minY, double maxY)
@@ -520,7 +497,7 @@ namespace WindowsFormsApp1
                 {
                     double value = minY + (maxY - minY) * i / tickCount;
                     float py = MapY(plot, minY, maxY, value);
-                    g.DrawString(FormatNumber(value), font, Brushes.Black, 14, py - 8);
+                    DrawYAxisLabel(g, font, plot, py, FormatNumber(value));
                 }
             }
         }
@@ -538,15 +515,21 @@ namespace WindowsFormsApp1
             {
                 double tickValue = Math.Round(value, 10);
                 float py = MapY(plot, minY, maxY, tickValue);
-                g.DrawString(tickValue.ToString(rule.LabelFormat), font, Brushes.Black, 14, py - 8);
+                DrawYAxisLabel(g, font, plot, py, tickValue.ToString(rule.LabelFormat));
             }
+        }
+
+        private void DrawYAxisLabel(Graphics g, Font font, Rectangle plot, float y, string text)
+        {
+            SizeF size = g.MeasureString(text, font);
+            g.DrawString(text, font, Brushes.Black, plot.Left - size.Width - 14, y - size.Height / 2F);
         }
 
         private YAxisRule GetYAxisRule()
         {
             string material = NormalizeMaterial(titleText);
 
-            if (IsCylinderFinishedChart(material))
+            if (IsFixedCylinderMaterial(material))
             {
                 if (MetricKey == "Weight")
                     return new YAxisRule(2.50, 5.00, 0.50, "0.00");
@@ -567,43 +550,70 @@ namespace WindowsFormsApp1
                     return new YAxisRule(0, 150, 10, "0");
             }
 
-            if (IsFilterFinishedChart(material))
+            if (IsFixedFilterParticleMaterial(material))
             {
                 if (MetricKey == "Particle")
                     return new YAxisRule(0, 10000, 1000, "0");
-
-                if (MetricKey == "TVOC")
-                {
-                    if (IsMaterial(
-                        material,
-                        "12G0A840000013",
-                        "12K0A840000015",
-                        "12K0A840000016",
-                        "12K0A840000017",
-                        "12B0P550000002"))
-                    {
-                        return new YAxisRule(0, 0.1, 0.01, "0.00");
-                    }
-
-                    return new YAxisRule(0, 5.0, 0.5, "0.0");
-                }
-
-                if (MetricKey == "PressureDrop")
-                {
-                    if (IsMaterial(
-                        material,
-                        "12K0A840000015",
-                        "12K0A840000016",
-                        "12K0A840000017"))
-                    {
-                        return new YAxisRule(0, 35, 5, "0");
-                    }
-
-                    return new YAxisRule(0, 150, 10, "0");
-                }
             }
 
+            if (MetricKey == "TVOC" && IsFixedFilterTvocMaterial(material))
+                return new YAxisRule(0, 0.1, 0.01, "0.00");
+
+            if (MetricKey == "TVOC" && IsFixedFilterWideTvocMaterial(material))
+                return new YAxisRule(0, 5.0, 0.5, "0.0");
+
+            if (MetricKey == "PressureDrop" && IsFixedFilterPressureDropMaterial(material))
+                return new YAxisRule(0, 35, 5, "0");
+
+            if (MetricKey == "PressureDrop" && IsFixedFilterWidePressureDropMaterial(material))
+                return new YAxisRule(0, 150, 10, "0");
+
             return null;
+        }
+
+        private bool IsFixedCylinderMaterial(string material)
+        {
+            return IsMaterial(material, "IKP201", "IKP205", "CI001", "SG017_A", "SG017_C", "SG017_D", "SG029", "SG035");
+        }
+
+        private bool IsFixedFilterParticleMaterial(string material)
+        {
+            return IsMaterial(
+                material,
+                "12G0A840000013",
+                "12K0A840000015",
+                "12K0A840000016",
+                "12K0A840000017",
+                "12B0P550000002",
+                "12B0P550000009",
+                "12B0P550000004",
+                "12A0H660000001");
+        }
+
+        private bool IsFixedFilterTvocMaterial(string material)
+        {
+            return IsMaterial(material, "12G0A840000013", "12K0A840000015", "12K0A840000016", "12K0A840000017", "12B0P550000002");
+        }
+
+        private bool IsFixedFilterWideTvocMaterial(string material)
+        {
+            return IsMaterial(material, "12B0P550000009", "12B0P550000004", "12A0H660000001");
+        }
+
+        private bool IsFixedFilterPressureDropMaterial(string material)
+        {
+            return IsMaterial(material, "12K0A840000015", "12K0A840000016", "12K0A840000017");
+        }
+
+        private bool IsFixedFilterWidePressureDropMaterial(string material)
+        {
+            return IsMaterial(
+                material,
+                "12G0A840000013",
+                "12B0P550000002",
+                "12B0P550000009",
+                "12B0P550000004",
+                "12A0H660000001");
         }
 
         private bool IsCylinderFinishedChart(string material)
@@ -659,7 +669,7 @@ namespace WindowsFormsApp1
                 {
                     float x = MapX(plot, i);
                     float y = MapY(plot, minY, maxY, points[i].Value);
-                    g.FillEllipse(brush, x - 2F, y - 2F, 4F, 4F);
+                    g.FillEllipse(brush, x - 4F, y - 4F, 8F, 8F);
                 }
             }
         }
@@ -669,21 +679,54 @@ namespace WindowsFormsApp1
             if (points.Count == 0)
                 return;
 
-            int step = Math.Max(1, points.Count / 12);
+            const float minLabelSpacing = 72F;
+            int maxLabelCount = Math.Max(2, Math.Min(12, (int)(plot.Width / minLabelSpacing)));
+            int step = Math.Max(1, (int)Math.Ceiling(points.Count / (double)maxLabelCount));
+            int lastIndex = points.Count - 1;
+            var labelIndexes = new List<int>();
 
             for (int i = 0; i < points.Count; i += step)
             {
-                DrawDateLabel(g, font, plot, i);
+                if (i == lastIndex)
+                    continue;
+
+                if (labelIndexes.Count > 0 &&
+                    points[labelIndexes[labelIndexes.Count - 1]].TestDate.Date == points[i].TestDate.Date)
+                {
+                    continue;
+                }
+
+                if (labelIndexes.Count > 0 &&
+                    MapX(plot, i) - MapX(plot, labelIndexes[labelIndexes.Count - 1]) < minLabelSpacing)
+                {
+                    continue;
+                }
+
+                labelIndexes.Add(i);
             }
 
-            if ((points.Count - 1) % step != 0)
-                DrawDateLabel(g, font, plot, points.Count - 1);
+            while (labelIndexes.Count > 0)
+            {
+                int previousIndex = labelIndexes[labelIndexes.Count - 1];
+                bool sameDate = points[previousIndex].TestDate.Date == points[lastIndex].TestDate.Date;
+                bool tooClose = MapX(plot, lastIndex) - MapX(plot, previousIndex) < minLabelSpacing;
+
+                if (!sameDate && !tooClose)
+                    break;
+
+                labelIndexes.RemoveAt(labelIndexes.Count - 1);
+            }
+
+            labelIndexes.Add(lastIndex);
+
+            foreach (int index in labelIndexes)
+                DrawDateLabel(g, font, plot, index);
         }
 
         private void DrawDateLabel(Graphics g, Font font, Rectangle plot, int index)
         {
             float x = MapX(plot, index);
-            g.TranslateTransform(x - 6, plot.Bottom + 8);
+            g.TranslateTransform(x - 8, plot.Bottom + 10);
             g.RotateTransform(90);
             g.DrawString(points[index].TestDate.ToString("yyyy.MM.dd"), font, Brushes.Black, 0, 0);
             g.ResetTransform();
@@ -710,14 +753,14 @@ namespace WindowsFormsApp1
 
         private void DrawLegend(Graphics g, Font font, Rectangle plot)
         {
-            int y = Math.Max(plot.Bottom + 102, Height - 72);
-            int x = 70;
+            int y = Math.Max(plot.Bottom + 116, Height - 82);
+            int x = plot.Left - 10;
             int maxX = Math.Max(x + 260, plot.Right);
 
             using (var blueBrush = new SolidBrush(Color.FromArgb(20, 158, 208)))
-            using (var redDash = new Pen(Color.Red, 2F) { DashStyle = DashStyle.Dash })
-            using (var green = new Pen(Color.FromArgb(64, 160, 46), 2F))
-            using (var red = new Pen(Color.Red, 2F))
+            using (var redDash = new Pen(Color.Red, 2.5F) { DashStyle = DashStyle.Dash })
+            using (var green = new Pen(Color.FromArgb(64, 160, 46), 2.5F))
+            using (var red = new Pen(Color.Red, 2.5F))
             {
                 x = DrawDotLegendItem(g, font, blueBrush, x, ref y, maxX, PointLegendText);
 
@@ -755,32 +798,32 @@ namespace WindowsFormsApp1
 
         private int DrawDotLegendItem(Graphics g, Font font, Brush brush, int x, ref int y, int maxX, string text)
         {
-            int width = 26 + (int)g.MeasureString(text, font).Width + 18;
+            int width = 32 + (int)g.MeasureString(text, font).Width + 22;
 
             if (x + width > maxX)
             {
-                x = 70;
-                y += 22;
+                x = 86;
+                y += 28;
             }
 
-            g.FillEllipse(brush, x, y + 5, 5, 5);
-            g.DrawString(text, font, Brushes.Black, x + 18, y);
+            g.FillEllipse(brush, x, y + 6, 8, 8);
+            g.DrawString(text, font, Brushes.Black, x + 22, y);
 
             return x + width;
         }
 
         private int DrawLineLegendItem(Graphics g, Font font, Pen pen, int x, ref int y, int maxX, string text)
         {
-            int width = 44 + (int)g.MeasureString(text, font).Width + 18;
+            int width = 50 + (int)g.MeasureString(text, font).Width + 22;
 
             if (x + width > maxX)
             {
-                x = 70;
-                y += 22;
+                x = 86;
+                y += 28;
             }
 
-            g.DrawLine(pen, x, y + 8, x + 30, y + 8);
-            g.DrawString(text, font, Brushes.Black, x + 40, y);
+            g.DrawLine(pen, x, y + 10, x + 34, y + 10);
+            g.DrawString(text, font, Brushes.Black, x + 44, y);
 
             return x + width;
         }

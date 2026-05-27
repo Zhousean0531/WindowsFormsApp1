@@ -33,17 +33,6 @@
             this.CYLTypeBox = new System.Windows.Forms.ComboBox();
             this.CylinderTestDateBox = new System.Windows.Forms.DateTimePicker();
             this.CylinderBox = new System.Windows.Forms.DataGridView();
-            this.CYLSN = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYLWeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Particle_In = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Particle_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_IPA_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_IPA_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Acetone_In = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Acetone_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Nontarget_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Nontarget_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CYL_Pressure_Drop = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CYLRawEffTB = new System.Windows.Forms.TextBox();
             this.CYLRawMaterialBox = new System.Windows.Forms.TextBox();
             this.ReCylinderBox = new System.Windows.Forms.TextBox();
@@ -59,6 +48,8 @@
             this.CylinderReportNO = new System.Windows.Forms.Label();
             this.CylinderTestDate = new System.Windows.Forms.Label();
             this.execute = new System.Windows.Forms.Button();
+            this.QualityAnalysisImageButton = new System.Windows.Forms.PictureBox();
+            this.ClearCurrentPageButton = new System.Windows.Forms.Button();
             this.CylinderRawPage = new System.Windows.Forms.TabPage();
             this.chkAsh = new System.Windows.Forms.CheckBox();
             this.chkButane = new System.Windows.Forms.CheckBox();
@@ -228,6 +219,7 @@
             this.FilterInProcessGileBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessMaterialNo = new System.Windows.Forms.TextBox();
             this.FilterInProcessgsmBox = new System.Windows.Forms.TextBox();
+            this.FilterInProcessThicknessBox = new System.Windows.Forms.TextBox();
             this.FilterBatchNOBox = new System.Windows.Forms.TextBox();
             this.FilterInProcessCarbonOrderBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -249,6 +241,7 @@
             this.FilterInProcessReportNO = new System.Windows.Forms.Label();
             this.label27 = new System.Windows.Forms.Label();
             this.FilterInProcessgsm = new System.Windows.Forms.Label();
+            this.FilterInProcessThickness = new System.Windows.Forms.Label();
             this.FilterInProcessOrder = new System.Windows.Forms.Label();
             this.FilterInProcessTest = new System.Windows.Forms.Label();
             this.FilterInProcessProduction = new System.Windows.Forms.Label();
@@ -314,8 +307,20 @@
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.SearchButton = new System.Windows.Forms.Button();
+            this.CYLSN = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYLWeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Particle_In = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Particle_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_IPA_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_IPA_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Acetone_In = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Acetone_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Nontarget_in = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Nontarget_out = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CYL_Pressure_Drop = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CylinderPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.QualityAnalysisImageButton)).BeginInit();
             this.CylinderRawPage.SuspendLayout();
             this.CylinderRawEffPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderRawMeshBox)).BeginInit();
@@ -352,7 +357,7 @@
             this.CylinderPage.Controls.Add(this.CylinderTestDate);
             this.CylinderPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderPage.Name = "CylinderPage";
-            this.CylinderPage.Size = new System.Drawing.Size(978, 626);
+            this.CylinderPage.Size = new System.Drawing.Size(978, 562);
             this.CylinderPage.TabIndex = 4;
             this.CylinderPage.Text = "濾筒成品";
             // 
@@ -409,73 +414,6 @@
             this.CylinderBox.Size = new System.Drawing.Size(915, 270);
             this.CylinderBox.TabIndex = 10;
             this.CylinderBox.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.CylinderBox_RowPostPaint);
-            // 
-            // CYLSN
-            // 
-            this.CYLSN.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.CYLSN.Frozen = true;
-            this.CYLSN.HeaderText = "生產序號";
-            this.CYLSN.Name = "CYLSN";
-            // 
-            // CYLWeight
-            // 
-            this.CYLWeight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.CYLWeight.HeaderText = "重量";
-            this.CYLWeight.Name = "CYLWeight";
-            this.CYLWeight.Width = 65;
-            // 
-            // CYL_Particle_In
-            // 
-            this.CYL_Particle_In.HeaderText = "Particle_In";
-            this.CYL_Particle_In.Name = "CYL_Particle_In";
-            this.CYL_Particle_In.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // CYL_Particle_out
-            // 
-            this.CYL_Particle_out.HeaderText = "Particle_Out";
-            this.CYL_Particle_out.Name = "CYL_Particle_out";
-            this.CYL_Particle_out.Width = 105;
-            // 
-            // CYL_IPA_in
-            // 
-            this.CYL_IPA_in.HeaderText = "IPA_In";
-            this.CYL_IPA_in.Name = "CYL_IPA_in";
-            this.CYL_IPA_in.Width = 65;
-            // 
-            // CYL_IPA_out
-            // 
-            this.CYL_IPA_out.HeaderText = "IPA_Out";
-            this.CYL_IPA_out.Name = "CYL_IPA_out";
-            this.CYL_IPA_out.Width = 78;
-            // 
-            // CYL_Acetone_In
-            // 
-            this.CYL_Acetone_In.HeaderText = "Acetone_In";
-            this.CYL_Acetone_In.Name = "CYL_Acetone_In";
-            // 
-            // CYL_Acetone_out
-            // 
-            this.CYL_Acetone_out.HeaderText = "Acetone_Out";
-            this.CYL_Acetone_out.Name = "CYL_Acetone_out";
-            this.CYL_Acetone_out.Width = 120;
-            // 
-            // CYL_Nontarget_in
-            // 
-            this.CYL_Nontarget_in.HeaderText = "Nontarget_In";
-            this.CYL_Nontarget_in.Name = "CYL_Nontarget_in";
-            this.CYL_Nontarget_in.Width = 125;
-            // 
-            // CYL_Nontarget_out
-            // 
-            this.CYL_Nontarget_out.HeaderText = "Nontarget_Out";
-            this.CYL_Nontarget_out.Name = "CYL_Nontarget_out";
-            this.CYL_Nontarget_out.Width = 130;
-            // 
-            // CYL_Pressure_Drop
-            // 
-            this.CYL_Pressure_Drop.HeaderText = "Pressure_Drop";
-            this.CYL_Pressure_Drop.Name = "CYL_Pressure_Drop";
-            this.CYL_Pressure_Drop.Width = 140;
             // 
             // CYLRawEffTB
             // 
@@ -603,14 +541,36 @@
             // execute
             // 
             this.execute.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.execute.Font = new System.Drawing.Font("微軟正黑體", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.execute.Location = new System.Drawing.Point(838, 12);
+            this.execute.Font = new System.Drawing.Font("微軟正黑體", 13.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.execute.Location = new System.Drawing.Point(867, 26);
             this.execute.Name = "execute";
-            this.execute.Size = new System.Drawing.Size(121, 53);
+            this.execute.Size = new System.Drawing.Size(100, 42);
             this.execute.TabIndex = 3;
             this.execute.Text = "執行";
             this.execute.UseVisualStyleBackColor = true;
             this.execute.Click += new System.EventHandler(this.Execute_Click);
+            // 
+            // QualityAnalysisImageButton
+            // 
+            this.QualityAnalysisImageButton.BackColor = System.Drawing.Color.White;
+            this.QualityAnalysisImageButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.QualityAnalysisImageButton.Location = new System.Drawing.Point(589, 26);
+            this.QualityAnalysisImageButton.Name = "QualityAnalysisImageButton";
+            this.QualityAnalysisImageButton.Size = new System.Drawing.Size(42, 42);
+            this.QualityAnalysisImageButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.QualityAnalysisImageButton.TabIndex = 5;
+            this.QualityAnalysisImageButton.TabStop = false;
+            // 
+            // ClearCurrentPageButton
+            // 
+            this.ClearCurrentPageButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ClearCurrentPageButton.Font = new System.Drawing.Font("微軟正黑體", 13.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.ClearCurrentPageButton.Location = new System.Drawing.Point(643, 26);
+            this.ClearCurrentPageButton.Name = "ClearCurrentPageButton";
+            this.ClearCurrentPageButton.Size = new System.Drawing.Size(92, 42);
+            this.ClearCurrentPageButton.TabIndex = 6;
+            this.ClearCurrentPageButton.Text = "清空";
+            this.ClearCurrentPageButton.UseVisualStyleBackColor = true;
             // 
             // CylinderRawPage
             // 
@@ -656,7 +616,7 @@
             this.CylinderRawPage.Controls.Add(this.CylinderRawParticle);
             this.CylinderRawPage.Location = new System.Drawing.Point(4, 29);
             this.CylinderRawPage.Name = "CylinderRawPage";
-            this.CylinderRawPage.Size = new System.Drawing.Size(978, 626);
+            this.CylinderRawPage.Size = new System.Drawing.Size(978, 562);
             this.CylinderRawPage.TabIndex = 3;
             this.CylinderRawPage.Text = "濾筒原料";
             // 
@@ -1508,7 +1468,7 @@
             this.FilterPage.Controls.Add(this.FilterTestDate);
             this.FilterPage.Location = new System.Drawing.Point(4, 29);
             this.FilterPage.Name = "FilterPage";
-            this.FilterPage.Size = new System.Drawing.Size(978, 626);
+            this.FilterPage.Size = new System.Drawing.Size(978, 562);
             this.FilterPage.TabIndex = 2;
             this.FilterPage.Text = "濾網成品";
             // 
@@ -1862,6 +1822,7 @@
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessGileBox);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessMaterialNo);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessgsmBox);
+            this.FilterInProcessPage.Controls.Add(this.FilterInProcessThicknessBox);
             this.FilterInProcessPage.Controls.Add(this.FilterBatchNOBox);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessCarbonOrderBox);
             this.FilterInProcessPage.Controls.Add(this.label2);
@@ -1883,13 +1844,14 @@
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessReportNO);
             this.FilterInProcessPage.Controls.Add(this.label27);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessgsm);
+            this.FilterInProcessPage.Controls.Add(this.FilterInProcessThickness);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessOrder);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessTest);
             this.FilterInProcessPage.Controls.Add(this.FilterInProcessProduction);
             this.FilterInProcessPage.Location = new System.Drawing.Point(4, 29);
             this.FilterInProcessPage.Name = "FilterInProcessPage";
             this.FilterInProcessPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterInProcessPage.Size = new System.Drawing.Size(978, 626);
+            this.FilterInProcessPage.Size = new System.Drawing.Size(978, 562);
             this.FilterInProcessPage.TabIndex = 1;
             this.FilterInProcessPage.Text = "濾網半成品";
             // 
@@ -2414,7 +2376,7 @@
             // FilterInProcessLowerBox
             // 
             this.FilterInProcessLowerBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessLowerBox.Location = new System.Drawing.Point(175, 494);
+            this.FilterInProcessLowerBox.Location = new System.Drawing.Point(175, 534);
             this.FilterInProcessLowerBox.Name = "FilterInProcessLowerBox";
             this.FilterInProcessLowerBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessLowerBox.TabIndex = 13;
@@ -2422,7 +2384,7 @@
             // FilterInProcessUpperBox
             // 
             this.FilterInProcessUpperBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessUpperBox.Location = new System.Drawing.Point(175, 454);
+            this.FilterInProcessUpperBox.Location = new System.Drawing.Point(175, 494);
             this.FilterInProcessUpperBox.Name = "FilterInProcessUpperBox";
             this.FilterInProcessUpperBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessUpperBox.TabIndex = 12;
@@ -2430,7 +2392,7 @@
             // FilterInProcessSpeedBox
             // 
             this.FilterInProcessSpeedBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessSpeedBox.Location = new System.Drawing.Point(175, 414);
+            this.FilterInProcessSpeedBox.Location = new System.Drawing.Point(175, 454);
             this.FilterInProcessSpeedBox.Name = "FilterInProcessSpeedBox";
             this.FilterInProcessSpeedBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessSpeedBox.TabIndex = 11;
@@ -2438,7 +2400,7 @@
             // FilterInProcessGileBox
             // 
             this.FilterInProcessGileBox.Cursor = System.Windows.Forms.Cursors.Default;
-            this.FilterInProcessGileBox.Location = new System.Drawing.Point(175, 374);
+            this.FilterInProcessGileBox.Location = new System.Drawing.Point(175, 414);
             this.FilterInProcessGileBox.Name = "FilterInProcessGileBox";
             this.FilterInProcessGileBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessGileBox.TabIndex = 10;
@@ -2458,6 +2420,14 @@
             this.FilterInProcessgsmBox.Name = "FilterInProcessgsmBox";
             this.FilterInProcessgsmBox.Size = new System.Drawing.Size(100, 29);
             this.FilterInProcessgsmBox.TabIndex = 9;
+            // 
+            // FilterInProcessThicknessBox
+            // 
+            this.FilterInProcessThicknessBox.Cursor = System.Windows.Forms.Cursors.Default;
+            this.FilterInProcessThicknessBox.Location = new System.Drawing.Point(175, 374);
+            this.FilterInProcessThicknessBox.Name = "FilterInProcessThicknessBox";
+            this.FilterInProcessThicknessBox.Size = new System.Drawing.Size(100, 29);
+            this.FilterInProcessThicknessBox.TabIndex = 10;
             // 
             // FilterBatchNOBox
             // 
@@ -2557,7 +2527,7 @@
             // FilterInProcessLower
             // 
             this.FilterInProcessLower.AutoSize = true;
-            this.FilterInProcessLower.Location = new System.Drawing.Point(40, 497);
+            this.FilterInProcessLower.Location = new System.Drawing.Point(40, 537);
             this.FilterInProcessLower.Name = "FilterInProcessLower";
             this.FilterInProcessLower.Size = new System.Drawing.Size(89, 20);
             this.FilterInProcessLower.TabIndex = 2;
@@ -2566,7 +2536,7 @@
             // FilterInProcessUpper
             // 
             this.FilterInProcessUpper.AutoSize = true;
-            this.FilterInProcessUpper.Location = new System.Drawing.Point(40, 457);
+            this.FilterInProcessUpper.Location = new System.Drawing.Point(40, 497);
             this.FilterInProcessUpper.Name = "FilterInProcessUpper";
             this.FilterInProcessUpper.Size = new System.Drawing.Size(89, 20);
             this.FilterInProcessUpper.TabIndex = 2;
@@ -2575,7 +2545,7 @@
             // FilterInProcessSpeed
             // 
             this.FilterInProcessSpeed.AutoSize = true;
-            this.FilterInProcessSpeed.Location = new System.Drawing.Point(40, 417);
+            this.FilterInProcessSpeed.Location = new System.Drawing.Point(40, 457);
             this.FilterInProcessSpeed.Name = "FilterInProcessSpeed";
             this.FilterInProcessSpeed.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessSpeed.TabIndex = 2;
@@ -2584,7 +2554,7 @@
             // FilterInProcessGile
             // 
             this.FilterInProcessGile.AutoSize = true;
-            this.FilterInProcessGile.Location = new System.Drawing.Point(40, 377);
+            this.FilterInProcessGile.Location = new System.Drawing.Point(40, 417);
             this.FilterInProcessGile.Name = "FilterInProcessGile";
             this.FilterInProcessGile.Size = new System.Drawing.Size(41, 20);
             this.FilterInProcessGile.TabIndex = 2;
@@ -2643,6 +2613,15 @@
             this.FilterInProcessgsm.Size = new System.Drawing.Size(73, 20);
             this.FilterInProcessgsm.TabIndex = 2;
             this.FilterInProcessgsm.Text = "需求克數";
+            // 
+            // FilterInProcessThickness
+            // 
+            this.FilterInProcessThickness.AutoSize = true;
+            this.FilterInProcessThickness.Location = new System.Drawing.Point(40, 377);
+            this.FilterInProcessThickness.Name = "FilterInProcessThickness";
+            this.FilterInProcessThickness.Size = new System.Drawing.Size(41, 20);
+            this.FilterInProcessThickness.TabIndex = 2;
+            this.FilterInProcessThickness.Text = "厚度";
             // 
             // FilterInProcessOrder
             // 
@@ -2714,7 +2693,7 @@
             this.FilterRawPage.Location = new System.Drawing.Point(4, 29);
             this.FilterRawPage.Name = "FilterRawPage";
             this.FilterRawPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FilterRawPage.Size = new System.Drawing.Size(978, 626);
+            this.FilterRawPage.Size = new System.Drawing.Size(978, 562);
             this.FilterRawPage.TabIndex = 0;
             this.FilterRawPage.Text = "濾網原料";
             // 
@@ -3045,10 +3024,10 @@
             this.tabControl1.Controls.Add(this.RawMaterialPage);
             this.tabControl1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.tabControl1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.tabControl1.Location = new System.Drawing.Point(0, 50);
+            this.tabControl1.Location = new System.Drawing.Point(0, 74);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(986, 659);
+            this.tabControl1.Size = new System.Drawing.Size(986, 595);
             this.tabControl1.TabIndex = 2;
             // 
             // RawMaterialPage
@@ -3065,7 +3044,7 @@
             this.RawMaterialPage.Location = new System.Drawing.Point(4, 29);
             this.RawMaterialPage.Name = "RawMaterialPage";
             this.RawMaterialPage.Padding = new System.Windows.Forms.Padding(3);
-            this.RawMaterialPage.Size = new System.Drawing.Size(978, 626);
+            this.RawMaterialPage.Size = new System.Drawing.Size(978, 562);
             this.RawMaterialPage.TabIndex = 5;
             this.RawMaterialPage.Text = "物料";
             this.RawMaterialPage.UseVisualStyleBackColor = true;
@@ -3250,14 +3229,82 @@
             // 
             // SearchButton
             // 
-            this.SearchButton.Font = new System.Drawing.Font("微軟正黑體", 15.75F);
-            this.SearchButton.Location = new System.Drawing.Point(681, 12);
+            this.SearchButton.Font = new System.Drawing.Font("微軟正黑體", 13.5F);
+            this.SearchButton.Location = new System.Drawing.Point(751, 26);
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(120, 53);
+            this.SearchButton.Size = new System.Drawing.Size(100, 42);
             this.SearchButton.TabIndex = 4;
             this.SearchButton.Text = "匯入";
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            // 
+            // CYLSN
+            // 
+            this.CYLSN.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.CYLSN.Frozen = true;
+            this.CYLSN.HeaderText = "生產序號";
+            this.CYLSN.Name = "CYLSN";
+            this.CYLSN.Width = 200;
+            // 
+            // CYLWeight
+            // 
+            this.CYLWeight.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.CYLWeight.HeaderText = "重量";
+            this.CYLWeight.Name = "CYLWeight";
+            this.CYLWeight.Width = 65;
+            // 
+            // CYL_Particle_In
+            // 
+            this.CYL_Particle_In.HeaderText = "Particle_In";
+            this.CYL_Particle_In.Name = "CYL_Particle_In";
+            this.CYL_Particle_In.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // CYL_Particle_out
+            // 
+            this.CYL_Particle_out.HeaderText = "Particle_Out";
+            this.CYL_Particle_out.Name = "CYL_Particle_out";
+            this.CYL_Particle_out.Width = 105;
+            // 
+            // CYL_IPA_in
+            // 
+            this.CYL_IPA_in.HeaderText = "IPA_In";
+            this.CYL_IPA_in.Name = "CYL_IPA_in";
+            this.CYL_IPA_in.Width = 65;
+            // 
+            // CYL_IPA_out
+            // 
+            this.CYL_IPA_out.HeaderText = "IPA_Out";
+            this.CYL_IPA_out.Name = "CYL_IPA_out";
+            this.CYL_IPA_out.Width = 78;
+            // 
+            // CYL_Acetone_In
+            // 
+            this.CYL_Acetone_In.HeaderText = "Acetone_In";
+            this.CYL_Acetone_In.Name = "CYL_Acetone_In";
+            // 
+            // CYL_Acetone_out
+            // 
+            this.CYL_Acetone_out.HeaderText = "Acetone_Out";
+            this.CYL_Acetone_out.Name = "CYL_Acetone_out";
+            this.CYL_Acetone_out.Width = 120;
+            // 
+            // CYL_Nontarget_in
+            // 
+            this.CYL_Nontarget_in.HeaderText = "Nontarget_In";
+            this.CYL_Nontarget_in.Name = "CYL_Nontarget_in";
+            this.CYL_Nontarget_in.Width = 125;
+            // 
+            // CYL_Nontarget_out
+            // 
+            this.CYL_Nontarget_out.HeaderText = "Nontarget_Out";
+            this.CYL_Nontarget_out.Name = "CYL_Nontarget_out";
+            this.CYL_Nontarget_out.Width = 130;
+            // 
+            // CYL_Pressure_Drop
+            // 
+            this.CYL_Pressure_Drop.HeaderText = "Pressure_Drop";
+            this.CYL_Pressure_Drop.Name = "CYL_Pressure_Drop";
+            this.CYL_Pressure_Drop.Width = 140;
             // 
             // Form1
             // 
@@ -3265,6 +3312,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(990, 669);
+            this.Controls.Add(this.QualityAnalysisImageButton);
+            this.Controls.Add(this.ClearCurrentPageButton);
             this.Controls.Add(this.SearchButton);
             this.Controls.Add(this.execute);
             this.Controls.Add(this.tabControl1);
@@ -3280,6 +3329,7 @@
             this.CylinderPage.ResumeLayout(false);
             this.CylinderPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CylinderBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.QualityAnalysisImageButton)).EndInit();
             this.CylinderRawPage.ResumeLayout(false);
             this.CylinderRawPage.PerformLayout();
             this.CylinderRawEffPanel.ResumeLayout(false);
@@ -3372,6 +3422,7 @@
         private System.Windows.Forms.TextBox FilterInProcessSpeedBox;
         private System.Windows.Forms.TextBox FilterInProcessGileBox;
         private System.Windows.Forms.TextBox FilterInProcessgsmBox;
+        private System.Windows.Forms.TextBox FilterInProcessThicknessBox;
         private System.Windows.Forms.TextBox FilterInProcessOrderBox;
         private System.Windows.Forms.Label FilterInProcessWire;
         private System.Windows.Forms.Label FilterInProcessEff;
@@ -3474,17 +3525,6 @@
         private System.Windows.Forms.TextBox FilterAlarmBox;
         private System.Windows.Forms.Label FilterAlarm;
         private System.Windows.Forms.ComboBox CYLTypeBox;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYLSN;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYLWeight;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Particle_In;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Particle_out;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_IPA_in;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_IPA_out;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Acetone_In;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Acetone_out;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Nontarget_in;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Nontarget_out;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Pressure_Drop;
         private System.Windows.Forms.ComboBox FilterReportCustmorBox;
         private System.Windows.Forms.TextBox FilterMaterialNumerBox;
         private System.Windows.Forms.Label FilterMaterialNumer;
@@ -3586,10 +3626,24 @@
         private System.Windows.Forms.TextBox FilterOrderBox;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Button SearchButton;
+        private System.Windows.Forms.PictureBox QualityAnalysisImageButton;
+        private System.Windows.Forms.Button ClearCurrentPageButton;
         private System.Windows.Forms.TextBox FilterRawSuppliedBox;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.TextBox FilterInProcessMaterialNo;
+        private System.Windows.Forms.Label FilterInProcessThickness;
         private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYLSN;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYLWeight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Particle_In;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Particle_out;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_IPA_in;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_IPA_out;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Acetone_In;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Acetone_out;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Nontarget_in;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Nontarget_out;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CYL_Pressure_Drop;
     }
 }
 

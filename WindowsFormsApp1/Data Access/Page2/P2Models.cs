@@ -37,6 +37,7 @@ namespace WindowsFormsApp1.Data_Access.Page2
     public class P2Sample
     {
         public decimal? Weight { get; set; }
+        public decimal? Thickness { get; set; }
         public decimal? PressureDrop { get; set; }
         public bool IsSelected { get; set; }
 

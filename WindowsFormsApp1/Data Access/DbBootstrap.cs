@@ -62,6 +62,26 @@ public static class DbBootstrap
         return new SqlConnection(_connStr);
     }
 
+    public static bool Reconnect()
+    {
+        try
+        {
+            _connStr = ResolveConnectionString();
+            SqlConnection.ClearAllPools();
+
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("資料庫重新連線失敗\n" + ex.Message);
+            return false;
+        }
+    }
+
     public static bool TestConnection()
     {
         try
@@ -86,12 +106,12 @@ public static class DbBootstrap
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Instruments' AND xtype='U')
 CREATE TABLE Instruments (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    InstrumentName NVARCHAR(200),
-    CalibrationDate DATETIME,
-    ExpireDate DATETIME,
+    InstrumentName NVARCHAR(100) NOT NULL,
+    CalibrationDate DATETIME NOT NULL,
+    ExpireDate DATETIME NOT NULL,
     CreatedAt DATETIME,
     UpdatedAt DATETIME,
-    UpdatedBy NVARCHAR(50)
+    UpdatedBy NVARCHAR(100)
 );
 ";
 
@@ -156,7 +176,6 @@ CREATE TABLE P2_Batch (
     Material NVARCHAR(50),
     TargetGsm DECIMAL(10,2),
     Glue NVARCHAR(50),
-    BatchNo NVARCHAR(50),
     MaterialNo NVARCHAR(50),
     Speed DECIMAL(10,2),
     UpperTemp DECIMAL(10,2),
@@ -167,8 +186,11 @@ CREATE TABLE P2_Batch (
     CreatedAt DATETIME,
     Username NVARCHAR(50),
     ReportNo NVARCHAR(50),
-    FilterSize NVARCHAR(50)
+    FilterSize NVARCHAR(50),
+    BatchNo NVARCHAR(500)
 );
+
+ALTER TABLE P2_Batch ALTER COLUMN BatchNo NVARCHAR(500) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_GasTest' AND xtype='U')
 CREATE TABLE P2_GasTest (
@@ -185,8 +207,12 @@ CREATE TABLE P2_Sample (
     GasTestId INT,
     Weight DECIMAL(10,2),
     PressureDrop DECIMAL(10,2),
-    IsSelected BIT
+    IsSelected BIT,
+    Thickness DECIMAL(10,3)
 );
+
+IF COL_LENGTH('dbo.P2_Sample', 'Thickness') IS NULL
+    ALTER TABLE P2_Sample ADD Thickness DECIMAL(10,3) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Efficiency' AND xtype='U')
 CREATE TABLE P2_Efficiency (
@@ -207,30 +233,30 @@ CREATE TABLE P2_Efficiency (
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P3_Batch' AND xtype='U')
 CREATE TABLE P3_Batch (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    ArrivalDate DATETIME,
-    TestingDate DATETIME,
-    FilterReportNo NVARCHAR(50),
-    WorkOrder NVARCHAR(50),
-    PackageNo NVARCHAR(50),
-    CarbonLot NVARCHAR(50),
-    FilterMaterialNo NVARCHAR(50),
+    ArrivalDate NVARCHAR(50),
+    TestingDate NVARCHAR(50),
+    FilterReportNo NVARCHAR(100),
+    WorkOrder NVARCHAR(100),
+    PackageNo NVARCHAR(100),
+    CarbonLot NVARCHAR(100),
+    FilterMaterialNo NVARCHAR(100),
     Customer NVARCHAR(100),
     Model NVARCHAR(100),
-    ReFilterNo NVARCHAR(50),
+    ReFilterNo NVARCHAR(100),
     Alarm NVARCHAR(100),
     MA NVARCHAR(50),
     MB NVARCHAR(50),
     MC NVARCHAR(50),
-    UserName NVARCHAR(50),
+    UserName NVARCHAR(100),
     CreatedAt DATETIME
 );
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P3_Row' AND xtype='U')
 CREATE TABLE P3_Row (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    BatchId INT,
+    BatchId INT NOT NULL,
     RowNo INT,
-    SN NVARCHAR(50),
+    SN NVARCHAR(100),
     Weight NVARCHAR(50),
     Length NVARCHAR(50),
     Width NVARCHAR(50),
@@ -295,8 +321,8 @@ CREATE TABLE P4_Batch (
     ReportNo NVARCHAR(50),
     Material NVARCHAR(50),
     MaterialNo NVARCHAR(50),
-    ArrivalDate DATETIME,
-    TestingDate DATETIME,
+    ArrivalDate DATE,
+    TestingDate DATE,
     QtyText NVARCHAR(50),
     Username NVARCHAR(50),
     CreatedAt DATETIME,
@@ -315,7 +341,7 @@ CREATE TABLE P4_Particle (
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Efficiency' AND xtype='U')
 CREATE TABLE P4_Efficiency (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
     BatchId INT,
     GasName NVARCHAR(50),
     Concentration FLOAT,
@@ -351,14 +377,14 @@ CREATE TABLE P5_Batch (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     ReportNo NVARCHAR(50),
     CylinderNo NVARCHAR(50),
-    Customer NVARCHAR(100),
+    Customer NVARCHAR(50),
     FilterType NVARCHAR(50),
-    MaterialNo NVARCHAR(50),
-    TestDate DATETIME,
+    TestDate NVARCHAR(50),
     UserName NVARCHAR(50),
     CreatedAt DATETIME,
     ReCylinderNo NVARCHAR(50),
-    CarbonLot NVARCHAR(50)
+    CarbonLot NVARCHAR(50),
+    MaterialNo NVARCHAR(50)
 );
 
 IF COL_LENGTH('dbo.P5_Batch', 'MaterialNo') IS NULL
@@ -367,8 +393,8 @@ IF COL_LENGTH('dbo.P5_Batch', 'MaterialNo') IS NULL
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P5_Row' AND xtype='U')
 CREATE TABLE P5_Row (
     Id INT IDENTITY(1,1) PRIMARY KEY,
-    BatchId INT,
-    RowNo INT,
+    BatchId INT NOT NULL,
+    RowNo INT NOT NULL,
     SN NVARCHAR(50),
     Weight NVARCHAR(50),
     Efficiency NVARCHAR(50),
@@ -407,8 +433,12 @@ CREATE TABLE P6_Batch (
     ReportNo NVARCHAR(50),
     TestDate DATETIME,
     UserName NVARCHAR(50),
-    CreatedAt DATETIME
+    CreatedAt DATETIME,
+    SuppliedNO NVARCHAR(50)
 );
+
+IF COL_LENGTH('dbo.P6_Batch', 'SuppliedNO') IS NULL
+    ALTER TABLE P6_Batch ADD SuppliedNO NVARCHAR(50) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P6_Item' AND xtype='U')
 CREATE TABLE P6_Item (

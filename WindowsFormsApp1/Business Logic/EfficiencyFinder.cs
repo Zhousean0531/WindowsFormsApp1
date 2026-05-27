@@ -15,13 +15,6 @@ public static class P3EfficiencyFinder
             { "MC", "" }
         };
 
-        var minMap = new Dictionary<string, double>
-        {
-            { "MA", double.MaxValue },
-            { "MB", double.MaxValue },
-            { "MC", double.MaxValue }
-        };
-
         var lots = SplitLots(text);
 
         if (lots.Count == 0)
@@ -39,19 +32,13 @@ public static class P3EfficiencyFinder
                 {
                     string gasType = NormalizeGasType(item.GasType);
 
-                    if (!minMap.ContainsKey(gasType))
+                    if (!result.ContainsKey(gasType))
                         continue;
 
-                    double eff;
-
-                    if (!double.TryParse(item.Efficiency, NumberStyles.Any, CultureInfo.InvariantCulture, out eff))
+                    if (!string.IsNullOrWhiteSpace(result[gasType]))
                         continue;
 
-                    if (eff < minMap[gasType])
-                    {
-                        minMap[gasType] = eff;
-                        result[gasType] = item.Efficiency;
-                    }
+                    result[gasType] = item.Efficiency;
                 }
             }
         }
@@ -84,6 +71,7 @@ public static class P3EfficiencyFinder
             (
                 SELECT
                     g.GasName,
+                    e.Id AS EfficiencyId,
                     e.EfficiencyValue,
                     ROW_NUMBER() OVER (
                         PARTITION BY g.GasName
@@ -93,10 +81,11 @@ public static class P3EfficiencyFinder
                 INNER JOIN P2_GasTest g ON g.BatchId = b.Id
                 INNER JOIN P2_Sample s ON s.GasTestId = g.Id
                 INNER JOIN P2_Efficiency e ON e.SampleId = s.Id
-                WHERE b.WorkOrder = @WorkOrder
+                WHERE LTRIM(RTRIM(ISNULL(b.WorkOrder, ''))) LIKE '%' + LTRIM(RTRIM(@WorkOrder)) + '%'
                   AND e.EfficiencyValue IS NOT NULL
             ) x
-            WHERE x.rn = 1;
+            WHERE x.rn = 1
+            ORDER BY x.EfficiencyId ASC;
         ";
 
         using (var cmd = new SqlCommand(sql, conn))
@@ -132,7 +121,7 @@ public static class P3EfficiencyFinder
         if (gasType == "NH3")
             return "MB";
 
-        if (gasType == "TOLUENE" || gasType == "ACETONE" || gasType == "IPA")
+        if (gasType == "TOLUENE")
             return "MC";
 
         if (gasType.Contains("MA"))
@@ -166,22 +155,23 @@ public static class EfficiencyFinder
             conn.Open();
 
             string sql = @"
-                SELECT MIN(TRY_CONVERT(float, e.EfficiencyValue)) AS MinEfficiency
+                SELECT TOP 1 TRY_CONVERT(float, e.EfficiencyValue) AS Efficiency
                 FROM P4_Batch b
                 INNER JOIN P4_Lot l ON l.BatchId = b.Id
                 INNER JOIN P4_Efficiency e ON e.BatchId = b.Id
                 WHERE l.LotFull LIKE @CarbonLot + '#%'
                   AND (
-                        (@FilterType = 'MA' AND e.GasName IN ('SO2', 'H2S'))
-                     OR (@FilterType = 'MB' AND e.GasName = 'NH3')
-                     OR (@FilterType = 'MC' AND e.GasName IN ('Toluene', 'Acetone', 'IPA'))
+                        (@FilterType = 'MA' AND UPPER(LTRIM(RTRIM(e.GasName))) IN ('SO2', 'H2S'))
+                     OR (@FilterType = 'MB' AND UPPER(LTRIM(RTRIM(e.GasName))) = 'NH3')
+                     OR (@FilterType = 'MC' AND UPPER(LTRIM(RTRIM(e.GasName))) = 'TOLUENE')
                   )
-                  AND e.EfficiencyValue IS NOT NULL";
+                  AND e.EfficiencyValue IS NOT NULL
+                ORDER BY e.Id ASC";
 
             using (var cmd = new SqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@CarbonLot", carbonLot.Trim());
-                cmd.Parameters.AddWithValue("@FilterType", filterType.Trim());
+                cmd.Parameters.AddWithValue("@FilterType", filterType.Trim().ToUpperInvariant());
 
                 object value = cmd.ExecuteScalar();
 

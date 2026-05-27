@@ -12,18 +12,20 @@ public static class ExcelReportUtil
     // =====================================================
     // 對外唯一入口
     // =====================================================
-    public static void ExportPage1(
+    public static bool ExportPage1(
         string reportSavePath,
         string helperSavePath,
         P1Batch batch)
     {
-        if (batch == null) return;
+        if (batch == null) return false;
 
-        Export_QC_RawMaterial_Report(reportSavePath, batch);
-        Export_Helper(helperSavePath, batch);
+        if (!Export_QC_RawMaterial_Report(reportSavePath, batch))
+            return false;
+
+        return Export_Helper(helperSavePath, batch);
     }
     // (A) 匯出 QC_RawMaterial_Template.xlsx（報告用）
-    private static void Export_QC_RawMaterial_Report(
+    private static bool Export_QC_RawMaterial_Report(
         string savePath,
         P1Batch batch)
     {
@@ -34,7 +36,7 @@ public static class ExcelReportUtil
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 QC_RawMaterial_Template.xlsx");
-            return;
+            return false;
         }
 
         File.Copy(templatePath, savePath, true);
@@ -45,13 +47,8 @@ public static class ExcelReportUtil
 
         try
         {
-            app = new Excel.Application
-            {
-                DisplayAlerts = false,
-                Visible = false
-            };
-
-            wb = app.Workbooks.Open(savePath);
+            app = ExcelInteropHelper.CreateApplication();
+            wb = ExcelInteropHelper.OpenWorkbook(app, savePath);
             ws = (Excel.Worksheet)wb.Sheets[1];
 
             // ===== 表頭 =====
@@ -95,28 +92,28 @@ public static class ExcelReportUtil
                     ? (eff0.HasValue ? (object)eff0.Value : "N.D.")
                     : "N.D.";
 
-                System.Threading.Thread.Sleep(20);
-                Application.DoEvents();
             }
 
             // ===== 簽名 =====
             ExcelSignatureHelper.TryAddSignature(ws, "E25");
 
-            wb.Save();
+            ExcelInteropHelper.Save(wb);
         }
         finally
         {
-            if (wb != null) wb.Close(false);
-            if (app != null) app.Quit();
+            ExcelInteropHelper.CloseWorkbook(wb, false);
+            ExcelInteropHelper.Quit(app);
 
             if (ws != null) Marshal.ReleaseComObject(ws);
             if (wb != null) Marshal.ReleaseComObject(wb);
             if (app != null) Marshal.ReleaseComObject(app);
         }
+
+        return true;
     }
 
     // (B) 匯出 Helper_Template.xlsm（彙整用）
-    private static void Export_Helper(
+    private static bool Export_Helper(
         string helperSavePath,
         P1Batch batch)
     {
@@ -127,13 +124,15 @@ public static class ExcelReportUtil
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Helper_Template.xlsm");
-            return;
+            return false;
         }
+
         var selectedSample = batch.Samples.FirstOrDefault(s => s.IsSelected);
         var eff0 = selectedSample?.Efficiencies?.FirstOrDefault();
         var eff10 = selectedSample?.Efficiencies?.ElementAtOrDefault(10);
+
         File.Copy(templatePath, helperSavePath, true);
-        
+
         HelperWorkbookInterop.Append(
             helperSavePath,
             "濾網工作表",
@@ -141,7 +140,6 @@ public static class ExcelReportUtil
             {
                 int n = batch.Samples.Count;
 
-                // ===== 每一筆資料 → 一列 =====
                 for (int i = 0; i < n; i++)
                 {
                     int row = startRow + i;
@@ -154,8 +152,8 @@ public static class ExcelReportUtil
                     wshelper.Cells[row, 6].Value = sample.VocOut;
                     wshelper.Cells[row, 7].Value =
                         sample.Outgassing.HasValue && sample.Outgassing.Value > 0
-                        ? (object)sample.Outgassing
-                        : "N.D.";
+                            ? (object)sample.Outgassing.Value
+                            : "N.D.";
                     wshelper.Cells[row, 8].Value = sample.DeltaP;
 
                     if (sample.IsSelected)
@@ -171,13 +169,14 @@ public static class ExcelReportUtil
                         wshelper.Cells[row, 10].Value = "N.D.";
                     }
                 }
-                wshelper.Cells[10, 2].Value =batch.Concentration;
+
+                wshelper.Cells[10, 2].Value = batch.Concentration;
                 wshelper.Cells[1, 19].Value =
                     $"{batch.TestingDate:MM.dd} {batch.Material} " +
                     $"{(selectedSample?.LotFull?.Contains("#") == true ? selectedSample.LotFull.Substring(selectedSample.LotFull.LastIndexOf('#')) : selectedSample?.LotFull)} " +
                     $"({selectedSample?.DeltaP:0.##}Pa) - " +
                     $"{batch.ArrivalDate:MM.dd} Arrived";
-                // ===== Mesh（粒徑）=====
+
                 if (batch.ParticleSizePercentages != null)
                 {
                     int r = 7;
@@ -192,19 +191,22 @@ public static class ExcelReportUtil
                         r++;
                     }
                 }
+
                 int startEffRow = 3;
                 int col = 19;
-
                 var effList = selectedSample?.Efficiencies;
 
                 if (effList != null)
                 {
                     for (int i = 0; i < effList.Count && i < 11; i++)
                     {
-                    wshelper.Cells[startEffRow + i, col].Value = effList[i].HasValue ? (object)effList[i].Value : "N.D.";
+                        wshelper.Cells[startEffRow + i, col].Value =
+                            effList[i].HasValue ? (object)effList[i].Value : "N.D.";
                     }
                 }
             }
         );
+
+        return true;
     }
 }

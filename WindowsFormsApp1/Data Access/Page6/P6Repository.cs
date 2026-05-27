@@ -38,18 +38,19 @@ namespace WindowsFormsApp1.Data_Access.Page6
         {
             string sql = @"
                 INSERT INTO P6_Batch
-                (ReportNo, TestDate, UserName, CreatedAt)
+                (ReportNo, TestDate, UserName, CreatedAt, SuppliedNO)
                 VALUES
-                (@ReportNo, @TestDate, @UserName, GETDATE());
+                (@ReportNo, @TestDate, @UserName, GETDATE(), @SuppliedNO);
 
                 SELECT SCOPE_IDENTITY();
             ";
 
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
-                cmd.Parameters.AddWithValue("@ReportNo", batch.ReportNo);
+                cmd.Parameters.AddWithValue("@ReportNo", DbValue(batch.ReportNo));
                 cmd.Parameters.AddWithValue("@TestDate", batch.TestDate);
-                cmd.Parameters.AddWithValue("@UserName", batch.UserName ?? "");
+                cmd.Parameters.AddWithValue("@UserName", DbValue(batch.UserName));
+                cmd.Parameters.AddWithValue("@SuppliedNO", DbValue(batch.SuppliedNO));
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
@@ -102,6 +103,14 @@ namespace WindowsFormsApp1.Data_Access.Page6
 
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        private static object DbValue(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return DBNull.Value;
+
+            return value;
         }
     }
 }

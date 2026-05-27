@@ -53,8 +53,8 @@ public static class ExportHelper_Page1
         {
             var batch = Page1DataCollector.Collect(tab);
             if (batch == null) return;
+            if (!Page1ReportExporter.Export(batch)) return;
             P1Repository.Insert(batch);
-            Page1ReportExporter.Export(batch);
             MessageBox.Show("完成");
         }
         catch (Exception ex)
@@ -71,8 +71,9 @@ public static class ExportHelper_Page2
         {
             var batch = Page2DataCollector.Collect(tab);
             if (batch == null) return;
+            if (!Page2ReportExporter.Export(batch)) return;
             P2Repository.Insert(batch);
-            Page2ReportExporter.Export(batch);
+            MessageBox.Show("完成");
         }
         catch (Exception ex)
         {
@@ -96,9 +97,10 @@ public static class ExportHelper_Page3
             if (result == DialogResult.Cancel)
                 return;
 
-            P3Repository.Insert(data);
+            if (!Page3ReportExporter.Export(data, pressureMode))
+                return;
 
-            Page3ReportExporter.Export(data, pressureMode);
+            P3Repository.Insert(data);
 
             MessageBox.Show("匯出完成");
         }
@@ -116,8 +118,8 @@ public static class ExportHelper_Page4
         {
             var batch = Page4DataCollector.Collect(tab);
             if (batch == null) return;
+            if (!Page4ReportExporter.Export(batch)) return;
             P4Repository.Insert(batch);
-            Page4ReportExporter.Export(batch);
             MessageBox.Show("完成");
         }
         catch (Exception ex)
@@ -137,8 +139,6 @@ public static class ExportHelper_Page5
 
             string rawEfficiencyText = ControlHelper.GetText(tab, "CYLRawEffTB");
 
-            P5Repository.Insert(data, rawEfficiencyText);
-
             Page5LookupResult lookupResult = null;
 
             if (!string.IsNullOrWhiteSpace(data.CylinderNo))
@@ -157,11 +157,15 @@ public static class ExportHelper_Page5
                 lookupResult = new Page5LookupResult();
             }
 
-            Page5ReportExporter.Export(
+            if (!Page5ReportExporter.Export(
                 data,
                 data.FilterType,
                 rawEfficiencyText
-            );
+            ))
+                return;
+
+            P5Repository.Insert(data, rawEfficiencyText);
+            MessageBox.Show("匯出完成");
         }
         catch (Exception ex)
         {
@@ -177,7 +181,7 @@ public static class ExportHelper_Page6
         {
             var data = Page6DataCollector.Collect(tab);
             if (data == null) return;
-            Page6ReportExporter.Export(data);
+            if (!Page6ReportExporter.Export(data)) return;
             var batch = Page6DataCollector.CollectForDb(tab, Environment.UserName);
             P6Repository.Insert(batch);
             MessageBox.Show("匯出完成");

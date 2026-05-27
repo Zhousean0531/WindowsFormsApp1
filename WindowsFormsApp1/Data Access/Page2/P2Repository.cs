@@ -99,9 +99,9 @@ namespace WindowsFormsApp1.Data_Access.Page2
         {
             string sql = @"
                 INSERT INTO P2_Sample
-                (GasTestId, Weight, PressureDrop, IsSelected)
+                (GasTestId, Weight, Thickness, PressureDrop, IsSelected)
                 VALUES
-                (@GasTestId, @Weight, @PressureDrop, @IsSelected);
+                (@GasTestId, @Weight, @Thickness, @PressureDrop, @IsSelected);
                 SELECT SCOPE_IDENTITY();
             ";
 
@@ -109,6 +109,7 @@ namespace WindowsFormsApp1.Data_Access.Page2
             {
                 cmd.Parameters.AddWithValue("@GasTestId", gasId);
                 cmd.Parameters.AddWithValue("@Weight", DbValue(sample.Weight));
+                cmd.Parameters.AddWithValue("@Thickness", DbValue(sample.Thickness));
                 cmd.Parameters.AddWithValue("@PressureDrop", DbValue(sample.PressureDrop));
                 cmd.Parameters.AddWithValue("@IsSelected", sample.IsSelected);
 

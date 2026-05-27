@@ -12,9 +12,12 @@ namespace WindowsFormsApp1
     public partial class Form1 : Form
     {
         private const int MAX_ROWS = 13;
+        private ComboBox _cylinderCustomerComboBox;
+
         public Form1()
         {
             InitializeComponent();
+            InitializeCylinderCustomerComboBox();
             this.FilterRawTypeBox.SelectedIndexChanged += new System.EventHandler(this.FilterRawTypeBox_SelectedIndexChanged);
             string today = DateTime.Now.ToString("yyyy.MM.dd");
             CylinderRawMoistureTB.Click += TxtMoisture_Click;
@@ -25,13 +28,82 @@ namespace WindowsFormsApp1
             ToggleAshUI();
             InitializeQueryPage();
             InitializeQualityAnalysisLauncher();
+            InitializeClearCurrentPageButton();
             InitializeResponsiveLayout();
         }
+
+        private void InitializeCylinderCustomerComboBox()
+        {
+            if (CylinderCustmorBox == null || CylinderCustmorBox.Parent == null)
+                return;
+
+            var template = CylinderCustmorBox;
+            var parent = template.Parent;
+            int childIndex = parent.Controls.GetChildIndex(template);
+            string initialText = string.IsNullOrWhiteSpace(template.Text)
+                ? "General"
+                : template.Text.Trim();
+
+            _cylinderCustomerComboBox = new ComboBox
+            {
+                Name = template.Name,
+                Location = template.Location,
+                Size = template.Size,
+                Anchor = template.Anchor,
+                Dock = template.Dock,
+                Font = template.Font,
+                Cursor = template.Cursor,
+                TabIndex = template.TabIndex,
+                DropDownStyle = ComboBoxStyle.DropDown,
+                FormattingEnabled = true,
+                Text = initialText
+            };
+            _cylinderCustomerComboBox.Items.Add("General");
+
+            parent.Controls.Remove(template);
+            template.Visible = false;
+            template.Name = "CylinderCustmorTextBoxTemplate";
+
+            parent.Controls.Add(_cylinderCustomerComboBox);
+            parent.Controls.SetChildIndex(_cylinderCustomerComboBox, childIndex);
+        }
+
+        private void SetCylinderCustomerText(string value)
+        {
+            string text = (value ?? string.Empty).Trim();
+            var combo = _cylinderCustomerComboBox
+                ?? ControlHelper.Find<ComboBox>(CylinderPage, "CylinderCustmorBox");
+
+            if (combo != null)
+            {
+                if (!string.IsNullOrWhiteSpace(text))
+                {
+                    bool exists = false;
+                    foreach (var item in combo.Items)
+                    {
+                        if (string.Equals(item?.ToString(), text, StringComparison.OrdinalIgnoreCase))
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (!exists)
+                        combo.Items.Add(text);
+                }
+
+                combo.Text = text;
+                return;
+            }
+
+            CylinderCustmorBox.Text = text;
+        }
+
         private void ClearPage5()
         {
             CylinderBox.Rows.Clear();
             CylinderReportNOBox.Clear();
-            CylinderCustmorBox.Clear();
+            SetCylinderCustomerText("");
             ReCylinderBox.Clear();
             CYLTypeBox.Text = "";
             CYLRawMaterialBox.Clear();
@@ -205,6 +277,9 @@ namespace WindowsFormsApp1
         }
         private void Execute_Click(object sender, EventArgs e)
         {
+            if (!DbBootstrap.Reconnect())
+                return;
+
             var currentTab = tabControl1.SelectedTab;
             
             var tab = tabControl1.SelectedTab;
@@ -438,7 +513,7 @@ namespace WindowsFormsApp1
             CylinderTestDateBox.Text = result.HeaderValues.GetValueOrDefault("TestDate");
             CylinderReportNOBox.Text = result.HeaderValues.GetValueOrDefault("ReportNo");
             CylinderNoBox.Text = result.HeaderValues.GetValueOrDefault("CylinderNo");
-            CylinderCustmorBox.Text = result.HeaderValues.GetValueOrDefault("Customer");
+            SetCylinderCustomerText(result.HeaderValues.GetValueOrDefault("Customer"));
 
             // 型式 (MA / MB / MC)
             CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("FilterType");
@@ -589,16 +664,110 @@ namespace WindowsFormsApp1
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
+            string importKind = AskExcelImportKind();
+            if (string.IsNullOrWhiteSpace(importKind))
+                return;
+
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Excel (*.xlsx)|*.xlsx";
+                ofd.Title = $"選擇 {importKind} 匯入 Excel";
+                ofd.Filter = "Excel (*.xlsx;*.xlsm)|*.xlsx;*.xlsm";
 
                 if (ofd.ShowDialog() != DialogResult.OK)
                     return;
 
-                int count = Page1ExcelImporter.ImportFromExcel(ofd.FileName);
+                try
+                {
+                    int count = ImportExcelByKind(ofd.FileName, importKind);
 
-                MessageBox.Show($"匯入完成，共 {count} 批");
+                    MessageBox.Show($"匯入完成，共 {count} 批");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        "匯入失敗：" + ex.Message,
+                        "匯入錯誤",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private string AskExcelImportKind()
+        {
+            using (var dialog = new Form())
+            using (var label = new Label())
+            using (var combo = new ComboBox())
+            using (var okButton = new Button())
+            using (var cancelButton = new Button())
+            {
+                dialog.Text = "選擇匯入資料";
+                dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dialog.StartPosition = FormStartPosition.CenterParent;
+                dialog.ClientSize = new Size(360, 145);
+                dialog.MaximizeBox = false;
+                dialog.MinimizeBox = false;
+                dialog.ShowInTaskbar = false;
+
+                label.AutoSize = true;
+                label.Location = new Point(24, 24);
+                label.Text = "今天想匯入哪一種資料？";
+
+                combo.DropDownStyle = ComboBoxStyle.DropDownList;
+                combo.Location = new Point(24, 55);
+                combo.Size = new Size(310, 28);
+                combo.Items.AddRange(new object[]
+                {
+                    "濾網成品",
+                    "濾網半成品",
+                    "濾網原料",
+                    "濾筒原料",
+                    "濾筒成品",
+                    "物料"
+                });
+                combo.SelectedIndex = 0;
+
+                okButton.Text = "確定";
+                okButton.DialogResult = DialogResult.OK;
+                okButton.Location = new Point(168, 101);
+                okButton.Size = new Size(80, 30);
+
+                cancelButton.Text = "取消";
+                cancelButton.DialogResult = DialogResult.Cancel;
+                cancelButton.Location = new Point(254, 101);
+                cancelButton.Size = new Size(80, 30);
+
+                dialog.Controls.Add(label);
+                dialog.Controls.Add(combo);
+                dialog.Controls.Add(okButton);
+                dialog.Controls.Add(cancelButton);
+                dialog.AcceptButton = okButton;
+                dialog.CancelButton = cancelButton;
+
+                return dialog.ShowDialog(this) == DialogResult.OK
+                    ? combo.Text
+                    : null;
+            }
+        }
+
+        private int ImportExcelByKind(string fileName, string importKind)
+        {
+            switch (importKind)
+            {
+                case "濾網原料":
+                    return Page1ExcelImporter.ImportFromExcel(fileName, importKind);
+                case "濾網半成品":
+                    return Page2ExcelImporter.ImportFromExcel(fileName, importKind);
+                case "濾網成品":
+                    return Page3ExcelImporter.ImportFromExcel(fileName, importKind);
+                case "濾筒原料":
+                    return Page4ExcelImporter.ImportFromExcel(fileName, importKind);
+                case "濾筒成品":
+                    return Page5ExcelImporter.ImportFromExcel(fileName, importKind);
+                case "物料":
+                    return Page6ExcelImporter.ImportFromExcel(fileName, importKind);
+                default:
+                    throw new InvalidOperationException("不支援的匯入資料種類：" + importKind);
             }
         }
     }

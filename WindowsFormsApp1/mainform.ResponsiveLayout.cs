@@ -7,11 +7,14 @@ namespace WindowsFormsApp1
 {
     public partial class Form1
     {
-        private const int HeaderHeight = 50;
-        private const int HeaderButtonTop = 12;
-        private const int HeaderRightMargin = 31;
-        private const int HeaderButtonGap = 37;
-        private const int AnalysisButtonGap = 17;
+        private const int HeaderHeight = 74;
+        private const int HeaderButtonTop = 8;
+        private const int HeaderRightMargin = 24;
+        private const int HeaderButtonGap = 16;
+        private const int AnalysisButtonGap = 12;
+        private static readonly Size HeaderButtonSize = new Size(100, 42);
+        private static readonly Size ClearButtonSize = new Size(92, 42);
+        private static readonly Size AnalysisButtonSize = new Size(42, 42);
         private const int PageScrollMargin = 24;
 
         private void InitializeResponsiveLayout()
@@ -26,9 +29,24 @@ namespace WindowsFormsApp1
             tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             SearchButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             execute.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            SearchButton.Size = HeaderButtonSize;
+            execute.Size = HeaderButtonSize;
+            SearchButton.Font = new Font("微軟正黑體", 13.5F, FontStyle.Regular, GraphicsUnit.Point, 136);
+            execute.Font = new Font("微軟正黑體", 13.5F, FontStyle.Regular, GraphicsUnit.Point, 136);
+
+            if (ClearCurrentPageButton != null)
+            {
+                ClearCurrentPageButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                ClearCurrentPageButton.Size = ClearButtonSize;
+                ClearCurrentPageButton.Font = new Font("微軟正黑體", 13.5F, FontStyle.Regular, GraphicsUnit.Point, 136);
+            }
 
             if (QualityAnalysisImageButton != null)
+            {
                 QualityAnalysisImageButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                QualityAnalysisImageButton.Size = AnalysisButtonSize;
+                QualityAnalysisImageButton.Image = BuildQualityAnalysisIcon(AnalysisButtonSize);
+            }
 
             foreach (TabPage page in tabControl1.TabPages)
                 ConfigureScrollablePage(page);
@@ -77,12 +95,24 @@ namespace WindowsFormsApp1
                 HeaderRightMargin,
                 execute.Left - SearchButton.Width - HeaderButtonGap);
 
+            if (ClearCurrentPageButton != null)
+            {
+                ClearCurrentPageButton.Top = HeaderButtonTop;
+                ClearCurrentPageButton.Left = Math.Max(
+                    HeaderRightMargin,
+                    SearchButton.Left - ClearCurrentPageButton.Width - HeaderButtonGap);
+            }
+
             if (QualityAnalysisImageButton != null)
             {
                 QualityAnalysisImageButton.Top = HeaderButtonTop;
+                int anchorLeft = ClearCurrentPageButton != null
+                    ? ClearCurrentPageButton.Left
+                    : SearchButton.Left;
+
                 QualityAnalysisImageButton.Left = Math.Max(
                     HeaderRightMargin,
-                    SearchButton.Left - QualityAnalysisImageButton.Width - AnalysisButtonGap);
+                    anchorLeft - QualityAnalysisImageButton.Width - AnalysisButtonGap);
             }
         }
 

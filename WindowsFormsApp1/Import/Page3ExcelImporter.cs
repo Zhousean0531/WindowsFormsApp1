@@ -7,6 +7,8 @@ using System.Windows.Forms;
 
 public static class Page3ExcelImporter
 {
+    private const string SheetName = "濾網成品";
+
     public static int ImportWithFileDialog(IWin32Window owner = null)
     {
         using (var ofd = new OpenFileDialog())
@@ -28,11 +30,19 @@ public static class Page3ExcelImporter
 
     public static int ImportFromExcel(string excelPath)
     {
+        return ImportFromExcel(excelPath, SheetName);
+    }
+
+    public static int ImportFromExcel(string excelPath, string sheetName)
+    {
         int importCount = 0;
 
         using (var wb = new XLWorkbook(excelPath))
         {
-            var ws = wb.Worksheets.First();
+            var ws = FindWorksheet(wb, sheetName);
+            if (ws == null)
+                throw new InvalidOperationException("Cannot find sheet: " + sheetName);
+
             var batches = new Dictionary<string, Page3ExportData>();
             var alarms = new Dictionary<string, List<string>>();
 
@@ -124,6 +134,12 @@ public static class Page3ExcelImporter
         }
 
         return importCount;
+    }
+
+    private static IXLWorksheet FindWorksheet(XLWorkbook wb, string sheetName)
+    {
+        return wb.Worksheets
+            .FirstOrDefault(x => string.Equals(x.Name, sheetName, StringComparison.OrdinalIgnoreCase));
     }
 
     private static Dictionary<int, string> BuildControlValues(IXLWorksheet ws, int row)

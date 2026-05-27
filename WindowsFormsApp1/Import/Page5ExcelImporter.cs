@@ -32,15 +32,19 @@ public static class Page5ExcelImporter
 
     public static int ImportFromExcel(string excelPath)
     {
+        return ImportFromExcel(excelPath, SheetName);
+    }
+
+    public static int ImportFromExcel(string excelPath, string sheetName)
+    {
         int importCount = 0;
 
         using (var wb = new XLWorkbook(excelPath))
         {
-            var ws = wb.Worksheets
-                .FirstOrDefault(x => string.Equals(x.Name, SheetName, StringComparison.OrdinalIgnoreCase));
+            var ws = FindWorksheet(wb, sheetName);
 
             if (ws == null)
-                throw new InvalidOperationException("Cannot find sheet: " + SheetName);
+                throw new InvalidOperationException("Cannot find sheet: " + sheetName);
 
             var batches = new Dictionary<string, Page5ExportData>();
             var rawEfficiencies = new Dictionary<string, string>();
@@ -50,11 +54,15 @@ public static class Page5ExcelImporter
             {
                 string testDate = GetDateText(ws.Cell(row, 1));
                 string filterType = GetNullableText(ws.Cell(row, 2));
-                string carbonLot = GetNullableText(ws.Cell(row, 3));
-                string cylinderNo = GetNullableText(ws.Cell(row, 4));
-                string rawEfficiency = GetEfficiencyText(ws.Cell(row, 8));
+                string materialNo = ResolveMaterialNoForImport(
+                    filterType,
+                    GetNullableText(ws.Cell(row, 3)),
+                    row);
+                string carbonLot = GetNullableText(ws.Cell(row, 4));
+                string cylinderNo = GetNullableText(ws.Cell(row, 5));
+                string rawEfficiency = GetEfficiencyText(ws.Cell(row, 9));
 
-                string key = $"{testDate}|{filterType}|{carbonLot}|{cylinderNo}";
+                string key = $"{testDate}|{filterType}|{materialNo}|{carbonLot}|{cylinderNo}";
 
                 if (!batches.TryGetValue(key, out Page5ExportData data))
                 {
@@ -65,6 +73,7 @@ public static class Page5ExcelImporter
                         CylinderNo = cylinderNo,
                         Customer = null,
                         FilterType = filterType,
+                        MaterialNo = materialNo,
                         ReCylinderNo = null,
                         CarbonLot = carbonLot,
                         UserName = Environment.UserName,
@@ -76,7 +85,7 @@ public static class Page5ExcelImporter
                 }
                 else
                 {
-                    FillMissingBatchValues(data, testDate, filterType, carbonLot, cylinderNo);
+                    FillMissingBatchValues(data, testDate, filterType, materialNo, carbonLot, cylinderNo);
 
                     if (string.IsNullOrWhiteSpace(rawEfficiencies[key]) &&
                         !string.IsNullOrWhiteSpace(rawEfficiency))
@@ -87,8 +96,8 @@ public static class Page5ExcelImporter
 
                 data.Rows.Add(new Page5RowData
                 {
-                    SN = GetNullableText(ws.Cell(row, 5)),
-                    Weight = GetNullableText(ws.Cell(row, 6)),
+                    SN = GetNullableText(ws.Cell(row, 6)),
+                    Weight = GetNullableText(ws.Cell(row, 7)),
                     ControlValues = BuildControlValues(ws, row)
                 });
 
@@ -105,10 +114,17 @@ public static class Page5ExcelImporter
         return importCount;
     }
 
+    private static IXLWorksheet FindWorksheet(XLWorkbook wb, string sheetName)
+    {
+        return wb.Worksheets
+            .FirstOrDefault(x => string.Equals(x.Name, sheetName, StringComparison.OrdinalIgnoreCase));
+    }
+
     private static void FillMissingBatchValues(
         Page5ExportData data,
         string testDate,
         string filterType,
+        string materialNo,
         string carbonLot,
         string cylinderNo)
     {
@@ -118,6 +134,9 @@ public static class Page5ExcelImporter
         if (string.IsNullOrWhiteSpace(data.FilterType) && !string.IsNullOrWhiteSpace(filterType))
             data.FilterType = filterType;
 
+        if (string.IsNullOrWhiteSpace(data.MaterialNo) && !string.IsNullOrWhiteSpace(materialNo))
+            data.MaterialNo = materialNo;
+
         if (string.IsNullOrWhiteSpace(data.CarbonLot) && !string.IsNullOrWhiteSpace(carbonLot))
             data.CarbonLot = carbonLot;
 
@@ -125,34 +144,90 @@ public static class Page5ExcelImporter
             data.CylinderNo = cylinderNo;
     }
 
+    private static string ResolveMaterialNoForImport(string filterType, string materialNoFromExcel, int row)
+    {
+        if (!string.IsNullOrWhiteSpace(materialNoFromExcel))
+            return materialNoFromExcel.Trim();
+
+        string materialNo = ResolveMaterialNoWithoutPrompt(filterType);
+
+        if (materialNo == null)
+        {
+            throw new InvalidOperationException(
+                $"濾筒成品第 {row} 列料號欄位空白，且原料種類「{filterType}」無法自動判斷料號。"
+                + "大量匯入時請在 C 欄填入料號，例如 11A0C00Y000002、11B0B00Y000002、11T0C00Y000002、11D0S00Y000002。");
+        }
+
+        return materialNo;
+    }
+
+    private static string ResolveMaterialNoWithoutPrompt(string filterType)
+    {
+        string text = (filterType ?? "").Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(text))
+            return null;
+
+        var materialNos = new List<string>();
+
+        foreach (string token in text.Split(new[] { '+', '/', ',', '，', '、' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            string materialNo = ResolveSingleMaterialNoWithoutPrompt(token.Trim().ToUpperInvariant());
+
+            if (materialNo == null)
+                return null;
+
+            if (!materialNos.Contains(materialNo))
+                materialNos.Add(materialNo);
+        }
+
+        return materialNos.Count == 0 ? null : string.Join("+", materialNos);
+    }
+
+    private static string ResolveSingleMaterialNoWithoutPrompt(string type)
+    {
+        if (type == "ACID")
+            return "11A0C00Y000002";
+
+        if (type == "DMS")
+            return "11D0S00Y000002";
+
+        if (type == "MB" || type == "BASE")
+            return "11B0B00Y000002";
+
+        if (type == "MC" || type == "TOC")
+            return "11T0C00Y000002";
+
+        return null;
+    }
+
     private static Dictionary<int, string> BuildControlValues(IXLWorksheet ws, int row)
     {
         return new Dictionary<int, string>
         {
-            [38] = null, // Particle_in 匯入時固定寫 NULL
-            [39] = GetNullableText(ws.Cell(row, 10)),
-            [40] = GetNullableText(ws.Cell(row, 11)),
+            [38] = GetMeasurementText(ws.Cell(row, 10)),
+            [39] = GetMeasurementText(ws.Cell(row, 11)),
+            [40] = GetMeasurementText(ws.Cell(row, 12)),
 
-            [41] = GetNullableText(ws.Cell(row, 12)),
-            [42] = GetNullableText(ws.Cell(row, 13)),
-            [43] = GetNullableText(ws.Cell(row, 14)),
+            [41] = GetMeasurementText(ws.Cell(row, 13)),
+            [42] = GetMeasurementText(ws.Cell(row, 14)),
+            [43] = GetMeasurementText(ws.Cell(row, 15)),
 
-            [44] = GetNullableText(ws.Cell(row, 15)),
-            [45] = GetNullableText(ws.Cell(row, 16)),
-            [46] = GetNullableText(ws.Cell(row, 17)),
+            [44] = GetMeasurementText(ws.Cell(row, 16)),
+            [45] = GetMeasurementText(ws.Cell(row, 17)),
+            [46] = GetMeasurementText(ws.Cell(row, 18)),
 
-            [47] = GetNullableText(ws.Cell(row, 18)),
-            [48] = GetNullableText(ws.Cell(row, 19)),
-            [49] = GetNullableText(ws.Cell(row, 20)),
+            [47] = GetMeasurementText(ws.Cell(row, 19)),
+            [48] = GetMeasurementText(ws.Cell(row, 20)),
+            [49] = GetMeasurementText(ws.Cell(row, 21)),
 
-            [50] = GetNullableText(ws.Cell(row, 21)),
-            [54] = GetNullableText(ws.Cell(row, 22))
+            [50] = GetMeasurementText(ws.Cell(row, 22)),
+            [54] = GetMeasurementText(ws.Cell(row, 23))
         };
     }
 
     private static bool IsEmptyRow(IXLWorksheet ws, int row)
     {
-        for (int col = 1; col <= 22; col++)
+        for (int col = 1; col <= 23; col++)
         {
             if (!ws.Cell(row, col).IsEmpty())
                 return false;
@@ -180,6 +255,16 @@ public static class Page5ExcelImporter
         string text = GetText(cell);
 
         if (IsEmptyValue(text))
+            return null;
+
+        return text;
+    }
+
+    private static string GetMeasurementText(IXLCell cell)
+    {
+        string text = GetText(cell);
+
+        if (IsBlankValue(text))
             return null;
 
         return text;
@@ -226,9 +311,13 @@ public static class Page5ExcelImporter
 
     private static bool IsEmptyValue(string text)
     {
-        return string.IsNullOrWhiteSpace(text) ||
+        return IsBlankValue(text) ||
                text.Equals("N.D.", StringComparison.OrdinalIgnoreCase) ||
-               text.Equals("N/A", StringComparison.OrdinalIgnoreCase) ||
-               text == "-";
+               text.Equals("N/A", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsBlankValue(string text)
+    {
+        return string.IsNullOrWhiteSpace(text) || text == "-";
     }
 }

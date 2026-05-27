@@ -48,10 +48,6 @@ public static class Page5DataCollector
             return null;
         }
 
-        data.MaterialNo = ResolveMaterialNo(data.FilterType);
-        if (data.MaterialNo == null)
-            return null;
-
         // ===== 取得 DataGridView =====
         var dgv = tab.Controls.Find("CylinderBox", true)
                               .FirstOrDefault() as DataGridView;
@@ -94,6 +90,10 @@ public static class Page5DataCollector
             );
             return null;
         }
+
+        data.MaterialNo = ResolveMaterialNo(data.FilterType);
+        if (data.MaterialNo == null)
+            return null;
 
         // ===== 欄位定義 =====
         string[] requiredControlColumns =
@@ -217,7 +217,7 @@ public static class Page5DataCollector
         };
     }
 
-    private static string ResolveMaterialNo(string filterType)
+    public static string ResolveMaterialNo(string filterType)
     {
         string text = (filterType ?? "").Trim().ToUpperInvariant();
         if (string.IsNullOrWhiteSpace(text))

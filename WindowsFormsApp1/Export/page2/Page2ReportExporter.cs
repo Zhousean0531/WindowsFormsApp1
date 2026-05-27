@@ -10,10 +10,10 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 public static class Page2ReportExporter
 {
-    public static void Export(P2Batch batch)
+    public static bool Export(P2Batch batch)
     {
         if (batch == null || batch.GasTests == null || batch.GasTests.Count == 0)
-            return;
+            return false;
 
         using (var sfd = new SaveFileDialog())
         {
@@ -25,7 +25,7 @@ public static class Page2ReportExporter
                 $"{batch.ReportNo}_{batch.Material}_{FormatDecimal(batch.TargetGsm)}gsm_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產)_{firstGas.GasName}.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return;
+                return false;
 
             string folder = Path.GetDirectoryName(sfd.FileName);
             string selectedBaseName = Path.GetFileNameWithoutExtension(sfd.FileName);
@@ -38,16 +38,13 @@ public static class Page2ReportExporter
 
             try
             {
-                app = new Excel.Application();
-                app.Visible = false;
-                app.DisplayAlerts = false;
-                app.EnableEvents = false;
+                app = ExcelInteropHelper.CreateApplication();
 
                 bool multiGas = batch.GasTests.Count > 1;
 
                 foreach (var gas in batch.GasTests)
                 {
-                    Export_Report(
+                    if (!Export_Report(
                         app,
                         folder,
                         selectedBaseName,
@@ -55,26 +52,28 @@ public static class Page2ReportExporter
                         batch,
                         gas,
                         multiGas
-                    );
+                    ))
+                        return false;
                 }
 
                 foreach (var gas in batch.GasTests)
                 {
-                    Export_Helper(
+                    if (!Export_Helper(
                         app,
                         folder,
                         selectedBaseName,
                         batch,
                         gas,
                         multiGas
-                    );
+                    ))
+                        return false;
                 }
 
-                MessageBox.Show("匯出完成！");
+                return true;
             }
             finally
             {
-                app?.Quit();
+                ExcelInteropHelper.Quit(app);
 
                 if (app != null)
                     Marshal.ReleaseComObject(app);
@@ -82,7 +81,7 @@ public static class Page2ReportExporter
         }
     }
 
-    private static void Export_Report(
+    private static bool Export_Report(
         Excel.Application app,
         string folder,
         string selectedBaseName,
@@ -100,7 +99,20 @@ public static class Page2ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 QC_SemiFinished_Template.xlsx");
-            return;
+            return false;
+        }
+
+        var selectedSample = gas.Samples.FirstOrDefault(s => s.IsSelected);
+        if (selectedSample == null)
+        {
+            MessageBox.Show($"{gas.GasName} 尚未選擇壓損樣品");
+            return false;
+        }
+
+        if (selectedSample.Efficiencies == null || selectedSample.Efficiencies.Count == 0)
+        {
+            MessageBox.Show($"{gas.GasName} 選擇的樣品沒有可匯出的效率資料");
+            return false;
         }
 
         string fileName;
@@ -123,12 +135,8 @@ public static class Page2ReportExporter
 
         try
         {
-            wb = app.Workbooks.Open(savePath);
+            wb = OpenWorkbook(app, savePath);
             ws = wb.Sheets["濾網半成品報告"];
-
-            var selectedSample = gas.Samples.FirstOrDefault(s => s.IsSelected);
-            if (selectedSample == null)
-                return;
 
             int idx = gas.Samples.IndexOf(selectedSample);
 
@@ -170,11 +178,12 @@ public static class Page2ReportExporter
 
             ExcelSignatureHelper.TryAddSignature(ws, "H28");
 
-            wb.Save();
+            ExcelInteropHelper.Save(wb);
+            return true;
         }
         finally
         {
-            wb?.Close(false);
+            ExcelInteropHelper.CloseWorkbook(wb, false);
 
             if (ws != null)
                 Marshal.ReleaseComObject(ws);
@@ -184,7 +193,7 @@ public static class Page2ReportExporter
         }
     }
 
-    private static void Export_Helper(
+    private static bool Export_Helper(
         Excel.Application app,
         string folder,
         string selectedBaseName,
@@ -201,19 +210,19 @@ public static class Page2ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Helper_Template.xlsm");
-            return;
+            return false;
         }
 
-        string fileName;
+        var selectedSample = gas.Samples.FirstOrDefault(s => s.IsSelected);
+        if (selectedSample == null)
+        {
+            MessageBox.Show($"{gas.GasName} 尚未選擇壓損樣品");
+            return false;
+        }
 
-        if (multiGas)
-        {
-            fileName = $"Helper_{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}.xlsm";
-        }
-        else
-        {
-            fileName = $"Helper_{SafeFileName(selectedBaseName)}.xlsm";
-        }
+        string fileName = multiGas
+            ? $"Helper_{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}.xlsm"
+            : $"Helper_{SafeFileName(selectedBaseName)}.xlsm";
 
         string savePath = Path.Combine(folder, fileName);
 
@@ -224,8 +233,14 @@ public static class Page2ReportExporter
 
         try
         {
-            wb = app.Workbooks.Open(savePath);
+            wb = OpenWorkbook(app, savePath);
             ws = wb.Worksheets["濾網半成品工作表"];
+
+            ws.Cells[1, 21].Value =
+                $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} " +
+                $"{FormatDecimal(selectedSample.Weight)}gsm " +
+                $"({FormatDecimal(selectedSample.PressureDrop)}Pa) - " +
+                $"{batch.ProductionDate?.ToString("MMdd")}生產";
 
             int currentRow = 2;
 
@@ -239,40 +254,43 @@ public static class Page2ReportExporter
                 ws.Cells[currentRow, 6].Value = batch.TargetGsm;
                 ws.Cells[currentRow, 7].Value = batch.Glue;
                 ws.Cells[currentRow, 8].Value = batch.Speed;
-                ws.Cells[currentRow, 9].value = batch.Pressure;
+                ws.Cells[currentRow, 9].Value = batch.Pressure;
                 ws.Cells[currentRow, 10].Value = batch.WindSpeed;
                 ws.Cells[currentRow, 11].Value = sample.Weight;
                 ws.Cells[currentRow, 12].Value = sample.PressureDrop;
-                ws.Cells[1, 21].Value =
-                    $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} " +
-                    $"{FormatDecimal(sample.Weight)}gsm " +
-                    $"({FormatDecimal(sample.PressureDrop)}Pa) - " +
-                    $"{batch.ProductionDate?.ToString("MMdd")}生產";
+
                 if (sample.IsSelected)
                 {
                     ws.Cells[currentRow, 13].Value = gas.GasName;
                     ws.Cells[currentRow, 14].Value = gas.Concentration;
 
-                    if (sample.Efficiencies.Count > 0)
+                    if (sample.Efficiencies != null && sample.Efficiencies.Count > 0)
                     {
-                        ws.Cells[currentRow, 15].Value =
-                            sample.Efficiencies[0];
+                        ws.Cells[currentRow, 15].Value = sample.Efficiencies[0];
                         ws.Cells[currentRow, 16].Value =
-                            sample.Efficiencies[9];
+                            sample.Efficiencies.Count > 10
+                                ? sample.Efficiencies[10]
+                                : sample.Efficiencies.LastOrDefault();
                     }
                 }
-                for(int i = 0; i < sample.Efficiencies.Count && i < 11; i++)
-                {
-                    ws.Cells[3 + i, 21].Value = sample.Efficiencies[i];
-                }
+
                 currentRow++;
             }
 
-            wb.Save();
+            if (selectedSample.Efficiencies != null)
+            {
+                for (int i = 0; i < selectedSample.Efficiencies.Count && i < 11; i++)
+                {
+                    ws.Cells[3 + i, 21].Value = selectedSample.Efficiencies[i];
+                }
+            }
+
+            ExcelInteropHelper.Save(wb);
+            return true;
         }
         finally
         {
-            wb?.Close(false);
+            ExcelInteropHelper.CloseWorkbook(wb, false);
 
             if (ws != null)
                 Marshal.ReleaseComObject(ws);
@@ -280,6 +298,11 @@ public static class Page2ReportExporter
             if (wb != null)
                 Marshal.ReleaseComObject(wb);
         }
+    }
+
+    private static Excel.Workbook OpenWorkbook(Excel.Application app, string path)
+    {
+        return ExcelInteropHelper.OpenWorkbook(app, path);
     }
 
     private static string FormatDecimal(decimal? value)
@@ -313,7 +336,7 @@ public static class Page2ReportExporter
         if (cell == null)
             return;
 
-        cell.Value = text;
+        ExcelInteropHelper.Retry(() => { cell.Value = text; });
 
         if (string.IsNullOrWhiteSpace(text))
             return;
@@ -322,8 +345,18 @@ public static class Page2ReportExporter
         {
             if (char.IsDigit(text[i]))
             {
-                Excel.Characters ch = cell.Characters[i + 1, 1];
-                ch.Font.Subscript = true;
+                Excel.Characters ch = null;
+
+                try
+                {
+                    ch = ExcelInteropHelper.Retry(() => cell.Characters[i + 1, 1]);
+                    ExcelInteropHelper.Retry(() => { ch.Font.Subscript = true; });
+                }
+                finally
+                {
+                    if (ch != null)
+                        Marshal.ReleaseComObject(ch);
+                }
             }
         }
     }
