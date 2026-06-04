@@ -24,17 +24,27 @@ public static class Page1DataCollector
             MessageBox.Show("UI 控制項未找到");
             return null;
         }
-        if (!double.TryParse(tbConc, out double conc) || conc <= 0)
+        if (tbVal == null)
         {
-            MessageBox.Show("濃度錯誤");
+            MessageBox.Show("找不到效率讀值欄位");
             return null;
         }
-        if (!double.TryParse(tbBg, out double bg))
+
+        if (!EfficiencyHelper.TryValidateInputs(
+            "效率",
+            tbConc,
+            tbBg,
+            tbVal.Text,
+            11,
+            out double conc,
+            out double bg,
+            out var readings,
+            out string efficiencyError))
         {
-            MessageBox.Show("背景值錯誤");
+            MessageBox.Show(efficiencyError);
             return null;
         }
-        var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
+
         var eff = EfficiencyHelper.Compute11Points(conc, bg, readings);
         if (eff == null)
         {
@@ -68,20 +78,51 @@ public static class Page1DataCollector
         // ───── 多筆資料 ─────
         var nos = ParseHelper.SplitStr(ControlHelper.GetText(tab, "FilterRawNumberBox"));
         var suppliedList = ParseHelper.SplitStr(suppliedText);
-        var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawWeightBox"));
-        var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsInletBox"));
-        var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsOutletBox"));
-        var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "FilterRawPressureBox"));
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "FilterRawWeightBox"), out var weights))
+        {
+            MessageBox.Show("測試品重量欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsInletBox"), out var vocIns))
+        {
+            MessageBox.Show("Inlet 欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "FilterRawVOCsOutletBox"), out var vocOuts))
+        {
+            MessageBox.Show("Outlet 欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "FilterRawPressureBox"), out var deltaPs))
+        {
+            MessageBox.Show("壓損欄位格式錯誤");
+            return null;
+        }
+
         string qtyText = QuantityHelper.BuildQuantityText(
             ProductKind.Filter,
             materialBox.Text,
             ControlHelper.GetText(tab, "FilterRawQtyWeight"),
             ControlHelper.GetText(tab, "FilterRawQuantityBox"));
 
-        int n = new[] { nos.Count, weights.Count, vocIns.Count, vocOuts.Count, deltaPs.Count, suppliedList.Count }.Min();
-        if (n <= 0)
+        int n = nos.Count;
+        bool countOk =
+            n > 0 &&
+            weights.Count == n &&
+            vocIns.Count == n &&
+            vocOuts.Count == n &&
+            deltaPs.Count == n;
+
+        if (suppliedList.Count > 1 && suppliedList.Count != n)
+            countOk = false;
+
+        if (!countOk)
         {
-            MessageBox.Show("資料筆數錯誤");
+            MessageBox.Show("各欄位筆數不一致，請確認原料編號、測試品重量、Inlet、Outlet、壓損");
             return null;
         }
 
@@ -123,7 +164,7 @@ public static class Page1DataCollector
             var sample = new P1Sample
             {
                 LotFull = lotFulls[i],
-                SuppliedNO = suppliedList[i],
+                SuppliedNO = suppliedList.Count == 1 ? suppliedList[0] : (suppliedList.Count > i ? suppliedList[i] : ""),
                 Weight = (decimal?)weights[i],
                 Density = (decimal?)densities[i],
                 DeltaP = (decimal?)deltaPs[i],

@@ -12,5 +12,6 @@ namespace WindowsFormsApp1.Data_Access.Query
         public string SemiProductGsm { get; set; }
         public string SemiProductMaterialNo { get; set; }
         public string ProductNo { get; set; }
+        public string MaterialKeyword { get; set; }
     }
 }

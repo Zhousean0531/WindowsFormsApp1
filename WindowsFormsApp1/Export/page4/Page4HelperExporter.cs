@@ -71,11 +71,11 @@ public static class Page4HelperExporter
             if (d.ParticleSizePercentages != null &&
                 d.ParticleSizePercentages.Count > 0)
             {
-                int meshRow = 8;
+                int meshRow = 7;
 
                 foreach (var p in d.ParticleSizePercentages)
                 {
-                    ws.Cells[meshRow-1, 1].Value = p.Key;
+                    ws.Cells[meshRow, 1].Value = p.Key;
                     ws.Cells[meshRow, 2].Value = p.Value / 100;
                     ws.Cells[meshRow, 2].NumberFormat = "0.0%";
 
@@ -86,8 +86,6 @@ public static class Page4HelperExporter
             // ===== Efficiency
             if (d.EfficiencyGroups != null && d.EfficiencyGroups.Count > 0)
             {
-                int defaultCol = 27;
-
                 //找選中的 row
                 var selected = d.Rows.FirstOrDefault(x => x.IsSelected);
                 if (selected == null) return;
@@ -98,13 +96,7 @@ public static class Page4HelperExporter
                         g.Efficiencies11.Count == 0)
                         continue;
 
-                    int col = defaultCol;
-
-                    if (string.Equals(g.GasName, "Acetone", StringComparison.OrdinalIgnoreCase))
-                        col = 28;
-
-                    if (string.Equals(g.GasName, "IPA", StringComparison.OrdinalIgnoreCase))
-                        col = 29;
+                    int col = GetEfficiencyCurveColumn(g.GasName);
 
                     string testDate =
                         DateTime.Parse(d.TestingDate).ToString("MM.dd");
@@ -121,13 +113,7 @@ public static class Page4HelperExporter
                         materialLot = parts.Length > 1 ? parts[parts.Length - 1] : materialLot;
                     }
                     int selectedRow = startRow + d.Rows.IndexOf(selected);
-                    int summaryCol = 15;
-
-                    if (string.Equals(g.GasName, "Acetone", StringComparison.OrdinalIgnoreCase))
-                        summaryCol = 17;
-
-                    if (string.Equals(g.GasName, "IPA", StringComparison.OrdinalIgnoreCase))
-                        summaryCol = 19;
+                    int summaryCol = GetEfficiencySummaryColumn(g.GasName);
 
                     ws.Cells[selectedRow, summaryCol].Value =
                         g.Eff0.HasValue ? (object)g.Eff0.Value : "N.D.";
@@ -158,6 +144,42 @@ public static class Page4HelperExporter
             if (ws != null) Marshal.ReleaseComObject(ws);
             if (wb != null) Marshal.ReleaseComObject(wb);
             if (app != null) Marshal.ReleaseComObject(app);
+        }
+    }
+
+    private static int GetEfficiencyCurveColumn(string gasName)
+    {
+        switch ((gasName ?? "").Trim().ToUpperInvariant())
+        {
+            case "ACETONE":
+                return 32; // AF
+            case "IPA":
+                return 33; // AG
+            case "H2S":
+                return 34; // AH
+            case "SO2":
+                return 35; // AI
+            case "TOLUENE":
+            default:
+                return 31; // AE
+        }
+    }
+
+    private static int GetEfficiencySummaryColumn(string gasName)
+    {
+        switch ((gasName ?? "").Trim().ToUpperInvariant())
+        {
+            case "ACETONE":
+                return 17; // Q/R
+            case "IPA":
+                return 19; // S/T
+            case "H2S":
+                return 21; // U/V
+            case "SO2":
+                return 23; // W/X
+            case "TOLUENE":
+            default:
+                return 15; // O/P
         }
     }
 }

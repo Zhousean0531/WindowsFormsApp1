@@ -28,6 +28,10 @@ namespace WindowsFormsApp1.Data_Access.Query
                     AppendRows(table, conn, BuildP3Sql(), cmd => AddCommonParameters(cmd, criteria, "ProductNo"));
                     AppendRows(table, conn, BuildP5Sql(), cmd => AddCommonParameters(cmd, criteria, "ProductNo"));
                 }
+                else if (criteria.QueryKind == "物料")
+                {
+                    AppendRows(table, conn, BuildP6Sql(), cmd => AddCommonParameters(cmd, criteria, "MaterialKeyword"));
+                }
             }
 
             return table;
@@ -85,6 +89,9 @@ namespace WindowsFormsApp1.Data_Access.Query
             if (filterName == "ProductNo")
                 return criteria.ProductNo ?? "";
 
+            if (filterName == "MaterialKeyword")
+                return criteria.MaterialKeyword ?? "";
+
             return "";
         }
 
@@ -93,8 +100,8 @@ namespace WindowsFormsApp1.Data_Access.Query
             return @"
 SELECT
     N'瞈曄雯??' AS [靘?],
-    CONVERT(NVARCHAR(50), b.ArrivalDate, 120) AS [P1_Batch_ArrivalDate],
-    CONVERT(NVARCHAR(50), b.TestingDate, 120) AS [P1_Batch_TestingDate],
+    CONVERT(NVARCHAR(10), b.ArrivalDate, 23) AS [P1_Batch_ArrivalDate],
+    CONVERT(NVARCHAR(10), b.TestingDate, 23) AS [P1_Batch_TestingDate],
     CONVERT(NVARCHAR(100), b.ReportNo) AS [P1_Batch_ReportNo],
     CONVERT(NVARCHAR(100), b.Material) AS [P1_Batch_Material],
     CONVERT(NVARCHAR(50), b.Concentration) AS [P1_Batch_Concentration],
@@ -139,8 +146,8 @@ SELECT
     CONVERT(NVARCHAR(100), b.ReportNo) AS [P4_Batch_ReportNo],
     CONVERT(NVARCHAR(100), b.Material) AS [P4_Batch_Material],
     CONVERT(NVARCHAR(100), b.MaterialNo) AS [P4_Batch_MaterialNo],
-    CONVERT(NVARCHAR(50), b.ArrivalDate, 120) AS [P4_Batch_ArrivalDate],
-    CONVERT(NVARCHAR(50), b.TestingDate, 120) AS [P4_Batch_TestingDate],
+    CONVERT(NVARCHAR(10), b.ArrivalDate, 23) AS [P4_Batch_ArrivalDate],
+    CONVERT(NVARCHAR(10), b.TestingDate, 23) AS [P4_Batch_TestingDate],
     CONVERT(NVARCHAR(200), b.QtyText) AS [P4_Batch_QtyText],
     CONVERT(NVARCHAR(100), b.Username) AS [P4_Batch_Username],
     CONVERT(NVARCHAR(50), b.CreatedAt, 120) AS [P4_Batch_CreatedAt],
@@ -206,8 +213,8 @@ ORDER BY b.TestingDate DESC, b.Id DESC, l.Id;";
             return @"
 SELECT
     N'濾網半成品' AS [來源],
-    CONVERT(NVARCHAR(50), b.ProductionDate, 120) AS [P2_Batch_ProductionDate],
-    CONVERT(NVARCHAR(50), b.TestDate, 120) AS [P2_Batch_TestDate],
+    CONVERT(NVARCHAR(10), b.ProductionDate, 23) AS [P2_Batch_ProductionDate],
+    CONVERT(NVARCHAR(10), b.TestDate, 23) AS [P2_Batch_TestDate],
     CONVERT(NVARCHAR(100), b.WorkOrder) AS [P2_Batch_WorkOrder],
     CONVERT(NVARCHAR(100), b.Material) AS [P2_Batch_Material],
     CONVERT(NVARCHAR(100), b.MaterialNo) AS [P2_Batch_MaterialNo],
@@ -270,8 +277,8 @@ ORDER BY b.TestDate DESC, b.Id DESC, g.Id, s.Id;";
             return @"
 SELECT
     N'濾網成品' AS [來源],
-    CONVERT(NVARCHAR(50), b.ArrivalDate, 120) AS [P3_Batch_ArrivalDate],
-    CONVERT(NVARCHAR(50), b.TestingDate, 120) AS [P3_Batch_TestingDate],
+    CONVERT(NVARCHAR(10), b.ArrivalDate, 23) AS [P3_Batch_ArrivalDate],
+    CONVERT(NVARCHAR(10), b.TestingDate, 23) AS [P3_Batch_TestingDate],
     CONVERT(NVARCHAR(100), b.FilterReportNo) AS [P3_Batch_FilterReportNo],
     CONVERT(NVARCHAR(100), b.WorkOrder) AS [P3_Batch_WorkOrder],
     CONVERT(NVARCHAR(100), b.PackageNo) AS [P3_Batch_PackageNo],
@@ -325,9 +332,10 @@ SELECT
     CONVERT(NVARCHAR(100), b.CylinderNo) AS [P5_Batch_CylinderNo],
     CONVERT(NVARCHAR(100), b.Customer) AS [P5_Batch_Customer],
     CONVERT(NVARCHAR(100), b.FilterType) AS [P5_Batch_FilterType],
+    CONVERT(NVARCHAR(100), COALESCE(NULLIF(b.RawMaterialType, ''), b.FilterType)) AS [P5_Batch_RawMaterialType],
     CONVERT(NVARCHAR(100), b.MaterialNo) AS [P5_Batch_MaterialNo],
     p.ProductNo AS [P5_Mapped_ProductNo],
-    CONVERT(NVARCHAR(50), b.TestDate, 120) AS [P5_Batch_TestDate],
+    CONVERT(NVARCHAR(10), b.TestDate, 23) AS [P5_Batch_TestDate],
     CONVERT(NVARCHAR(100), b.UserName) AS [P5_Batch_UserName],
     CONVERT(NVARCHAR(50), b.CreatedAt, 120) AS [P5_Batch_CreatedAt],
     CONVERT(NVARCHAR(100), b.ReCylinderNo) AS [P5_Batch_ReCylinderNo],
@@ -355,11 +363,11 @@ LEFT JOIN P5_Row r ON r.BatchId = b.Id
 CROSS APPLY (
     SELECT COALESCE(
         NULLIF(LTRIM(RTRIM(ISNULL(b.MaterialNo, ''))), ''),
-        CASE
-            WHEN UPPER(ISNULL(b.FilterType, '')) LIKE '%ACID%' THEN N'11A0C00Y000002'
-            WHEN UPPER(ISNULL(b.FilterType, '')) LIKE '%BASE%' OR UPPER(ISNULL(b.FilterType, '')) LIKE '%MB%' THEN N'11B0B00Y000002'
-            WHEN UPPER(ISNULL(b.FilterType, '')) LIKE '%DMS%' OR UPPER(ISNULL(b.FilterType, '')) LIKE '%MA%' THEN N'11D0S00Y000002'
-            WHEN UPPER(ISNULL(b.FilterType, '')) LIKE '%TOC%' OR UPPER(ISNULL(b.FilterType, '')) LIKE '%MC%' THEN N'11T0C00Y000002'
+            CASE
+            WHEN UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%ACID%' THEN N'11A0C00Y000002'
+            WHEN UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%BASE%' OR UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%MB%' THEN N'11B0B00Y000002'
+            WHEN UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%DMS%' OR UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%MA%' THEN N'11D0S00Y000002'
+            WHEN UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%TOC%' OR UPPER(COALESCE(NULLIF(LTRIM(RTRIM(ISNULL(b.RawMaterialType, ''))), ''), LTRIM(RTRIM(ISNULL(b.FilterType, ''))))) LIKE '%MC%' THEN N'11T0C00Y000002'
             ELSE NULL
         END
     ) AS ProductNo
@@ -370,8 +378,45 @@ WHERE (@StartDate IS NULL OR CONVERT(date, b.TestDate) >= @StartDate)
         @Filter = ''
         OR ISNULL(p.ProductNo, '') LIKE '%' + @Filter + '%'
         OR ISNULL(b.FilterType, '') LIKE '%' + @Filter + '%'
+        OR ISNULL(b.RawMaterialType, '') LIKE '%' + @Filter + '%'
       )
 ORDER BY b.TestDate DESC, b.Id DESC, r.RowNo;";
+        }
+
+        private static string BuildP6Sql()
+        {
+            return @"
+SELECT
+    N'物料' AS [來源],
+    CONVERT(NVARCHAR(100), b.ReportNo) AS [P6_Batch_ReportNo],
+    CONVERT(NVARCHAR(10), b.TestDate, 23) AS [P6_Batch_TestDate],
+    CONVERT(NVARCHAR(100), b.SuppliedNO) AS [P6_Batch_SuppliedNO],
+    CONVERT(NVARCHAR(100), b.UserName) AS [P6_Batch_UserName],
+    CONVERT(NVARCHAR(50), b.CreatedAt, 120) AS [P6_Batch_CreatedAt],
+    COALESCE(CONVERT(NVARCHAR(10), TRY_CONVERT(date, i.Col1), 23), CONVERT(NVARCHAR(100), i.Col1)) AS [P6_Item_ReceivedDate],
+    CONVERT(NVARCHAR(100), i.Col2) AS [P6_Item_Material],
+    CONVERT(NVARCHAR(100), i.Spec1) AS [P6_Item_InQty],
+    CONVERT(NVARCHAR(100), i.Spec2) AS [P6_Item_InUnit],
+    CONVERT(NVARCHAR(100), i.Range1) AS [P6_Item_SampleQty],
+    CONVERT(NVARCHAR(100), i.Range2) AS [P6_Item_SampleUnit],
+    CONVERT(NVARCHAR(100), i.Result) AS [P6_Item_Appearance],
+    CONVERT(NVARCHAR(100), i.Judgment) AS [P6_Item_Spec],
+    CONVERT(NVARCHAR(100), i.Extra1) AS [P6_Item_Measured],
+    CONVERT(NVARCHAR(100), i.Extra2) AS [P6_Item_Judgment],
+    CONVERT(NVARCHAR(100), i.Extra3) AS [P6_Item_Note],
+    CONVERT(NVARCHAR(100), i.Supplier) AS [P6_Item_Supplier]
+FROM P6_Batch b
+LEFT JOIN P6_Item i ON i.BatchId = b.Id
+WHERE (@StartDate IS NULL OR CONVERT(date, b.TestDate) >= @StartDate)
+  AND (@EndDate IS NULL OR CONVERT(date, b.TestDate) <= @EndDate)
+  AND (
+        @Filter = ''
+        OR ISNULL(i.Col2, '') LIKE '%' + @Filter + '%'
+        OR ISNULL(i.Supplier, '') LIKE '%' + @Filter + '%'
+        OR ISNULL(b.ReportNo, '') LIKE '%' + @Filter + '%'
+        OR ISNULL(b.SuppliedNO, '') LIKE '%' + @Filter + '%'
+      )
+ORDER BY b.TestDate DESC, b.Id DESC, i.Id;";
         }
     }
 }

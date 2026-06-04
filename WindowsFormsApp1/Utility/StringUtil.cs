@@ -20,4 +20,19 @@ public static class StringUtil
             .Where(v => !double.IsNaN(v))
             .ToList();
     }
+
+    public static bool TrySplitDouble(string raw, out List<double> values)
+    {
+        values = new List<double>();
+
+        foreach (string token in Split(raw))
+        {
+            if (!double.TryParse(token, out double value))
+                return false;
+
+            values.Add(value);
+        }
+
+        return true;
+    }
 }

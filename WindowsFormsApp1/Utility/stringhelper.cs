@@ -19,4 +19,19 @@ public static class ParseHelper
             .Select(s => double.TryParse(s, out var v) ? v : 0)
             .ToList();
     }
+
+    public static bool TrySplitDouble(string raw, out List<double> values)
+    {
+        values = new List<double>();
+
+        foreach (string token in SplitStr(raw))
+        {
+            if (!double.TryParse(token, out double value))
+                return false;
+
+            values.Add(value);
+        }
+
+        return true;
+    }
 }

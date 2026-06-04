@@ -34,6 +34,7 @@ public static class Page5LookupHelper
                     CylinderNo,
                     Customer,
                     FilterType,
+                    COALESCE(NULLIF(RawMaterialType, ''), FilterType) AS RawMaterialType,
                     ReCylinderNo,
                     CarbonLot
                 FROM P5_Batch
@@ -55,6 +56,7 @@ public static class Page5LookupHelper
                     result.HeaderValues["CylinderNo"] = reader["CylinderNo"]?.ToString();
                     result.HeaderValues["Customer"] = reader["Customer"]?.ToString();
                     result.HeaderValues["FilterType"] = reader["FilterType"]?.ToString();
+                    result.HeaderValues["RawMaterialType"] = reader["RawMaterialType"]?.ToString();
                     result.HeaderValues["ReCylinderNo"] = reader["ReCylinderNo"]?.ToString();
                     result.HeaderValues["CarbonLot"] = reader["CarbonLot"]?.ToString();
                 }

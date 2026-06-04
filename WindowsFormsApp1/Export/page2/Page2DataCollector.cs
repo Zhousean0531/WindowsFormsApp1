@@ -22,6 +22,7 @@ public static class Page2DataCollector
         string productSize = ControlHelper.GetText(tab, "FilterInProcessProductSizeBox");
         string rawOrder = ControlHelper.GetText(tab, "FilterInProcessCarbonOrderBox");
         string normalOrder = ControlHelper.GetText(tab, "FilterInProcessOrderBox");
+        string orderType = ControlHelper.GetText(tab, "FilterInProcessOrderTypeBox");
         string materialNo = ControlHelper.GetText(tab, "FilterInProcessMaterialNo");
         string batchNo=ControlHelper.GetText(tab, "FilterBatchNOBox");
         string thickness = ControlHelper.GetText(tab, "FilterInProcessThicknessBox");
@@ -36,35 +37,39 @@ public static class Page2DataCollector
         string userName = Environment.UserName;
         string filterSize = ControlHelper.GetText(tab, "FilterSizeTB");
 
-        string orderDisplay = ResolveOrderDisplay(rawOrder, normalOrder);
+        string orderDisplay = ResolveOrderDisplay(rawOrder, normalOrder, orderType);
 
-        var weights = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "FilterInProcessTestGsmBox")
-        );
-
-        var deltas = StringUtil.SplitDouble(
-            ControlHelper.GetText(tab, "FilterInProcessPressureDropBox")
-        );
-
-        var thicknesses = StringUtil.SplitDouble(thickness);
-
-        int n = Math.Min(weights.Count, deltas.Count);
-
-        if (n == 0)
+        if (!StringUtil.TrySplitDouble(ControlHelper.GetText(tab, "FilterInProcessTestGsmBox"), out var weights))
         {
-            MessageBox.Show("沒有可用的測試資料");
+            MessageBox.Show("重量欄位格式錯誤");
             return null;
         }
 
-        if (thicknesses.Count > 0 && thicknesses.Count != n)
+        if (!StringUtil.TrySplitDouble(ControlHelper.GetText(tab, "FilterInProcessPressureDropBox"), out var deltas))
+        {
+            MessageBox.Show("壓損欄位格式錯誤");
+            return null;
+        }
+
+        if (!StringUtil.TrySplitDouble(thickness, out var thicknesses))
+        {
+            MessageBox.Show("厚度欄位格式錯誤");
+            return null;
+        }
+
+        int n = weights.Count;
+        if (n == 0 || deltas.Count != n)
+        {
+            MessageBox.Show("重量與壓損筆數需一致");
+            return null;
+        }
+
+        bool hasThicknessInput = !string.IsNullOrWhiteSpace(thickness);
+        if (hasThicknessInput && thicknesses.Count != n)
         {
             MessageBox.Show("厚度筆數需和重量 / 壓損筆數一致");
             return null;
         }
-
-        weights = weights.Take(n).ToList();
-        deltas = deltas.Take(n).ToList();
-        thicknesses = thicknesses.Take(n).ToList();
 
         DateTime? prodDt = TryParseDate(productionDate);
         DateTime? testDt = TryParseDate(testDate);
@@ -135,25 +140,27 @@ public static class Page2DataCollector
                 return null;
             }
 
-            if (!decimal.TryParse(tbConc.Text, out decimal conc) || conc <= 0)
+            if (!EfficiencyHelper.TryValidateInputs(
+                gasKey,
+                tbConc.Text,
+                tbBg.Text,
+                tbVal.Text,
+                11,
+                out double concDouble,
+                out double bgDouble,
+                out var readings,
+                out string efficiencyError))
             {
-                MessageBox.Show($"{gasKey} 濃度需>0");
+                MessageBox.Show(efficiencyError);
                 return null;
             }
 
-            decimal.TryParse(tbBg.Text, out decimal bg);
-
-            var readings = EfficiencyHelper.ParseReadings(tbVal.Text);
-
-            if (readings.Count < 11)
-            {
-                MessageBox.Show($"{gasKey} 需輸入至少 11 筆讀值");
-                return null;
-            }
+            decimal conc = (decimal)concDouble;
+            decimal bg = (decimal)bgDouble;
 
             var eff = EfficiencyHelper.Compute11Points(
-                (double)conc,
-                (double)bg,
+                concDouble,
+                bgDouble,
                 readings
             );
 
@@ -180,7 +187,7 @@ public static class Page2DataCollector
                 var sample = new P2Sample
                 {
                     Weight = (decimal)weights[i],
-                    Thickness = thicknesses.Count > i ? (decimal)thicknesses[i] : (decimal?)null,
+                    Thickness = hasThicknessInput ? (decimal)thicknesses[i] : (decimal?)null,
                     PressureDrop = (decimal)deltas[i],
                     IsSelected = (i == selectedIdx)
                 };
@@ -243,20 +250,15 @@ public static class Page2DataCollector
 
     private static string ResolveOrderDisplay(
     string rawOrder,
-    string normalOrder
+    string normalOrder,
+    string orderType
 )
     {
         rawOrder = (rawOrder ?? "").Trim();
         normalOrder = (normalOrder ?? "").Trim();
+        orderType = (orderType ?? "").Trim();
 
-        var result = MessageBox.Show(
-            "此訂單是否為台積堆疊式成品？",
-            "訂單確認",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question
-        );
-
-        if (result == DialogResult.Yes)
+        if (string.Equals(orderType, "台積堆疊式", StringComparison.OrdinalIgnoreCase))
         {
             return $"台積堆疊式({rawOrder})";
         }

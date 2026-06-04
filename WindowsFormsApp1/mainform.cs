@@ -13,11 +13,14 @@ namespace WindowsFormsApp1
     {
         private const int MAX_ROWS = 13;
         private ComboBox _cylinderCustomerComboBox;
+        private Label _filterInProcessOrderTypeLabel;
+        private ComboBox _filterInProcessOrderTypeBox;
 
         public Form1()
         {
             InitializeComponent();
             InitializeCylinderCustomerComboBox();
+            InitializeFilterInProcessOrderTypeBox();
             this.FilterRawTypeBox.SelectedIndexChanged += new System.EventHandler(this.FilterRawTypeBox_SelectedIndexChanged);
             string today = DateTime.Now.ToString("yyyy.MM.dd");
             CylinderRawMoistureTB.Click += TxtMoisture_Click;
@@ -68,6 +71,44 @@ namespace WindowsFormsApp1
             parent.Controls.SetChildIndex(_cylinderCustomerComboBox, childIndex);
         }
 
+        private void InitializeFilterInProcessOrderTypeBox()
+        {
+            if (FilterInProcessPage == null)
+                return;
+
+            if (ControlHelper.Find<ComboBox>(FilterInProcessPage, "FilterInProcessOrderTypeBox") != null)
+                return;
+
+            _filterInProcessOrderTypeLabel = new Label
+            {
+                AutoSize = true,
+                Location = new Point(306, 300),
+                Name = "FilterInProcessOrderTypeLabel",
+                Text = "訂單類型"
+            };
+
+            _filterInProcessOrderTypeBox = new ComboBox
+            {
+                Cursor = Cursors.Default,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                FormattingEnabled = true,
+                Location = new Point(386, 295),
+                Name = "FilterInProcessOrderTypeBox",
+                Size = new Size(120, 28),
+                TabIndex = 21
+            };
+
+            _filterInProcessOrderTypeBox.Items.AddRange(new object[]
+            {
+                "一般",
+                "台積堆疊式"
+            });
+            _filterInProcessOrderTypeBox.SelectedIndex = 0;
+
+            FilterInProcessPage.Controls.Add(_filterInProcessOrderTypeLabel);
+            FilterInProcessPage.Controls.Add(_filterInProcessOrderTypeBox);
+        }
+
         private void SetCylinderCustomerText(string value)
         {
             string text = (value ?? string.Empty).Trim();
@@ -106,6 +147,7 @@ namespace WindowsFormsApp1
             SetCylinderCustomerText("");
             ReCylinderBox.Clear();
             CYLTypeBox.Text = "";
+            CYLFilterNameBox.Clear();
             CYLRawMaterialBox.Clear();
             CYLRawEffTB.Clear();
         }
@@ -515,8 +557,11 @@ namespace WindowsFormsApp1
             CylinderNoBox.Text = result.HeaderValues.GetValueOrDefault("CylinderNo");
             SetCylinderCustomerText(result.HeaderValues.GetValueOrDefault("Customer"));
 
-            // 型式 (MA / MB / MC)
-            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("FilterType");
+            // 原料種類 (MA / MB / MC)
+            CYLTypeBox.Text = result.HeaderValues.GetValueOrDefault("RawMaterialType");
+
+            // 原料名稱
+            CYLFilterNameBox.Text = result.HeaderValues.GetValueOrDefault("FilterType");
 
             // 再生筒號
             ReCylinderBox.Text = result.HeaderValues.GetValueOrDefault("ReCylinderNo");

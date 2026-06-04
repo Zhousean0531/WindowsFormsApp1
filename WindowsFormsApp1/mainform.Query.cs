@@ -22,6 +22,7 @@ namespace WindowsFormsApp1
         private TextBox QuerySemiGsmBox;
         private TextBox QuerySemiMaterialNoBox;
         private TextBox QueryProductNoBox;
+        private TextBox QueryMaterialBox;
         private Button QuerySearchButton;
         private Button QueryExportButton;
         private DataGridView QueryResultGrid;
@@ -57,14 +58,15 @@ namespace WindowsFormsApp1
                 Location = new Point(132, 124),
                 Size = new Size(170, 27)
             };
-            QueryKindBox.Items.AddRange(new object[] { "原料", "半成品", "成品" });
+            QueryKindBox.Items.AddRange(new object[] { "原料", "半成品", "成品", "物料" });
             QueryKindBox.SelectedIndexChanged += QueryKindBox_SelectedIndexChanged;
 
             QueryRawMaterialBox = BuildConditionTextBox("QueryRawMaterialBox", 132, 172);
             QuerySemiProductBox = BuildConditionTextBox("QuerySemiProductBox", 132, 218);
             QuerySemiGsmBox = BuildConditionTextBox("QuerySemiGsmBox", 430, 218);
-            QuerySemiMaterialNoBox = BuildConditionTextBox("QuerySemiMaterialNoBox", 430, 264);
+            QuerySemiMaterialNoBox = BuildConditionTextBox("QuerySemiMaterialNoBox", 728, 218);
             QueryProductNoBox = BuildConditionTextBox("QueryProductNoBox", 132, 264);
+            QueryMaterialBox = BuildConditionTextBox("QueryMaterialBox", 430, 264);
 
             QuerySearchButton = new Button
             {
@@ -118,10 +120,12 @@ namespace WindowsFormsApp1
             QueryPage.Controls.Add(QuerySemiProductBox);
             QueryPage.Controls.Add(BuildLabel("半成品克重：", 330, 222));
             QueryPage.Controls.Add(QuerySemiGsmBox);
-            QueryPage.Controls.Add(BuildLabel("半成品料號：", 330, 268));
+            QueryPage.Controls.Add(BuildLabel("半成品料號：", 628, 222));
             QueryPage.Controls.Add(QuerySemiMaterialNoBox);
             QueryPage.Controls.Add(BuildLabel("成品料號：", 48, 268));
             QueryPage.Controls.Add(QueryProductNoBox);
+            QueryPage.Controls.Add(BuildLabel("物料料號/名稱：", 314, 268));
+            QueryPage.Controls.Add(QueryMaterialBox);
             QueryPage.Controls.Add(QuerySearchButton);
             QueryPage.Controls.Add(QueryExportButton);
             QueryPage.Controls.Add(QueryResultGrid);
@@ -210,12 +214,14 @@ namespace WindowsFormsApp1
             bool isRaw = kind == "原料";
             bool isSemi = kind == "半成品";
             bool isProduct = kind == "成品";
+            bool isMaterial = kind == "物料";
 
             SetBoxEnabled(QueryRawMaterialBox, isRaw);
             SetBoxEnabled(QuerySemiProductBox, isSemi);
             SetBoxEnabled(QuerySemiGsmBox, isSemi);
             SetBoxEnabled(QuerySemiMaterialNoBox, isSemi);
             SetBoxEnabled(QueryProductNoBox, isProduct);
+            SetBoxEnabled(QueryMaterialBox, isMaterial);
 
             QuerySearchButton.Enabled = !string.IsNullOrWhiteSpace(kind);
         }
@@ -256,7 +262,8 @@ namespace WindowsFormsApp1
                     SemiProductType = QuerySemiProductBox.Text.Trim(),
                     SemiProductGsm = QuerySemiGsmBox.Text.Trim(),
                     SemiProductMaterialNo = QuerySemiMaterialNoBox.Text.Trim(),
-                    ProductNo = QueryProductNoBox.Text.Trim()
+                    ProductNo = QueryProductNoBox.Text.Trim(),
+                    MaterialKeyword = QueryMaterialBox.Text.Trim()
                 };
 
                 _queryResultTable = QcQueryRepository.Query(criteria);
@@ -278,7 +285,7 @@ namespace WindowsFormsApp1
             if (picker == null)
                 return;
 
-            picker.CustomFormat = "yyyy.MM.dd";
+            picker.CustomFormat = "yyyy-MM-dd";
             picker.Tag = true;
         }
 

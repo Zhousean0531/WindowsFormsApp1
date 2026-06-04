@@ -78,15 +78,16 @@ namespace WindowsFormsApp1.Data_Access.Page2
         {
             string sql = @"
                 INSERT INTO P2_GasTest
-                (BatchId, GasName, Concentration, Background)
+                (BatchId, ReportNo, GasName, Concentration, Background)
                 VALUES
-                (@BatchId, @GasName, @Concentration, @Background);
+                (@BatchId, @ReportNo, @GasName, @Concentration, @Background);
                 SELECT SCOPE_IDENTITY();
             ";
 
             using (var cmd = new SqlCommand(sql, conn, tran))
             {
                 cmd.Parameters.AddWithValue("@BatchId", batchId);
+                cmd.Parameters.AddWithValue("@ReportNo", DbValue(gas.ReportNo));
                 cmd.Parameters.AddWithValue("@GasName", DbValue(gas.GasName));
                 cmd.Parameters.AddWithValue("@Concentration", DbValue(gas.Concentration));
                 cmd.Parameters.AddWithValue("@Background", DbValue(gas.Background));

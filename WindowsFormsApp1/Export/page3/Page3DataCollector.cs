@@ -86,6 +86,9 @@ public static class Page3DataCollector
             return null;
         }
 
+        if (!ValidateNumericCells(rows))
+            return null;
+
         foreach (var r in rows)
         {
             string sn = GetCell(r, "生產序號");
@@ -152,6 +155,60 @@ public static class Page3DataCollector
             [54] = pressureDrop
         };
     }
+
+    private static bool ValidateNumericCells(List<DataGridViewRow> rows)
+    {
+        var fields = new[]
+        {
+            new NumericField("重量", "重量"),
+            new NumericField("長", "長", "length"),
+            new NumericField("寬", "寬", "width"),
+            new NumericField("高", "高", "height"),
+            new NumericField("對角線", "對角線", "diagonal"),
+            new NumericField("Particle In", "Particle_In", "ParticleIn"),
+            new NumericField("Particle Out", "Particle_Out", "ParticleOut"),
+            new NumericField("IPA In", "IPA_In", "IPAIn"),
+            new NumericField("IPA Out", "IPA_Out", "IPAOut"),
+            new NumericField("Acetone In", "Acetone_In", "AcetoneIn"),
+            new NumericField("Acetone Out", "Acetone_Out", "AcetoneOut"),
+            new NumericField("Nontarget In", "Nontarget_In", "NonTargetIn"),
+            new NumericField("Nontarget Out", "Nontarget_Out", "NonTargetOut"),
+            new NumericField("壓損規格", "Pressure_Drop_Spec", "PressureDropSpec"),
+            new NumericField("壓損", "Pressure_Drop", "PressureDrop")
+        };
+
+        foreach (var row in rows)
+        {
+            foreach (var field in fields)
+            {
+                string value = GetCell(row, field.Names).Trim();
+
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                if (!double.TryParse(value, out _))
+                {
+                    MessageBox.Show($"{field.DisplayName} 欄位格式錯誤");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private class NumericField
+    {
+        public NumericField(string displayName, params string[] names)
+        {
+            DisplayName = displayName;
+            Names = names;
+        }
+
+        public string DisplayName { get; }
+        public string[] Names { get; }
+    }
+
     private static string GetCell(DataGridViewRow row, params string[] names)
     {
         foreach (var name in names)

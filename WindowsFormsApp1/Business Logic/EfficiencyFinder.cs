@@ -71,11 +71,13 @@ public static class P3EfficiencyFinder
             (
                 SELECT
                     g.GasName,
+                    b.TestDate AS BatchTestDate,
+                    b.Id AS BatchId,
                     e.Id AS EfficiencyId,
                     e.EfficiencyValue,
                     ROW_NUMBER() OVER (
                         PARTITION BY g.GasName
-                        ORDER BY e.Id ASC
+                        ORDER BY b.TestDate DESC, b.Id DESC, e.Id ASC
                     ) AS rn
                 FROM P2_Batch b
                 INNER JOIN P2_GasTest g ON g.BatchId = b.Id
@@ -85,7 +87,7 @@ public static class P3EfficiencyFinder
                   AND e.EfficiencyValue IS NOT NULL
             ) x
             WHERE x.rn = 1
-            ORDER BY x.EfficiencyId ASC;
+            ORDER BY x.BatchTestDate DESC, x.BatchId DESC, x.EfficiencyId ASC;
         ";
 
         using (var cmd = new SqlCommand(sql, conn))

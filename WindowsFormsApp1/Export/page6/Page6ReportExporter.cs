@@ -9,10 +9,20 @@ public static class Page6ReportExporter
 {
     public static bool Export(Page6ExportData d)
     {
+        var staged = ExportStaged(d);
+        if (!staged.Success)
+            return false;
+
+        ReportExportStaging.Commit(staged.Files);
+        return true;
+    }
+
+    public static ReportExportResult ExportStaged(Page6ExportData d)
+    {
         if (d == null || d.DataGrid == null || d.DataGrid.Rows.Count == 0)
         {
             MessageBox.Show("目前沒有資料可匯出");
-            return false;
+            return ReportExportResult.Failed();
         }
 
         string templatePath = Path.Combine(
@@ -23,7 +33,7 @@ public static class Page6ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到物料報告範本");
-            return false;
+            return ReportExportResult.Failed();
         }
 
         string savePath;
@@ -34,12 +44,13 @@ public static class Page6ReportExporter
                 $"{d.ReportNo}({d.TestDate:MMdd}到廠).xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return false;
+                return ReportExportResult.Failed();
 
             savePath = sfd.FileName;
         }
 
-        File.Copy(templatePath, savePath, true);
+        string tempPath = ReportExportStaging.CreateTempPath(savePath);
+        File.Copy(templatePath, tempPath, true);
 
         Excel.Application app = null;
         Excel.Workbook wb = null;
@@ -48,7 +59,7 @@ public static class Page6ReportExporter
         try
         {
             app = ExcelInteropHelper.CreateApplication();
-            wb = ExcelInteropHelper.OpenWorkbook(app, savePath);
+            wb = ExcelInteropHelper.OpenWorkbook(app, tempPath);
             ws = (Excel.Worksheet)wb.Sheets[1]; // 或指定名稱
 
             // ===== 表頭 =====
@@ -121,6 +132,6 @@ public static class Page6ReportExporter
             if (app != null) Marshal.ReleaseComObject(app);
         }
 
-        return true;
+        return ReportExportResult.FromFile(tempPath, savePath);
     }
 }

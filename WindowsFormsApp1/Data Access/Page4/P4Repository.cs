@@ -101,9 +101,9 @@ public static class P4Repository
     {
         string sql = @"
     INSERT INTO P4_Efficiency
-    (BatchId, GasName, Concentration, SequenceIndex, EfficiencyValue)
+    (BatchId, ReportNo, GasName, Concentration, SequenceIndex, EfficiencyValue)
     VALUES
-    (@BatchId, @GasName, @Concentration, @Index, @Value);";
+    (@BatchId, @ReportNo, @GasName, @Concentration, @Index, @Value);";
 
         foreach (var g in b.EfficiencyGroups)
         {
@@ -114,6 +114,7 @@ public static class P4Repository
                     using (var cmd = new SqlCommand(sql, conn, tran))
                     {
                         cmd.Parameters.AddWithValue("@BatchId", batchId);
+                        cmd.Parameters.AddWithValue("@ReportNo", DbValue(g.ReportNo));
                         cmd.Parameters.AddWithValue("@GasName", DbValue(g.GasName));
                         cmd.Parameters.AddWithValue("@Concentration", DbValue(g.Concentration));
                         cmd.Parameters.AddWithValue("@Index", kv.Key);
@@ -131,6 +132,7 @@ public static class P4Repository
                 using (var cmd = new SqlCommand(sql, conn, tran))
                 {
                     cmd.Parameters.AddWithValue("@BatchId", batchId);
+                    cmd.Parameters.AddWithValue("@ReportNo", DbValue(g.ReportNo));
                     cmd.Parameters.AddWithValue("@GasName", DbValue(g.GasName));
                     cmd.Parameters.AddWithValue("@Concentration", DbValue(g.Concentration));
                     cmd.Parameters.AddWithValue("@Index", i);

@@ -16,7 +16,8 @@ public static class Page5DataCollector
             ReportNo = ControlHelper.GetText(tab, "CylinderReportNOBox"),
             CylinderNo = ControlHelper.GetText(tab, "CylinderNoBox"),
             Customer = ControlHelper.GetText(tab, "CylinderCustmorBox"),
-            FilterType = ControlHelper.GetText(tab, "CYLTypeBox"),
+            FilterType = ControlHelper.GetText(tab, "CYLFilterNameBox"),
+            RawMaterialType = ControlHelper.GetText(tab, "CYLTypeBox"),
             ReCylinderNo = ControlHelper.GetText(tab, "ReCylinderBox"),
             CarbonLot = ControlHelper.GetText(tab, "CYLRawMaterialBox"),
             Rows = new List<Page5RowData>(),
@@ -35,6 +36,8 @@ public static class Page5DataCollector
         if (string.IsNullOrWhiteSpace(data.Customer))
             missingFields.Add("客戶");
         if (string.IsNullOrWhiteSpace(data.FilterType))
+            missingFields.Add("原料名稱");
+        if (string.IsNullOrWhiteSpace(data.RawMaterialType))
             missingFields.Add("原料種類");
 
         if (missingFields.Any())
@@ -91,7 +94,10 @@ public static class Page5DataCollector
             return null;
         }
 
-        data.MaterialNo = ResolveMaterialNo(data.FilterType);
+        if (!ValidateNumericCells(rows))
+            return null;
+
+        data.MaterialNo = ResolveMaterialNo(data.RawMaterialType);
         if (data.MaterialNo == null)
             return null;
 
@@ -215,6 +221,55 @@ public static class Page5DataCollector
 
             [54] = Get("CYL_Pressure_Drop")
         };
+    }
+
+    private static bool ValidateNumericCells(List<DataGridViewRow> rows)
+    {
+        string[] controlColumns =
+        {
+            "CYL_Particle_In",
+            "CYL_Particle_out",
+            "CYL_IPA_in",
+            "CYL_IPA_out",
+            "CYL_Acetone_In",
+            "CYL_Acetone_out",
+            "CYL_Nontarget_in",
+            "CYL_Nontarget_out",
+            "CYL_Pressure_Drop"
+        };
+
+        foreach (var row in rows)
+        {
+            if (!ValidateCell(row, "CYLWeight", "重量"))
+                return false;
+
+            foreach (string column in controlColumns)
+            {
+                if (!ValidateCell(row, column, column))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool ValidateCell(DataGridViewRow row, string columnName, string displayName)
+    {
+        if (row == null || row.DataGridView == null || !row.DataGridView.Columns.Contains(columnName))
+            return true;
+
+        string value = row.Cells[columnName]?.Value?.ToString()?.Trim();
+
+        if (string.IsNullOrWhiteSpace(value))
+            return true;
+
+        if (!double.TryParse(value, out _))
+        {
+            MessageBox.Show($"{displayName} 欄位格式錯誤");
+            return false;
+        }
+
+        return true;
     }
 
     public static string ResolveMaterialNo(string filterType)

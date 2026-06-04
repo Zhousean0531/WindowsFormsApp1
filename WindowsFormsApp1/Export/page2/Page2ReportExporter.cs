@@ -12,20 +12,33 @@ public static class Page2ReportExporter
 {
     public static bool Export(P2Batch batch)
     {
-        if (batch == null || batch.GasTests == null || batch.GasTests.Count == 0)
+        var staged = ExportStaged(batch);
+        if (!staged.Success)
             return false;
+
+        ReportExportStaging.Commit(staged.Files);
+        return true;
+    }
+
+    public static ReportExportResult ExportStaged(P2Batch batch)
+    {
+        if (batch == null || batch.GasTests == null || batch.GasTests.Count == 0)
+            return ReportExportResult.Failed();
 
         using (var sfd = new SaveFileDialog())
         {
             sfd.Filter = "Excel (*.xlsx)|*.xlsx";
 
             var firstGas = batch.GasTests.First();
+            bool multiGas = batch.GasTests.Count > 1;
+            string firstReportNo = firstGas.ReportNo ?? batch.ReportNo;
+            string gasSuffix = multiGas ? "" : $"_{firstGas.GasName}";
 
             sfd.FileName =
-                $"{batch.ReportNo}_{batch.Material}_{FormatDecimal(batch.TargetGsm)}gsm_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產)_{firstGas.GasName}.xlsx";
+                $"{firstReportNo}_{batch.Material}_{FormatDecimal(batch.TargetGsm)}gsm_{batch.WorkOrder}({batch.TestDate?.ToString("MMdd")}生產){gasSuffix}.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return false;
+                return ReportExportResult.Failed();
 
             string folder = Path.GetDirectoryName(sfd.FileName);
             string selectedBaseName = Path.GetFileNameWithoutExtension(sfd.FileName);
@@ -35,41 +48,66 @@ public static class Page2ReportExporter
                 selectedExt = ".xlsx";
 
             Excel.Application app = null;
+            var result = new ReportExportResult { Success = true };
 
             try
             {
                 app = ExcelInteropHelper.CreateApplication();
 
-                bool multiGas = batch.GasTests.Count > 1;
-
                 foreach (var gas in batch.GasTests)
                 {
-                    if (!Export_Report(
-                        app,
+                    string finalPath = BuildGasFinalPath(
                         folder,
                         selectedBaseName,
                         selectedExt,
-                        batch,
-                        gas,
+                        batch.ReportNo,
+                        gas.ReportNo,
+                        gas.GasName,
                         multiGas
+                    );
+                    string tempPath = ReportExportStaging.CreateTempPath(finalPath);
+
+                    if (!Export_Report(
+                        app,
+                        tempPath,
+                        batch,
+                        gas
                     ))
-                        return false;
+                    {
+                        ReportExportStaging.Cleanup(result.Files);
+                        return ReportExportResult.Failed();
+                    }
+
+                    result.Files.Add(new ReportOutputFile { TempPath = tempPath, FinalPath = finalPath });
                 }
 
                 foreach (var gas in batch.GasTests)
                 {
-                    if (!Export_Helper(
-                        app,
+                    string finalPath = BuildHelperFinalPath(
                         folder,
                         selectedBaseName,
-                        batch,
-                        gas,
+                        batch.ReportNo,
+                        gas.ReportNo,
+                        gas.GasName,
                         multiGas
+                    );
+                    string tempPath = ReportExportStaging.CreateTempPath(finalPath);
+
+                    if (!Export_Helper(
+                        app,
+                        tempPath,
+                        batch,
+                        gas
                     ))
-                        return false;
+                    {
+                        ReportExportStaging.Cleanup(result.Files);
+                        return ReportExportResult.Failed();
+                    }
+
+                    result.Files.Add(new ReportOutputFile { TempPath = tempPath, FinalPath = finalPath });
                 }
 
-                return true;
+                return result;
             }
             finally
             {
@@ -83,12 +121,9 @@ public static class Page2ReportExporter
 
     private static bool Export_Report(
         Excel.Application app,
-        string folder,
-        string selectedBaseName,
-        string selectedExt,
+        string savePath,
         P2Batch batch,
-        P2GasTest gas,
-        bool multiGas
+        P2GasTest gas
     )
     {
         string templatePath = Path.Combine(
@@ -115,19 +150,6 @@ public static class Page2ReportExporter
             return false;
         }
 
-        string fileName;
-
-        if (multiGas)
-        {
-            fileName = $"{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}{selectedExt}";
-        }
-        else
-        {
-            fileName = $"{SafeFileName(selectedBaseName)}{selectedExt}";
-        }
-
-        string savePath = Path.Combine(folder, fileName);
-
         File.Copy(templatePath, savePath, true);
 
         Excel.Workbook wb = null;
@@ -148,7 +170,7 @@ public static class Page2ReportExporter
             string l1Text =
                 $"{batch.TestDate?.ToString("MM.dd")} {batch.Material} {weights[idx]}gsm ({drops[idx]}Pa) -{prodDt:MMdd}生產";
 
-            ws.Range["C6"].Value = batch.ReportNo;
+            ws.Range["C6"].Value = gas.ReportNo ?? batch.ReportNo;
 
             // F7 = batch.Material + batch.TargetGsm + gsm + (MMdd生產)
             ws.Range["F7"].Value =
@@ -195,11 +217,9 @@ public static class Page2ReportExporter
 
     private static bool Export_Helper(
         Excel.Application app,
-        string folder,
-        string selectedBaseName,
+        string savePath,
         P2Batch batch,
-        P2GasTest gas,
-        bool multiGas
+        P2GasTest gas
     )
     {
         string templatePath = Path.Combine(
@@ -219,12 +239,6 @@ public static class Page2ReportExporter
             MessageBox.Show($"{gas.GasName} 尚未選擇壓損樣品");
             return false;
         }
-
-        string fileName = multiGas
-            ? $"Helper_{SafeFileName(selectedBaseName)}_{SafeFileName(gas.GasName)}.xlsm"
-            : $"Helper_{SafeFileName(selectedBaseName)}.xlsm";
-
-        string savePath = Path.Combine(folder, fileName);
 
         File.Copy(templatePath, savePath, true);
 
@@ -326,6 +340,52 @@ public static class Page2ReportExporter
         }
 
         return result;
+    }
+
+    private static string BuildGasFinalPath(
+        string folder,
+        string selectedBaseName,
+        string selectedExt,
+        string batchReportNo,
+        string gasReportNo,
+        string gasName,
+        bool multiGas
+    )
+    {
+        string baseName = ReplaceReportNo(selectedBaseName, batchReportNo, gasReportNo);
+
+        if (multiGas)
+            baseName = $"{baseName}_{gasName}";
+
+        return Path.Combine(folder, $"{SafeFileName(baseName)}{selectedExt}");
+    }
+
+    private static string BuildHelperFinalPath(
+        string folder,
+        string selectedBaseName,
+        string batchReportNo,
+        string gasReportNo,
+        string gasName,
+        bool multiGas
+    )
+    {
+        string baseName = "Helper_" + ReplaceReportNo(selectedBaseName, batchReportNo, gasReportNo);
+
+        if (multiGas)
+            baseName = $"{baseName}_{gasName}";
+
+        return Path.Combine(folder, $"{SafeFileName(baseName)}.xlsm");
+    }
+
+    private static string ReplaceReportNo(string text, string batchReportNo, string gasReportNo)
+    {
+        if (string.IsNullOrWhiteSpace(gasReportNo) ||
+            string.Equals(batchReportNo, gasReportNo, StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(text) ||
+            string.IsNullOrWhiteSpace(batchReportNo))
+            return text;
+
+        return text.Replace(batchReportNo, gasReportNo);
     }
 
     private static void WriteTextWithSubscriptNumbers(

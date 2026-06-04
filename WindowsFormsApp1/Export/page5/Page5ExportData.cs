@@ -8,6 +8,7 @@ public class Page5ExportData
     public string CylinderNo { get; set; }
     public string Customer { get; set; }
     public string FilterType { get; set; }
+    public string RawMaterialType { get; set; }
     public string MaterialNo { get; set; }
     public string ReCylinderNo { get; set; }
     public string CarbonLot { get; set; }

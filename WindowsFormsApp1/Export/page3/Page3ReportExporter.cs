@@ -9,12 +9,24 @@ public static class Page3ReportExporter
 {
     public static bool Export(
         Page3ExportData d,
-        Page3PressureMode pressureMode,
+        string fileNameOverride = null
+    )
+    {
+        var staged = ExportStaged(d, fileNameOverride);
+        if (!staged.Success)
+            return false;
+
+        ReportExportStaging.Commit(staged.Files);
+        return true;
+    }
+
+    public static ReportExportResult ExportStaged(
+        Page3ExportData d,
         string fileNameOverride = null
     )
     {
         if (d == null || d.Rows == null || d.Rows.Count == 0)
-            return false;
+            return ReportExportResult.Failed();
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -24,7 +36,7 @@ public static class Page3ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Report.xlsx");
-            return false;
+            return ReportExportResult.Failed();
         }
 
         using (SaveFileDialog sfd = new SaveFileDialog())
@@ -33,11 +45,12 @@ public static class Page3ReportExporter
             sfd.FileName = BuildFileName(d, fileNameOverride);
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return false;
+                return ReportExportResult.Failed();
 
-            File.Copy(templatePath, sfd.FileName, true);
+            string tempPath = ReportExportStaging.CreateTempPath(sfd.FileName);
+            File.Copy(templatePath, tempPath, true);
 
-            using (XLWorkbook wb = new XLWorkbook(sfd.FileName))
+            using (XLWorkbook wb = new XLWorkbook(tempPath))
             {
                 IXLWorksheet ws = wb.Worksheet(1);
                 // ===== 1. 儀器校正資訊 =====
@@ -81,16 +94,16 @@ public static class Page3ReportExporter
                             }
                         }
                     }
-                    WritePressureDrop(ws, row, r, pressureMode);
+                    WritePressureDrop(ws, row, r);
 
                     row++;
                 }
 
                 wb.Save();
             }
-        }
 
-        return true;
+            return ReportExportResult.FromFile(tempPath, sfd.FileName);
+        }
     }
 
     // ===== 檔名處理 =====
@@ -186,31 +199,14 @@ public static class Page3ReportExporter
     private static void WritePressureDrop(
     IXLWorksheet ws,
     int row,
-    Page3RowData r,
-    Page3PressureMode pressureMode
+    Page3RowData r
 )
     {
         string pressureSpec = GetControlText(r, 53);
         string pressureValue = GetControlText(r, 54);
 
-        // 先全部寫 N/A，避免模板殘留舊值
-        ws.Cell(row, "AI").Value = "N/A"; // 單片壓損規格
-        ws.Cell(row, "AJ").Value = "N/A"; // 單片壓損數據
-        ws.Cell(row, "AK").Value = "N/A"; // 整組壓損規格
-        ws.Cell(row, "AL").Value = "N/A"; // 整組壓損數據
-
-        if (pressureMode == Page3PressureMode.Single)
-        {
-            // 單片
-            ws.Cell(row, "AI").Value = ToReportText(pressureSpec);
-            ws.Cell(row, "AJ").Value = ToReportText(pressureValue);
-        }
-        else
-        {
-            // 整組
-            ws.Cell(row, "AK").Value = ToReportText(pressureSpec);
-            ws.Cell(row, "AL").Value = ToReportText(pressureValue);
-        }
+        ws.Cell(row, "AI").Value = ToReportText(pressureSpec);
+        ws.Cell(row, "AJ").Value = ToReportText(pressureValue);
     }
 
     private static string GetControlText(Page3RowData r, int key)
@@ -251,7 +247,7 @@ public static class Page3ReportExporter
         WriteInstrumentNA(ws, "S4", "S5", "S6");   // MC
         WriteInstrumentNA(ws, "W4", "W5", "W6");   // Particle
         WriteInstrumentNA(ws, "AH4", "AH5", "AH6"); // FT3+
-        WriteInstrumentNA(ws, "AM4", "AM5", "AM6"); //PressureDrop
+        WriteInstrumentNA(ws, "AK4", "AK5", "AK6"); // PressureDrop
 
         List<string> instrumentNos = BuildPage3InstrumentNos(d);
 
@@ -279,7 +275,7 @@ public static class Page3ReportExporter
         // Page3 固定顯示
         WriteInstrumentByNo(ws, instruments, "QAD-GT-03", "W4", "W5", "W6");
         WriteInstrumentByNo(ws, instruments, "QAD-MIT-02", "AH4", "AH5", "AH6");
-        WriteInstrumentByNo(ws, instruments, "QAD-IAQ-05", "AM4", "AM5", "AM6");
+        WriteInstrumentByNo(ws, instruments, "QAD-IAQ-05", "AK4", "AK5", "AK6");
     }
 
     private static List<string> BuildPage3InstrumentNos(Page3ExportData d)

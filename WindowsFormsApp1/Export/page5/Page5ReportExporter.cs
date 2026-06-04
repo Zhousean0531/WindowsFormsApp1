@@ -15,8 +15,24 @@ public static class Page5ReportExporter
     )
 
     {
-        if (d == null || d.Rows == null || d.Rows.Count == 0)
+        var staged = ExportStaged(d, cylTypeText, rawEfficiencyText, fileNameOverride);
+        if (!staged.Success)
             return false;
+
+        ReportExportStaging.Commit(staged.Files);
+        return true;
+    }
+
+    public static ReportExportResult ExportStaged(
+        Page5ExportData d,
+        string cylTypeText,
+        string rawEfficiencyText,
+        string fileNameOverride = null
+    )
+
+    {
+        if (d == null || d.Rows == null || d.Rows.Count == 0)
+            return ReportExportResult.Failed();
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -26,10 +42,10 @@ public static class Page5ReportExporter
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到 Report.xlsx");
-            return false;
+            return ReportExportResult.Failed();
         }
 
-        string reportType = ResolveReportType(d.FilterType);
+        string reportType = ResolveFileNameReportType(d);
 
         using (var sfd = new SaveFileDialog())
         {
@@ -37,11 +53,12 @@ public static class Page5ReportExporter
             sfd.FileName = BuildFileName(d, reportType, fileNameOverride);
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return false;
+                return ReportExportResult.Failed();
 
-            File.Copy(templatePath, sfd.FileName, true);
+            string tempPath = ReportExportStaging.CreateTempPath(sfd.FileName);
+            File.Copy(templatePath, tempPath, true);
 
-            using (var wb = new XLWorkbook(sfd.FileName))
+            using (var wb = new XLWorkbook(tempPath))
             {
                 var ws = wb.Worksheet(1);
                 // ===== 1. 儀器校正資訊 =====
@@ -73,10 +90,7 @@ public static class Page5ReportExporter
                     {
                         ws.Cell(row, effCol.Value).Value = ToReportText(rawEfficiencyText);
                     }
-                    ws.Cell(row, "AI").Value = "N/A";
-                    ws.Cell(row, "AJ").Value = "N/A";
-                    ws.Cell(row, "AK").Value = "130";
-                    ws.Cell(row, "AL").Value = "N/A";
+                    ws.Cell(row, "AI").Value = "130";
                     if (r.ControlValues != null)
                     {
                         foreach (var kv in r.ControlValues)
@@ -92,9 +106,9 @@ public static class Page5ReportExporter
 
                 wb.Save();
             }
-        }
 
-        return true;
+            return ReportExportResult.FromFile(tempPath, sfd.FileName);
+        }
     }
 
     // ===== 檔名處理 =====
@@ -141,7 +155,7 @@ public static class Page5ReportExporter
         { 48, 31 }, // AE
         { 49, 32 }, // AF
         { 50, 33 }, // AG
-        { 54, 38 }  // AL
+        { 54, 36 }  // AJ
     };
     // ===== 一般欄位空值轉 N/A =====
     private static string ToReportText(string value)
@@ -152,6 +166,26 @@ public static class Page5ReportExporter
     }
 
     // ===== 報告類型 =====
+    private static string ResolveFileNameReportType(Page5ExportData d)
+    {
+        if (d == null)
+            return "";
+
+        string rawMaterialType = (d.RawMaterialType ?? "").Trim().ToUpper();
+        string materialNo = (d.MaterialNo ?? "").Trim().ToUpper();
+
+        if (rawMaterialType == "MA")
+        {
+            if (materialNo.Contains("11A0C00Y000002"))
+                return "ACID";
+
+            if (materialNo.Contains("11D0S00Y000002"))
+                return "DMS";
+        }
+
+        return ResolveReportType(d.RawMaterialType);
+    }
+
     private static string ResolveReportType(string filterType)
     {
         if (string.IsNullOrWhiteSpace(filterType))
@@ -188,7 +222,7 @@ public static class Page5ReportExporter
         WriteInstrumentNA(ws, "S4", "S5", "S6");    // MC
         WriteInstrumentNA(ws, "W4", "W5", "W6");    // Met One / GT-324
         WriteInstrumentNA(ws, "AH4", "AH5", "AH6"); // FT3+
-        WriteInstrumentNA(ws, "AM4", "AM5", "AM6"); //PressureDrop
+        WriteInstrumentNA(ws, "AK4", "AK5", "AK6"); // PressureDrop
 
         List<string> instrumentNos = BuildPage5InstrumentNos(cylTypeText);
 
@@ -220,7 +254,7 @@ public static class Page5ReportExporter
         // Page5 固定顯示
         WriteInstrumentByNo(ws, instruments, "QAD-GT-03", "W4", "W5", "W6");
         WriteInstrumentByNo(ws, instruments, "QAD-MIT-03", "AH4", "AH5", "AH6");
-        WriteInstrumentByNo(ws, instruments, "QAD-IAQ-05", "AM4", "AM5", "AM6");
+        WriteInstrumentByNo(ws, instruments, "QAD-IAQ-05", "AK4", "AK5", "AK6");
     }
 
     private static List<string> BuildPage5InstrumentNos(string cylTypeText)

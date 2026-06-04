@@ -72,7 +72,8 @@ public static class Page5ExcelImporter
                         ReportNo = null,
                         CylinderNo = cylinderNo,
                         Customer = null,
-                        FilterType = filterType,
+                        FilterType = null,
+                        RawMaterialType = filterType,
                         MaterialNo = materialNo,
                         ReCylinderNo = null,
                         CarbonLot = carbonLot,
@@ -131,8 +132,8 @@ public static class Page5ExcelImporter
         if (string.IsNullOrWhiteSpace(data.TestDate) && !string.IsNullOrWhiteSpace(testDate))
             data.TestDate = testDate;
 
-        if (string.IsNullOrWhiteSpace(data.FilterType) && !string.IsNullOrWhiteSpace(filterType))
-            data.FilterType = filterType;
+        if (string.IsNullOrWhiteSpace(data.RawMaterialType) && !string.IsNullOrWhiteSpace(filterType))
+            data.RawMaterialType = filterType;
 
         if (string.IsNullOrWhiteSpace(data.MaterialNo) && !string.IsNullOrWhiteSpace(materialNo))
             data.MaterialNo = materialNo;

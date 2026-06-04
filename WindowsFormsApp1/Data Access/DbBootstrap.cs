@@ -196,10 +196,14 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_GasTest' AND xtype='U')
 CREATE TABLE P2_GasTest (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     BatchId INT,
+    ReportNo NVARCHAR(50),
     GasName NVARCHAR(50),
     Concentration DECIMAL(10,2),
     Background DECIMAL(10,2)
 );
+
+IF COL_LENGTH('dbo.P2_GasTest', 'ReportNo') IS NULL
+    ALTER TABLE P2_GasTest ADD ReportNo NVARCHAR(50) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P2_Sample' AND xtype='U')
 CREATE TABLE P2_Sample (
@@ -343,11 +347,15 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Efficiency' AND xtype='U'
 CREATE TABLE P4_Efficiency (
     Id BIGINT IDENTITY(1,1) PRIMARY KEY,
     BatchId INT,
+    ReportNo NVARCHAR(50),
     GasName NVARCHAR(50),
     Concentration FLOAT,
     SequenceIndex INT,
     EfficiencyValue FLOAT
 );
+
+IF COL_LENGTH('dbo.P4_Efficiency', 'ReportNo') IS NULL
+    ALTER TABLE P4_Efficiency ADD ReportNo NVARCHAR(50) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P4_Lot' AND xtype='U')
 CREATE TABLE P4_Lot (
@@ -378,7 +386,8 @@ CREATE TABLE P5_Batch (
     ReportNo NVARCHAR(50),
     CylinderNo NVARCHAR(50),
     Customer NVARCHAR(50),
-    FilterType NVARCHAR(50),
+    FilterType NVARCHAR(100),
+    RawMaterialType NVARCHAR(50),
     TestDate NVARCHAR(50),
     UserName NVARCHAR(50),
     CreatedAt DATETIME,
@@ -389,6 +398,28 @@ CREATE TABLE P5_Batch (
 
 IF COL_LENGTH('dbo.P5_Batch', 'MaterialNo') IS NULL
     ALTER TABLE P5_Batch ADD MaterialNo NVARCHAR(50) NULL;
+
+IF COL_LENGTH('dbo.P5_Batch', 'RawMaterialType') IS NULL
+BEGIN
+    ALTER TABLE P5_Batch ADD RawMaterialType NVARCHAR(50) NULL;
+END;
+
+IF COL_LENGTH('dbo.P5_Batch', 'RawMaterialType') IS NOT NULL
+    EXEC(N'
+        UPDATE dbo.P5_Batch
+        SET RawMaterialType = FilterType
+        WHERE RawMaterialType IS NULL
+          AND FilterType IS NOT NULL;
+    ');
+
+IF EXISTS (
+    SELECT 1
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('dbo.P5_Batch')
+      AND name = 'FilterType'
+      AND max_length < 200
+)
+    ALTER TABLE P5_Batch ALTER COLUMN FilterType NVARCHAR(100) NULL;
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='P5_Row' AND xtype='U')
 CREATE TABLE P5_Row (

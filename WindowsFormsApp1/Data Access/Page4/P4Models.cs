@@ -51,6 +51,7 @@ namespace WindowsFormsApp1.Data_Access.Page4
 
     public class P4EfficiencyGroup
     {
+        public string ReportNo { get; set; }
         public string GasName { get; set; }
         public double? Concentration { get; set; }
 

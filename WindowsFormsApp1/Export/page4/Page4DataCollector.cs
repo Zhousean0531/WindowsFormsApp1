@@ -48,23 +48,51 @@ public static class Page4DataCollector
 
         // ===== Lot =====
         string supplierLot = ControlHelper.GetText(tab, "CylinderRawLotBox");
-        if (string.IsNullOrWhiteSpace(supplierLot))
-            supplierLot = "-";
 
         string factoryLot = ControlHelper.GetText(tab, "CylinderRawLotFullTB");
 
         // ===== 分割 =====
         var numbers = ParseHelper.SplitStr(ControlHelper.GetText(tab, "CylinderRawNumberBox"));
-        var weights = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"));
-        var vocIns = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"));
-        var vocOuts = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"));
-        var deltaPs = ParseHelper.SplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"));
         var supplierLots = ParseHelper.SplitStr(supplierLot);
-        int n = new[] { weights.Count,  vocIns.Count, vocOuts.Count, deltaPs.Count }.Min();
 
-        if (n == 0)
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "CylinderRawWeightBox"), out var weights))
         {
-            MessageBox.Show("沒有可用資料");
+            MessageBox.Show("測試品重量欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsInletBox"), out var vocIns))
+        {
+            MessageBox.Show("Inlet 欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "CylinderRawVOCsOutletBox"), out var vocOuts))
+        {
+            MessageBox.Show("Outlet 欄位格式錯誤");
+            return null;
+        }
+
+        if (!ParseHelper.TrySplitDouble(ControlHelper.GetText(tab, "CylinderRawPressureBox"), out var deltaPs))
+        {
+            MessageBox.Show("壓損欄位格式錯誤");
+            return null;
+        }
+
+        int n = numbers.Count;
+        bool countOk =
+            n > 0 &&
+            weights.Count == n &&
+            vocIns.Count == n &&
+            vocOuts.Count == n &&
+            deltaPs.Count == n;
+
+        if (supplierLots.Count > 1 && supplierLots.Count != n)
+            countOk = false;
+
+        if (!countOk)
+        {
+            MessageBox.Show("各欄位筆數不一致，請確認原料編號、測試品重量、Inlet、Outlet、壓損");
             return null;
         }
 
@@ -81,7 +109,7 @@ public static class Page4DataCollector
             }
             rows.Add(new P4Row
             {
-                LotNo = i < supplierLots.Count ? supplierLots[i] : "",
+                LotNo = supplierLots.Count == 1 ? supplierLots[0] : (supplierLots.Count > i ? supplierLots[i] : ""),
                 LotFull = string.IsNullOrWhiteSpace(num)
                     ? factoryLot
                     : factoryLot + "#" + num,
@@ -123,14 +151,20 @@ public static class Page4DataCollector
             {
                 if (row.IsNewRow) continue;
 
-                string key = row.Cells[0].Value?.ToString();
-                string val = row.Cells[1].Value?.ToString();
+                string key = row.Cells[0].Value?.ToString()?.Trim();
+                string val = row.Cells[1].Value?.ToString()?.Trim();
 
                 if (string.IsNullOrWhiteSpace(key)) continue;
+                if (key.Contains("總重")) continue;
 
                 double percent;
                 if (double.TryParse(val, out percent))
                     particlePercentages[key] = percent;
+                else
+                {
+                    MessageBox.Show($"粒徑 {key} 的百分比錯誤");
+                    return null;
+                }
             }
         }
 
@@ -144,25 +178,33 @@ public static class Page4DataCollector
             if (!chk.Checked) continue;
             if (!(chk.Tag is string gasKey)) continue;
             var gasCfg = GasMappingHelper.Get(gasKey);
+            if (gasCfg == null) continue;
             if (!gasCfg.UiMap.TryGetValue(GasPageType.CylinderRawPage, out var ui)) continue;
 
             var tbConc = ControlHelper.Find<TextBox>(panel, ui.ConcBox);
             var tbBg = ControlHelper.Find<TextBox>(panel, ui.BgBox);
             var tbVal = ControlHelper.Find<TextBox>(panel, ui.ValueBox);
 
-            if (tbConc == null || tbVal == null) continue;
+            if (tbConc == null || tbBg == null || tbVal == null)
+            {
+                MessageBox.Show($"{gasKey} 找不到濃度 / 背景 / 讀值欄位");
+                return null;
+            }
 
-            double conc;
-            if (!double.TryParse(tbConc.Text, out conc)) continue;
-
-            double bg = 0;
-            double.TryParse(tbBg?.Text, out bg);
-
-            var arr = tbVal.Text
-                .Replace("／", "/")
-                .Replace(",", "/")
-                .Replace("\r\n", "/")
-                .Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (!EfficiencyHelper.TryValidateInputs(
+                gasKey,
+                tbConc.Text,
+                tbBg.Text,
+                tbVal.Text,
+                11,
+                out double conc,
+                out double bg,
+                out var readings,
+                out string efficiencyError))
+            {
+                MessageBox.Show(efficiencyError);
+                return null;
+            }
 
             var g = new P4EfficiencyGroup
             {
@@ -170,18 +212,15 @@ public static class Page4DataCollector
                 Concentration = conc
             };
 
-            foreach (var s in arr)
+            foreach (var reading in readings)
             {
-                double v;
-                if (double.TryParse(s.Trim(), out v))
-                {
-                    double eff = 0;
+                double v = reading.Value;
+                double eff = 0;
 
-                    if ((conc - bg) != 0)
-                        eff = (conc - v) / (conc - bg) * 100.0;
+                if ((conc - bg) != 0)
+                    eff = (conc - v) / (conc - bg) * 100.0;
 
-                    g.Efficiencies11.Add(Math.Round(eff, 1));
-                }
+                g.Efficiencies11.Add(Math.Round(eff, 1));
             }
 
             if (g.Efficiencies11.Count > 0)

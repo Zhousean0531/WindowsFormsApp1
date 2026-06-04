@@ -28,6 +28,7 @@ namespace WindowsFormsApp1.Data_Access.Page2
     }
     public class P2GasTest
     {
+        public string ReportNo { get; set; }
         public string GasName { get; set; }
         public decimal? Concentration { get; set; }
         public decimal? Background { get; set; }

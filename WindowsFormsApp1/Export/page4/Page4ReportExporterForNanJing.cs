@@ -10,8 +10,18 @@ public static class Page4ReportExporterForNanJing
 {
     public static bool Export(P4Batch d)
     {
+        var staged = ExportStaged(d);
+        if (!staged.Success)
+            return false;
+
+        ReportExportStaging.Commit(staged.Files);
+        return true;
+    }
+
+    public static ReportExportResult ExportStaged(P4Batch d)
+    {
         if (d.Material != "SG017_A" && d.Material != "SG017_D")
-            return true;
+            return new ReportExportResult { Success = true };
 
         string templatePath = Path.Combine(
             Application.StartupPath,
@@ -21,7 +31,7 @@ public static class Page4ReportExporterForNanJing
         if (!File.Exists(templatePath))
         {
             MessageBox.Show("找不到南京範本");
-            return false;
+            return ReportExportResult.Failed();
         }
 
         using (var sfd = new SaveFileDialog())
@@ -30,7 +40,9 @@ public static class Page4ReportExporterForNanJing
             sfd.FileName = d.ReportNo + "_" + d.Material + "_加測.xlsx";
 
             if (sfd.ShowDialog() != DialogResult.OK)
-                return false;
+                return ReportExportResult.Failed();
+
+            string tempPath = ReportExportStaging.CreateTempPath(sfd.FileName);
 
             Excel.Application app = null;
             Excel.Workbook wb = null;
@@ -87,7 +99,7 @@ public static class Page4ReportExporterForNanJing
 
                 ExcelSignatureHelper.TryAddSignature(ws, "G26");
 
-                ExcelInteropHelper.SaveAs(wb, sfd.FileName);
+                ExcelInteropHelper.SaveAs(wb, tempPath);
             }
             finally
             {
@@ -98,8 +110,8 @@ public static class Page4ReportExporterForNanJing
                 if (wb != null) Marshal.ReleaseComObject(wb);
                 if (app != null) Marshal.ReleaseComObject(app);
             }
-        }
 
-        return true;
+            return ReportExportResult.FromFile(tempPath, sfd.FileName);
+        }
     }
 }
